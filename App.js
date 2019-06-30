@@ -37,13 +37,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   welcome: {
-    fontSize: 20,
+    fontSize: 14,
     textAlign: 'center',
     margin: 10,
+    fontFamily: 'FjallaOne-Regular'
   },
   instructions: {
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
+    fontFamily: 'Lora-Regular'
   },
 });

@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -40,6 +39,12 @@
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
+		31E1404C9DDB40DC8FEC7B9E /* FjallaOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D36F2FE0008047AFBF69BFEB /* FjallaOne-Regular.ttf */; };
+		BB26485190674BAABA358F50 /* PlayfairDisplay-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AC00B3B8492C498B8C47B2BE /* PlayfairDisplay-Black.ttf */; };
+		1B69D9838A744FE591E83A4C /* PlayfairDisplay-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 146C048097AC422B80745F92 /* PlayfairDisplay-Bold.ttf */; };
+		CCB9B887524E4E619A3ED854 /* PlayfairDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 04C32FE3BFF7466DA237EAF0 /* PlayfairDisplay-Regular.ttf */; };
+		E0E40058B50D4153821063B0 /* Lora-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4106D4CBE2394FE29527901F /* Lora-Bold.ttf */; };
+		4FEA1C4883924100A8A694EF /* Lora-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 808CD7DAB5AE43C98480A4A4 /* Lora-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -347,6 +352,12 @@
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		D36F2FE0008047AFBF69BFEB /* FjallaOne-Regular.ttf */ = {isa = PBXFileReference; name = "FjallaOne-Regular.ttf"; path = "../source/assets/fonts/FjallaOne/FjallaOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AC00B3B8492C498B8C47B2BE /* PlayfairDisplay-Black.ttf */ = {isa = PBXFileReference; name = "PlayfairDisplay-Black.ttf"; path = "../source/assets/fonts/PlayFair/PlayfairDisplay-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		146C048097AC422B80745F92 /* PlayfairDisplay-Bold.ttf */ = {isa = PBXFileReference; name = "PlayfairDisplay-Bold.ttf"; path = "../source/assets/fonts/PlayFair/PlayfairDisplay-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		04C32FE3BFF7466DA237EAF0 /* PlayfairDisplay-Regular.ttf */ = {isa = PBXFileReference; name = "PlayfairDisplay-Regular.ttf"; path = "../source/assets/fonts/PlayFair/PlayfairDisplay-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4106D4CBE2394FE29527901F /* Lora-Bold.ttf */ = {isa = PBXFileReference; name = "Lora-Bold.ttf"; path = "../source/assets/fonts/Lora/Lora-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		808CD7DAB5AE43C98480A4A4 /* Lora-Regular.ttf */ = {isa = PBXFileReference; name = "Lora-Regular.ttf"; path = "../source/assets/fonts/Lora/Lora-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -585,6 +596,7 @@
 				00E356EF1AD99517003FC87E /* PoceniTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				DB07B4AC83D1496982C68057 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -610,6 +622,20 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		DB07B4AC83D1496982C68057 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				D36F2FE0008047AFBF69BFEB /* FjallaOne-Regular.ttf */,
+				AC00B3B8492C498B8C47B2BE /* PlayfairDisplay-Black.ttf */,
+				146C048097AC422B80745F92 /* PlayfairDisplay-Bold.ttf */,
+				04C32FE3BFF7466DA237EAF0 /* PlayfairDisplay-Regular.ttf */,
+				4106D4CBE2394FE29527901F /* Lora-Bold.ttf */,
+				808CD7DAB5AE43C98480A4A4 /* Lora-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -692,7 +718,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 940;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -1057,6 +1083,12 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				31E1404C9DDB40DC8FEC7B9E /* FjallaOne-Regular.ttf in Resources */,
+				BB26485190674BAABA358F50 /* PlayfairDisplay-Black.ttf in Resources */,
+				1B69D9838A744FE591E83A4C /* PlayfairDisplay-Bold.ttf in Resources */,
+				CCB9B887524E4E619A3ED854 /* PlayfairDisplay-Regular.ttf in Resources */,
+				E0E40058B50D4153821063B0 /* Lora-Bold.ttf in Resources */,
+				4FEA1C4883924100A8A694EF /* Lora-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
