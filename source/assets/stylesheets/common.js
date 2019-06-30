@@ -8,5 +8,10 @@ export var common = StyleSheet.create({
   fontbody: {
     fontFamily: 'Lora-Regular',
     fontSize: 14
+  },
+  container: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
   }
 });
