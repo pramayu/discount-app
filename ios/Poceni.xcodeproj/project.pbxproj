@@ -66,6 +66,8 @@
 		FDF532A8C4FF4F969E48157F /* libRNVectorIcons-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5BF83E28754DAE91B72F9C /* libRNVectorIcons-tvOS.a */; };
 		A32C5637ED534F8A992BC62D /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4324F6B9C2844FBDB6C6C91D /* libRNGestureHandler.a */; };
 		A36D33A96E974AAF8CD48E9A /* libRNGestureHandler-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C58AB2014484DF4BE507F77 /* libRNGestureHandler-tvOS.a */; };
+		9051F17B5B314EF1A1F2D81A /* PT_Sans-Web-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0BEA86184C8A477DAF6B87A9 /* PT_Sans-Web-Bold.ttf */; };
+		BAAD76F273E042128EF8B707 /* PT_Sans-Web-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0EFFE6DBA84444018B40D0FA /* PT_Sans-Web-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -402,6 +404,8 @@
 		E006FAAF49964D8A9C971F3C /* RNGestureHandler.xcodeproj */ = {isa = PBXFileReference; name = "RNGestureHandler.xcodeproj"; path = "../node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		4324F6B9C2844FBDB6C6C91D /* libRNGestureHandler.a */ = {isa = PBXFileReference; name = "libRNGestureHandler.a"; path = "libRNGestureHandler.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		1C58AB2014484DF4BE507F77 /* libRNGestureHandler-tvOS.a */ = {isa = PBXFileReference; name = "libRNGestureHandler-tvOS.a"; path = "libRNGestureHandler-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		0BEA86184C8A477DAF6B87A9 /* PT_Sans-Web-Bold.ttf */ = {isa = PBXFileReference; name = "PT_Sans-Web-Bold.ttf"; path = "../source/assets/fonts/PTSans/PT_Sans-Web-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0EFFE6DBA84444018B40D0FA /* PT_Sans-Web-Regular.ttf */ = {isa = PBXFileReference; name = "PT_Sans-Web-Regular.ttf"; path = "../source/assets/fonts/PTSans/PT_Sans-Web-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -699,6 +703,8 @@
 				D51CFE3AE323427D8C4FA20E /* Octicons.ttf */,
 				235DEE0F2639401D9797D582 /* SimpleLineIcons.ttf */,
 				01F14C1AE48D483A85FB5FCC /* Zocial.ttf */,
+				0BEA86184C8A477DAF6B87A9 /* PT_Sans-Web-Bold.ttf */,
+				0EFFE6DBA84444018B40D0FA /* PT_Sans-Web-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1173,6 +1179,8 @@
 				F7C76301FEC548268F901C57 /* Octicons.ttf in Resources */,
 				15DC420099174BD3B525B7AC /* SimpleLineIcons.ttf in Resources */,
 				E1879801CE964B5985A4246C /* Zocial.ttf in Resources */,
+				9051F17B5B314EF1A1F2D81A /* PT_Sans-Web-Bold.ttf in Resources */,
+				BAAD76F273E042128EF8B707 /* PT_Sans-Web-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
