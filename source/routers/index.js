@@ -3,6 +3,7 @@ import { Animated, Easing, Platform } from 'react-native';
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import BasePreloader from '../components/preloader/base';
 import SignUp from '../components/authenticate/signup';
+import SignIn from '../components/authenticate/signin';
 
 var SlideFromRight = (index, position, width) => {
   var translateX = position.interpolate({
@@ -40,6 +41,9 @@ var frontscreen = createStackNavigator({
   },
   SignUp: {
     screen: SignUp
+  },
+  SignIn: {
+    screen: SignIn
   }
 }, {
   headerMode: 'none',
