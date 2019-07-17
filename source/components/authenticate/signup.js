@@ -19,6 +19,7 @@ class SignUp extends Component {
     super(props)
     this.state = {
       formstatus: false,
+      errorstatus: false,
       username: '',
       email: '',
       phone: '',
@@ -27,6 +28,8 @@ class SignUp extends Component {
     }
     this.formtotop = new Animated.Value(0);
     this.formtodown = new Animated.Value(0);
+    this.errorshow = new Animated.Value(0);
+    this.erroroff = new Animated.Value(0);
   }
 
   componentDidMount = () => {
@@ -75,19 +78,43 @@ class SignUp extends Component {
     });
   };
 
+  toerrorshow = () => {
+    Animated.timing(this.errorshow, {
+      toValue: 2,
+      duration: 800
+    }).start(() => {
+      this.setState({
+        errorstatus: true
+      });
+      this.erroroff.setValue(0);
+    })
+  };
+
+  toerroroff = () => {
+    Animated.timing(this.erroroff, {
+      toValue: 2,
+      duration: 800
+    }).start(() => {
+      this.setState({
+        errorstatus: false
+      });
+      this.errorshow.setValue(0);
+    })
+  }
+
   validator = (data) => {
     var errors = {};
     if(data.username.length === 0) {
-      errors.username = 'this field is required';
+      errors.username = 'This Field is Required';
     };
     if(data.email.length === 0) {
-      errors.email = 'this field is required';
+      errors.email = 'This Field is Required';
     };
     if(data.phone.length === 0) {
-      errors.phone = 'this field is required';
+      errors.phone = 'This Field is Required';
     };
     if(data.password.length < 8) {
-      errors.phone = 'this field is required';
+      errors.password = 'This Field is Required & Min Length 8 Character';
     };
     return {
       errors,
@@ -128,6 +155,25 @@ class SignUp extends Component {
           password: this.state.password
         }
       });
+      var { status, error } = response.data.createuser;
+      if(status === true) {
+        this.setState({
+          username: '',
+          email: '',
+          phone: '',
+          password: '',
+        });
+        this.props.navigation.navigate('UniquePin');
+      } else if (status === false) {
+        var errors = {};
+        errors[`${error[0].path}`] = `${error[0].message}`
+        this.setState({
+          errors: errors
+        });
+        if(error[0].path === 'createuserexsist') {
+          this.toerrorshow();
+        }
+      }
     }
   }
 
@@ -140,6 +186,14 @@ class SignUp extends Component {
     var todownsty = this.formtodown.interpolate({
       inputRange: [0, 1],
       outputRange: [-120, 0]
+    });
+    var toerrorshowsty = this.errorshow.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [-height, 20, 0]
+    });
+    var toerroroffsty = this.erroroff.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [0, 20, -height]
     });
     return (
       <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
@@ -155,13 +209,37 @@ class SignUp extends Component {
             <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 14}]}>Create Account</Text>
             <Text style={[common.fontbody, {textAlign: 'center',color: '#f6f5f3', lineHeight: 22}]}>Find all discounted items in our application</Text>
           </View>
-          <TextInput onChangeText={(txt) => this.fieldOnChange('username',txt)} autoCorrect={false} autoCapitalize='none' placeholder="Username" placeholderTextColor="#444" placeholderText style={[common.fontbody, common.field]}/>
-          <TextInput onChangeText={(txt) => this.fieldOnChange('email',txt)} autoCorrect={false} autoCapitalize='none' placeholder="Email Address" placeholderTextColor="#444" placeholderText style={[common.fontbody, common.field]}/>
-          <TextInput onChangeText={(txt) => this.fieldOnChange('phone',txt)} keyboardType='number-pad' autoCorrect={false} autoCapitalize='none' placeholder="Phone Number" placeholderTextColor="#444" placeholderText style={[common.fontbody, common.field]}/>
-          <TextInput onChangeText={(txt) => this.fieldOnChange('password',txt)} secureTextEntry={true} autoCorrect={false} autoCapitalize='none' placeholder="Password" placeholderTextColor="#444" placeholderText style={[common.fontbody, common.field]}/>
+          <TextInput onChangeText={(txt) => this.fieldOnChange('username',txt)}
+            autoCorrect={false} autoCapitalize='none' placeholder={this.state.errors.username ? this.state.errors.username : "Username"} placeholderTextColor="#444"
+            placeholderText style={[common.fontbody, common.field, {borderWidth: 1, borderColor: this.state.errors.username ? '#bf7c55' : '#444'}]}/>
+          <TextInput onChangeText={(txt) => this.fieldOnChange('email',txt)}
+            autoCorrect={false} autoCapitalize='none' placeholder={this.state.errors.email ? this.state.errors.email : "Email Address"} placeholderTextColor="#444"
+            placeholderText style={[common.fontbody, common.field, {borderWidth: 1, borderColor: this.state.errors.email ? '#bf7c55' : '#444'}]}/>
+          <TextInput onChangeText={(txt) => this.fieldOnChange('phone',txt)}
+            keyboardType='number-pad' autoCorrect={false} autoCapitalize='none' placeholder={this.state.errors.phone ? this.state.errors.phone : "Phone Number"}
+            placeholderTextColor="#444" placeholderText style={[common.fontbody, common.field, {borderWidth: 1, borderColor: this.state.errors.phone ? '#bf7c55' : '#444'}]}/>
+          <TextInput onChangeText={(txt) => this.fieldOnChange('password',txt)}
+            secureTextEntry={true} autoCorrect={false} autoCapitalize='none' placeholder={this.state.errors.password ? this.state.errors.password : "Password"}
+            placeholderTextColor="#444" placeholderText style={[common.fontbody, common.field, {borderWidth: 1, borderColor: this.state.errors.password ? '#bf7c55' : '#444'}]}/>
           <TouchableOpacity onPress={(e) => this.handleSubmit()} style={{marginTop: 20, width: '100%', height: 38, borderRadius: 4, backgroundColor: '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
             <Text style={[common.fontitle, {fontSize: 13, color: '#f6f5f3'}]}>Let's Goo</Text>
           </TouchableOpacity>
+        </Animated.View>
+        <Animated.View style={{transform:[{translateY: this.state.errorstatus === true ? toerroroffsty : toerrorshowsty}],position: 'absolute', width: '100%', height: height, justifyContent: 'flex-start', paddingHorizontal: 30, paddingTop: 40}}>
+          <View style={{width: '100%', height: 150, backgroundColor: '#f6f5f3', borderRadius: 4, elevation: 30}}>
+            <View style={{flex: 1, flexDirection: 'column'}}>
+              <View style={{flex: .25, alignItems: 'flex-end', justifyContent: 'center', paddingHorizontal: 10}}>
+                <TouchableOpacity onPress={(e) => this.toerroroff()}>
+                  <Ionicons name="ios-close-circle-outline" size={22} color="#444"/>
+                </TouchableOpacity>
+              </View>
+              <View style={{flex: .75, justifyContent: 'flex-start', alignItems: 'center'}}>
+                <Ionicons name="ios-information-circle-outline" size={40} color="#bf7c55"/>
+                <Text style={[common.fontitle, {color: '#bf7c55', fontSize: 14, marginTop: 10}]}>Someting Wrong</Text>
+                <Text style={[common.fontbody, {color: '#444', fontSize: 14, marginTop: 5}]}>{ this.state.errors.createuserexsist }</Text>
+              </View>
+            </View>
+          </View>
         </Animated.View>
       </View>
     )

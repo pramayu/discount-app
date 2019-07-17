@@ -14,8 +14,12 @@ import { HttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
 import { ApolloLink } from 'apollo-link';
 import { ApolloProvider } from 'react-apollo';
+import jwtdecode from 'jwt-decode';
 import AsyncStorage from '@react-native-community/async-storage';
-import { FrontScreen } from './source/routers/index';
+import { useScreens } from 'react-native-screens';
+import { MainScreen } from './source/routers/index';
+
+useScreens();
 
 var authLink = setContext(async (_, {headers}) => {
   var token = await AsyncStorage.getItem('token');
@@ -45,7 +49,7 @@ var client = new ApolloClient({
           current_user: {
             __typename: 'current_user',
             _id: cuser._id,
-            type: cuser.tipe,
+            usertype: cuser.usertype,
             username: cuser.username
           }
         }
@@ -57,7 +61,7 @@ var client = new ApolloClient({
 });
 
 var App = () => {
-  return <ApolloProvider client={client}><FrontScreen /></ApolloProvider>
+  return <ApolloProvider client={client}><MainScreen /></ApolloProvider>
 }
 
 export default App;

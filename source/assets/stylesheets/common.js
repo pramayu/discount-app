@@ -9,6 +9,10 @@ export var common = StyleSheet.create({
     fontFamily: 'PT_Sans-Web-Regular',
     fontSize: 14
   },
+  fontbodybold: {
+    fontSize: 14,
+    fontFamily: 'PT_Sans-Web-Bold',
+  },
   container: {
     flex: 1,
     display: 'flex',
@@ -24,7 +28,5 @@ export var common = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: '#f6f5f3',
     marginBottom: 12,
-    // borderWidth: 1,
-    // borderColor: '#fe9d07'
   }
 });
