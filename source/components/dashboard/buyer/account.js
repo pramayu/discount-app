@@ -42,6 +42,11 @@ class AccountBuyer extends Component {
     this._navListener.remove();
   }
 
+  userlogout = async() => {
+    await AsyncStorage.removeItem('token');
+    this.props.navigation.navigate('CheckToken');
+  }
+
 
   render() {
     var { width, height } = Dimensions.get('window');
@@ -72,7 +77,7 @@ class AccountBuyer extends Component {
                           <Text style={[common.fontbody, { color: '#f6f5f3', letterSpacing: .5}]}>@{data.user.user.username}</Text>
                         </View>
                         <View style={{flex: .2, justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-                          <TouchableOpacity style={{height: '100%', justifyContent: 'center'}}>
+                          <TouchableOpacity onPress={(e) => this.userlogout()} tyle={{height: '100%', justifyContent: 'center'}}>
                             <Ionicons name="ios-power" size={22} color="#f6f5f3"/>
                           </TouchableOpacity>
                         </View>
@@ -80,8 +85,12 @@ class AccountBuyer extends Component {
                     </View>
                     <View style={{flex: .88, width: '100%'}}>
                       <View style={{width: '100%', alignItems: 'center', height: '85%', justifyContent: 'center'}}>
-                        <View style={{backgroundColor: '#f6f5f3',borderRadius: 50, width: 100, height: 100, alignItems: 'center',justifyContent: 'center'}}>
-                          <MaterialIcons name="landscape" color="#6c7e70" size={64}/>
+                        <View style={{backgroundColor: '#f6f5f3',borderRadius: 80, width: 110, height: 110, alignItems: 'center',justifyContent: 'center'}}>
+                          {
+                            data.user.user.photos ?
+                            <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 80, borderWidth: 1, borderColor: '#f6f5f3'}} source={{uri: data.user.user.photos[0].secureUrl}}/> :
+                            <MaterialIcons name="landscape" color="#6c7e70" size={64}/>
+                          }
                         </View>
                         <Text style={[common.fontitle, { color: '#f6f5f3', marginTop: 15, letterSpacing: .5}]}>
                           { data.user.user.fullname ? data.user.user.fullname : 'Update Fullname'}
@@ -109,7 +118,7 @@ class AccountBuyer extends Component {
                 </View>
                 <View style={{width: '100%', height: 'auto', paddingHorizontal: 20, paddingTop: 35}}>
                   <View style={{width: '100%', alignItems: 'center'}}>
-                    <Text style={[common.fontitle, {color: '#444', letterSpacing: .5}]}>Following</Text>
+                    <Text style={[common.fontitle, {color: '#444', letterSpacing: .5}]}>Recent from Following</Text>
                   </View>
                   <View style={{width: '100%', alignItems: 'center', paddingHorizontal: '17%', paddingVertical: 5}}>
                     <Text style={[common.fontbody, {color: '#7f8082', textAlign: 'center'}]}>These are all discount stuffs from the merchant you following.</Text>

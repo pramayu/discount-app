@@ -49,8 +49,8 @@ export var USER_LOGIN = gql`
 `;
 
 export var UPDATE_USER = gql`
-  mutation($userID: ID!, $username: String, $email: String, $phone: String, $fullname: String, $address: String) {
-    updateuser(userID: $userID, username: $username, email: $email, phone: $phone, fullname: $fullname, address: $address) {
+  mutation($userID: ID!, $username: String, $email: String, $phone: String, $fullname: String, $address: String, $pprofile: [pprofile]) {
+    updateuser(userID: $userID, username: $username, email: $email, phone: $phone, fullname: $fullname, address: $address, pprofile: $pprofile) {
       status
       error {
         path
@@ -75,6 +75,12 @@ export var FETCH_USER = gql`
         phone
         fullname
         address
+        photos {
+          _id
+          publicId
+          secureUrl
+          imgType
+        }
       }
     }
   }

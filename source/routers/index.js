@@ -14,6 +14,7 @@ import DiscoverBuyer from '../components/dashboard/buyer/discover';
 import Notif from '../components/dashboard/buyer/notif';
 import BuyerDashboard from '../components/dashboard/buyer/timeline';
 import SettingUser from '../components/shared/setting';
+import ChangePassword from '../components/shared/changepassword';
 
 import CheckToken from '../components/authenticate/checktoken';
 import Offline from '../components/offline/offline';
@@ -31,7 +32,7 @@ var SlideFromRight = (index, position, width) => {
 var TransitionConfiguration = () => {
   return {
     transitionSpec: {
-      duration: 650,
+      duration: 800,
       easing: Easing.out(Easing.poly(4)),
       timing: Animated.timing,
       useNativeDriver: true,
@@ -77,7 +78,8 @@ var authenticateRoute = createStackNavigator({
 
 var accountBuyer = createStackNavigator({
   AccountBuyer: { screen: AccountBuyer },
-  SettingUser: { screen: SettingUser }
+  SettingUser: { screen: SettingUser },
+  ChangePassword: { screen: ChangePassword }
 }, {
   headerMode: 'none',
   transitionConfig: TransitionConfiguration,

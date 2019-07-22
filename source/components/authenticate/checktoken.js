@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
-  View, Text, StatusBar, TouchableOpacity
+  View, Text, StatusBar, TouchableOpacity,
+  PermissionsAndroid
 } from 'react-native';
 import { compose, graphql } from 'react-apollo';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -23,6 +24,22 @@ class CheckToken extends Component {
 
   componentDidMount = () => {
     this.checkconnection();
+    this.requestCameraPermission();
+  }
+
+  requestCameraPermission = async() => {
+    try {
+      var granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE, {
+          title: 'PERMISSION',
+          message: 'EXTERNAL STORAGE PERMISSION',
+          buttonNeutral: 'ASK ME LATER',
+          buttonNegative: 'CANCEL',
+          buttonPositive: 'OK'
+        });
+    } catch (err) {
+
+    }
   }
 
   checkconnection = () => {
