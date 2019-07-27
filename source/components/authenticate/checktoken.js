@@ -10,7 +10,7 @@ import NetInfo from "@react-native-community/netinfo";
 import {
   AUTHORIZATION
 } from '../../queries/queryUser';
-
+import Loading from '../shared/loading';
 
 
 class CheckToken extends Component {
@@ -53,43 +53,38 @@ class CheckToken extends Component {
   }
 
   authorization = async() => {
-    var usertoken = await AsyncStorage.getItem('token');
-    if(usertoken) {
-      var response = await this.props.authorization({
-        variables: {
-          usertoken: usertoken
-        }
-      });
-      var { status, usertype } = response.data.authorization;
-      if(status === true) {
-        if(usertype === 'buyer') {
-          this.props.navigation.navigate('BuyerDashRoute');
-        } else if (usertype === 'merchant') {
-
+    try {
+      var usertoken = await AsyncStorage.getItem('token');
+      if(usertoken) {
+        var response = await this.props.authorization({
+          variables: {
+            usertoken: usertoken
+          }
+        });
+        var { status, usertype } = response.data.authorization;
+        if(status === true) {
+          if(usertype === 'buyer') {
+            this.props.navigation.navigate('BuyerDashRoute');
+          } else if (usertype === 'merchant') {
+            this.props.navigation.navigate('MerchantDashRoute');
+          } else {
+            this.props.navigation.navigate('AuthenticateScreen');
+          }
         } else {
           this.props.navigation.navigate('AuthenticateScreen');
         }
       } else {
         this.props.navigation.navigate('AuthenticateScreen');
       }
-    } else {
-      this.props.navigation.navigate('AuthenticateScreen');
+    } catch (error) {
+      if(error) {
+        this.props.navigation.navigate('Maintenance');
+      }
     }
   }
 
   render() {
-    return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#ECEFF1'}}>
-        <StatusBar backgroundColor='#ECEFF1' barStyle='dark-content'/>
-        <View style={{width: 150, height: 150, justifyContent: 'center', alignItems: 'center'}}>
-          <View style={{width: 100, height: 100, justifyContent: 'center', alignItems: 'center'}}>
-            <MaterialIcons name="landscape" color="#444" size={72}/>
-            <Text style={{transform: [{translateY: -20}],margin: 0,fontSize: 22, color: '#444', letterSpacing: 3, fontFamily: 'Oswald'}}>POCENI</Text>
-          </View>
-          <View style={{position: 'absolute', width: 120, height: 120, borderRadius: 100}}></View>
-        </View>
-      </View>
-    )
+    return <Loading />
   }
 }
 

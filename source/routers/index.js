@@ -16,8 +16,14 @@ import BuyerDashboard from '../components/dashboard/buyer/timeline';
 import SettingUser from '../components/shared/setting';
 import ChangePassword from '../components/shared/changepassword';
 
+import Scan from '../components/dashboard/merchant/scan';
+import Shop from '../components/dashboard/merchant/shop';
+import Stuff from '../components/dashboard/merchant/stuff';
+import Upload from '../components/dashboard/merchant/upload';
+
 import CheckToken from '../components/authenticate/checktoken';
 import Offline from '../components/offline/offline';
+import Maintenance from '../components/authenticate/maintenance';
 
 import TabBarComponent from './tab_component';
 
@@ -69,6 +75,9 @@ var authenticateRoute = createStackNavigator({
   },
   Offline: {
     screen: Offline
+  },
+  Maintenance: {
+    screen: Maintenance
   }
 }, {
   headerMode: 'none',
@@ -185,6 +194,95 @@ var buyerDashboard = createBottomTabNavigator({
   }
 });
 
+var merchantDashboard = createBottomTabNavigator({
+  Shop: {
+    screen: Shop
+  },
+  Upload: {
+    screen: Upload
+  },
+  Scan: {
+    screen: Scan
+  },
+  Notif: {
+    screen: Notif
+  },
+  Stuff: {
+    screen: Stuff
+  }
+}, {
+  defaultNavigationOptions: ({ navigation }) => ({
+    tabBarIcon: ({ focused, horizontal, tintColor }) => {
+      var { routeName } = navigation.state;
+      if(routeName === 'Shop') {
+        return (
+          <View style={style.container}>
+            <View style={[style.container, focused ? { transform: [{translateY: 13}], opacity: 1 } : { opacity: 0, transform: [{translateY: -20}]}]}>
+              <Text style={style.text}>Dashboard.</Text>
+              <Ionicons name='ios-radio-button-on' color='#444' size={8}/>
+            </View>
+            <View style={focused ? { transform: [{translateY: 20}], opacity: 0} : { opacity: 1, transform: [{translateY: -13.5}] }}>
+              <Ionicons name='ios-filing' size={20} color='#444' />
+            </View>
+          </View>
+        )
+      } else if (routeName === 'Stuff') {
+        return (
+          <View style={style.container}>
+            <View style={[style.container, focused ? { transform: [{translateY: 13}], opacity: 1 } : { opacity: 0, transform: [{translateY: -20}]}]}>
+              <Text style={style.text}>Stuffs.</Text>
+              <Ionicons name='ios-radio-button-on' color='#444' size={8}/>
+            </View>
+            <Ionicons name='ios-cube' size={20} color='#444' style={focused ? { transform: [{translateY: 20}], opacity: 0} : { opacity: 1, transform: [{translateY: -13.5}] }}/>
+          </View>
+        )
+      } else if(routeName === 'Upload') {
+        return (
+          <View style={style.container}>
+            <View style={[style.container, focused ? { transform: [{translateY: 13}], opacity: 1 } : { opacity: 0, transform: [{translateY: -20}]}]}>
+              <Text style={style.text}>Upload.</Text>
+              <Ionicons name='ios-radio-button-on' color='#444' size={8}/>
+            </View>
+            <Ionicons name='ios-archive' size={20} color='#444' style={focused ? { transform: [{translateY: 20}], opacity: 0} : { opacity: 1, transform: [{translateY: -13.5}] }}/>
+          </View>
+        )
+      } else if (routeName === 'Scan') {
+        return (
+          <View style={style.container}>
+            <View style={[style.container, focused ? { transform: [{translateY: 13}], opacity: 1 } : { opacity: 0, transform: [{translateY: -20}]}]}>
+              <Text style={style.text}>Bill.</Text>
+              <Ionicons name='ios-radio-button-on' color='#444' size={8}/>
+            </View>
+            <Ionicons name='ios-qr-scanner' size={20} color='#444' style={focused ? { transform: [{translateY: 20}], opacity: 0} : { opacity: 1, transform: [{translateY: -13.5}] }}/>
+          </View>
+        )
+      } else if (routeName === 'Notif') {
+        return (
+          <View style={style.container}>
+            <View style={[style.container, focused ? { transform: [{translateY: 13}], opacity: 1 } : { opacity: 0, transform: [{translateY: -20}]}]}>
+              <Text style={style.text}>Reminder.</Text>
+              <Ionicons name='ios-radio-button-on' color='#444' size={8}/>
+            </View>
+            <Ionicons name='ios-notifications' size={22} color='#444' style={focused ? { transform: [{translateY: 20}], opacity: 0} : { opacity: 1, transform: [{translateY: -13.5}] }}/>
+          </View>
+        )
+      }
+    }
+  }),
+  tabBarOptions: {
+    showLabel: false,
+    style: {
+      backgroundColor: '#f6f5f3',
+      height: 52,
+      borderColor: '#f6f5f3',
+      borderTopWidth: 0,
+    },
+    tabStyle: {
+      backgroundColor: '#f6f5f3'
+    }
+  }
+});
+
 var style = StyleSheet.create({
   container: {
     width: '100%',
@@ -202,5 +300,6 @@ var style = StyleSheet.create({
 export var MainScreen = createAppContainer(createSwitchNavigator({
   CheckToken: { screen: CheckToken },
   AuthenticateScreen: { screen: authenticateRoute },
-  BuyerDashRoute: { screen: buyerDashboard }
+  BuyerDashRoute: { screen: buyerDashboard },
+  MerchantDashRoute: { screen: merchantDashboard }
 }));

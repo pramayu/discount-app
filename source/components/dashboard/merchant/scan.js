@@ -7,7 +7,7 @@ import {
   common
 } from '../../../assets/stylesheets/common';
 
-class Notif extends Component {
+class Scan extends Component {
   componentDidMount = () => {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
@@ -26,4 +26,4 @@ class Notif extends Component {
   }
 }
 
-export default Notif;
+export default Scan;

@@ -60,6 +60,31 @@ export var UPDATE_USER = gql`
   }
 `;
 
+export var CHANGE_PASSWORD = gql`
+  mutation($userID: ID!, $oldpassword: String!, $newpassword: String!, $confirmpassword: String!) {
+    changepassword(userID: $userID, oldpassword: $oldpassword, newpassword: $newpassword, confirmpassword: $confirmpassword) {
+      status
+      error {
+        path
+        message
+      }
+    }
+  }
+`
+
+export var CHANGE_USER_TYPE = gql`
+  mutation($userID: ID!, $usertype: String!) {
+    changeusertype(userID: $userID, usertype: $usertype) {
+      status
+      token
+      error {
+        path
+        message
+      }
+    }
+  }
+`
+
 export var FETCH_USER = gql`
   query($userID: ID!) {
     user(userID: $userID) {

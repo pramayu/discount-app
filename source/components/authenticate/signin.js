@@ -202,7 +202,7 @@ class SignIn extends Component {
           <TouchableOpacity onPress={(e) => this.handleSubmit()} style={{marginTop: 20, width: '100%', height: 38, borderRadius: 4, backgroundColor: '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
             <Text style={[common.fontitle, {fontSize: 13, color: '#f6f5f3'}]}>Let's Goo</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={(e) => AsyncStorage.removeItem('token')} style={{marginTop: 20, width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center'}}>
+          <TouchableOpacity style={{marginTop: 20, width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center'}}>
             <Text style={[common.fontitle, {fontSize: 13, color: '#444'}]}>Login with Google</Text>
           </TouchableOpacity>
         </Animated.View>
