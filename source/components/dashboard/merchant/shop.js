@@ -75,6 +75,131 @@ class Shop extends Component {
             </View>
           </View>
         </View>
+        <View style={{flex: .12, width: '100%', paddingHorizontal: 25}}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{flex: .5, justifyContent: 'flex-end', alignItems: 'flex-start'}}>
+              <Text style={[common.fontbody, {color: '#444'}]}>Your Balance</Text>
+              <Text style={[common.fontitle, {color: '#444', marginTop: 5, fontSize: 16}]}>IDR 200.000</Text>
+            </View>
+            <View style={{flex: .5, alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+              <TouchableOpacity style={{width: '60%', height: 26, borderRadius: 20, borderWidth: 1, borderColor: '#444', backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>TODAY</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <View style={{flex: .48, width: '100%', paddingHorizontal: 25, paddingTop: 30}}>
+          <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+            <View style={{width: '32%', height: 130, marginBottom: 7}}>
+              <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#9aaf9a', borderRadius: 4}}>
+                <View style={{width: '100%', height: 35, justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                  <View style={{width: 35, height: 35, borderRadius: 4,backgroundColor: 'rgba(0,0,0,.1)', justifyContent: 'flex-start', alignItems: 'flex-start', borderBottomRightRadius: 30, paddingTop: 6, paddingLeft: 6}}>
+                    <Ionicons name='ios-pulse' size={18} color='#f6f5f3'/>
+                  </View>
+                </View>
+                <View style={{width: '100%', height: 60, justifyContent: 'flex-start',paddingTop: 10, paddingLeft: 15, alignItems: 'flex-start'}}>
+                  <Text style={[common.fontitle, {color: '#5c6a5c', fontSize: 24}]}>35</Text>
+                  <Text style={[common.fontbody, {color: '#5c6a5c', marginTop: 5, fontSize: 12}]}>TRANSACTION</Text>
+                </View>
+                <View style={{width: '100%', alignItems: 'flex-end',paddingRight: 15, paddingTop: 5}}>
+                  <Ionicons name='ios-arrow-round-forward' size={22} color='#5c6a5c'/>
+                </View>
+              </View>
+              <TouchableOpacity style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 4, justifyContent: 'center', alignItems: 'center'}}>
+              </TouchableOpacity>
+            </View>
+            <View style={{width: '32%', height: 130, marginBottom: 7}}>
+              <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#275b5c', borderRadius: 4}}>
+                <View style={{width: '100%', height: 35, justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                  <View style={{width: 35, height: 35, borderRadius: 4,backgroundColor: 'rgba(0,0,0,.1)', justifyContent: 'flex-start', alignItems: 'flex-start', borderBottomRightRadius: 30, paddingTop: 6, paddingLeft: 6}}>
+                    <Ionicons name='ios-people' size={18} color='#f6f5f3'/>
+                  </View>
+                </View>
+                <View style={{width: '100%', height: 60, justifyContent: 'flex-start',paddingTop: 10, paddingLeft: 15, alignItems: 'flex-start'}}>
+                  <Text style={[common.fontitle, {color: '#3b8b8e', fontSize: 24}]}>14</Text>
+                  <Text style={[common.fontbody, {color: '#3b8b8e', marginTop: 5, fontSize: 12}]}>EMPLOYEE</Text>
+                </View>
+                <View style={{width: '100%', alignItems: 'flex-end',paddingRight: 15, paddingTop: 5}}>
+                  <Ionicons name='ios-arrow-round-forward' size={22} color='#3b8b8e'/>
+                </View>
+              </View>
+              <TouchableOpacity style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 4, justifyContent: 'center', alignItems: 'center'}}>
+              </TouchableOpacity>
+            </View>
+            <View style={{width: '32%', height: 130, marginBottom: 7}}>
+              <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#114345', borderRadius: 4}}>
+                <View style={{width: '100%', height: 35, justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                  <View style={{width: 35, height: 35, borderRadius: 4,backgroundColor: 'rgba(0,0,0,.1)', justifyContent: 'flex-start', alignItems: 'flex-start', borderBottomRightRadius: 30, paddingTop: 6, paddingLeft: 8}}>
+                    <Ionicons name='ios-flash' size={18} color='#f6f5f3'/>
+                  </View>
+                </View>
+                <View style={{width: '100%', height: 60, justifyContent: 'flex-start',paddingTop: 10, paddingLeft: 15, alignItems: 'flex-start'}}>
+                  <Text style={[common.fontitle, {color: '#3b8b8e', fontSize: 24}]}>25</Text>
+                  <Text style={[common.fontbody, {color: '#3b8b8e', marginTop: 5, fontSize: 12}]}>DISCOUNT</Text>
+                </View>
+                <View style={{width: '100%', alignItems: 'flex-end',paddingRight: 15, paddingTop: 5}}>
+                  <Ionicons name='ios-arrow-round-forward' size={22} color='#3b8b8e'/>
+                </View>
+              </View>
+              <TouchableOpacity style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 4, justifyContent: 'center', alignItems: 'center'}}>
+              </TouchableOpacity>
+            </View>
+            <View style={{width: '32%', height: 130}}>
+              <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#356e71', borderRadius: 4}}>
+                <View style={{width: '100%', height: 35, justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                  <View style={{width: 35, height: 35, borderRadius: 4,backgroundColor: 'rgba(0,0,0,.1)', justifyContent: 'flex-start', alignItems: 'flex-start', borderBottomRightRadius: 30, paddingTop: 6, paddingLeft: 6}}>
+                    <Ionicons name='ios-chatbubbles' size={18} color='#f6f5f3'/>
+                  </View>
+                </View>
+                <View style={{width: '100%', height: 60, justifyContent: 'flex-start',paddingTop: 10, paddingLeft: 15, alignItems: 'flex-start'}}>
+                  <Text style={[common.fontitle, {color: '#49a2a6', fontSize: 24}]}>65</Text>
+                  <Text style={[common.fontbody, {color: '#49a2a6', marginTop: 5, fontSize: 12}]}>REVIEW</Text>
+                </View>
+                <View style={{width: '100%', alignItems: 'flex-end',paddingRight: 15, paddingTop: 5}}>
+                  <Ionicons name='ios-arrow-round-forward' size={22} color='#49a2a6'/>
+                </View>
+              </View>
+            </View>
+            <View style={{width: '66%', height: 130}}>
+              <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#506b6e', borderRadius: 4}}>
+                <View style={{width: '100%', height: 35, justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <View style={{flex: .3}}>
+                      <View style={{width: 35, height: 35, borderRadius: 4,backgroundColor: 'rgba(0,0,0,.1)', justifyContent: 'flex-start', alignItems: 'flex-start', borderBottomRightRadius: 30, paddingTop: 6, paddingLeft: 6}}>
+                        <Ionicons name='ios-fitness' size={18} color='#f6f5f3'/>
+                      </View>
+                    </View>
+                    <View style={{flex: .7, justifyContent: 'center', alignItems: 'flex-end', paddingRight: 15}}>
+                      <Text style={[common.fontbody, {color: '#82a4a8', marginTop: 5, fontSize: 12}]}>COMPETITOR</Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={{width: '100%', height: 40, justifyContent: 'flex-start',paddingTop: 10, paddingLeft: 15, alignItems: 'flex-start'}}>
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <View style={{flex: .2}}>
+                      <Text style={[common.fontitle, {color: '#82a4a8', fontSize: 24}]}>15</Text>
+                    </View>
+                    <View style={{flex: .8, paddingTop: 3}}>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <View style={{width: 20, height: 20, borderRadius: 50, backgroundColor: '#82a4a8', marginRight: 4}}></View>
+                        <View style={{width: 20, height: 20, borderRadius: 50, backgroundColor: '#82a4a8', marginRight: 4}}></View>
+                        <View style={{width: 20, height: 20, borderRadius: 50, backgroundColor: '#82a4a8', marginRight: 4}}></View>
+                        <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center',width: 20, height: 20, borderRadius: 50, backgroundColor: '#82a4a8', marginRight: 4}}>
+                          <Ionicons size={16} color='#506b6e' name="ios-add"/>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                <View style={{width: '100%', paddingHorizontal: 15, paddingRight: 35, paddingTop: 5}}>
+                  <Text style={[common.fontbody, {color: '#82a4a8', marginTop: 5, fontSize: 14}]}>
+                    Know what discounts competitors offer.
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
       </View>
     )
   }
