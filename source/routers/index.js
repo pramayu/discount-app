@@ -20,6 +20,7 @@ import Scan from '../components/dashboard/merchant/scan';
 import Shop from '../components/dashboard/merchant/shop';
 import Stuff from '../components/dashboard/merchant/stuff';
 import Upload from '../components/dashboard/merchant/upload';
+import ShopSetting from '../components/shared/merchant/setting';
 
 import CheckToken from '../components/authenticate/checktoken';
 import Offline from '../components/offline/offline';
@@ -94,7 +95,25 @@ var accountBuyer = createStackNavigator({
   transitionConfig: TransitionConfiguration,
 });
 
+var shopScreen = createStackNavigator({
+  Shop: { screen: Shop },
+  ShopSetting: { screen: ShopSetting }
+}, {
+  headerMode: 'none',
+  transitionConfig: TransitionConfiguration,
+});
+
 accountBuyer.navigationOptions = ({ navigation }) => {
+  var tabBarVisible = true;
+  if(navigation.state.index > 0) {
+    tabBarVisible = false
+  }
+  return {
+    tabBarVisible
+  }
+}
+
+shopScreen.navigationOptions = ({ navigation }) => {
   var tabBarVisible = true;
   if(navigation.state.index > 0) {
     tabBarVisible = false
@@ -196,7 +215,7 @@ var buyerDashboard = createBottomTabNavigator({
 
 var merchantDashboard = createBottomTabNavigator({
   Shop: {
-    screen: Shop
+    screen: shopScreen
   },
   Upload: {
     screen: Upload

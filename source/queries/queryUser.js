@@ -106,6 +106,21 @@ export var FETCH_USER = gql`
           secureUrl
           imgType
         }
+        merchant {
+          _id
+          name
+          address
+          districs
+          province
+          description
+          foodtype
+          sosmed
+          phone
+          coordinate {
+            latitude
+            longitude
+          }
+        }
       }
     }
   }

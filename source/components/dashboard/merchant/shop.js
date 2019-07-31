@@ -1,16 +1,36 @@
 import React, { Component } from 'react';
 import {
   View, Text, TouchableOpacity,
-  StatusBar, TouchableHighlight
+  StatusBar, TouchableHighlight,
+  Dimensions, Image
 } from 'react-native';
+import { graphql, compose, Query } from 'react-apollo';
+import _ from 'lodash';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {
   common
 } from '../../../assets/stylesheets/common';
+import {
+  CURRENT_USER, FETCH_USER
+} from '../../../queries/queryUser';
+import Loading from '../../shared/loading';
 
 class Shop extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      current_user: ''
+    }
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    this.setState({
+      current_user: nextProps.current_user ? nextProps.current_user : ''
+    })
+  }
+
   componentDidMount = () => {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
@@ -21,18 +41,25 @@ class Shop extends Component {
   componentWillUnmount = () => {
     this._navListener.remove();
   }
-  render() {
+
+  mainScreen = (user) => {
     return (
-      <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
+      <View style={{flex: 1, flexDirection: 'column'}}>
         <View style={{flex: .1, width: '100%', paddingHorizontal: 25}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex: .7, justifyContent: 'flex-end', alignItems: 'flex-start'}}>
               <Text style={[common.fontitle, {color: '#7f8082'}]}>Hello,</Text>
-              <Text style={[common.fontitle, {color: '#444', fontSize: 16}]}>Lawrance Anzela</Text>
+              <Text style={[common.fontitle, {color: '#444', fontSize: 16}]}>
+                { user.fullname.length > 0 ? user.fullname : user.username }
+              </Text>
             </View>
             <View style={{flex: .3, justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-              <TouchableHighlight style={{width: 40, height: 40, borderRadius: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#6c7e70'}}>
-                <MaterialIcons name="landscape" color="#f6f5f3" size={24}/>
+              <TouchableHighlight onPress={(e) => this.props.navigation.navigate('ShopSetting', {merchant: user.merchant})} style={{width: 40, height: 40, borderRadius: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#6c7e70', elevation: 5}}>
+                {
+                  _.isEmpty(user.photos) ?
+                  <MaterialIcons name="landscape" color="#f6f5f3" size={24}/> :
+                  <Image source={{uri: user.photos[0].secureUrl }} style={{width: '100%', height: '100%', borderRadius: 50, resizeMode: 'cover'}}/>
+                }
               </TouchableHighlight>
             </View>
           </View>
@@ -203,6 +230,36 @@ class Shop extends Component {
       </View>
     )
   }
+
+  render() {
+    var { width, height } = Dimensions.get('window');
+    if(this.state.current_user._id) {
+      return (
+        <Query query={FETCH_USER} variables={{userID: this.state.current_user._id}}>
+          {({ loading, error, data }) => {
+            if(loading || data.user.status === false) {
+              return <View style={[common.container, { backgroundColor: '#f6f5f3' }]}></View>
+            }
+            return (
+              <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
+                { this.mainScreen(data.user.user) }
+              </View>
+            )
+          }}
+        </Query>
+      )
+    } else {
+      return <View style={[common.container, { backgroundColor: '#f6f5f3' }]}></View>
+    }
+  }
 }
 
-export default Shop;
+export default compose(
+  graphql(CURRENT_USER, {
+    name: 'current_user',
+    options: (ownProps) => ({
+      fetchPolicy: 'network-only'
+    }),
+    props: ({ current_user: { current_user }}) => ({ current_user })
+  })
+)(Shop);
