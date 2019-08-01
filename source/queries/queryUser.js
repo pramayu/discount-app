@@ -120,6 +120,12 @@ export var FETCH_USER = gql`
             latitude
             longitude
           }
+          photos {
+            _id
+            publicId
+            secureUrl
+            imgType
+          }
         }
       }
     }

@@ -2,15 +2,19 @@ import React, { Component } from 'react';
 import {
   View, Text, TouchableOpacity,
   StatusBar, TouchableHighlight,
-  TextInput, Dimensions, KeyboardAvoidingView
+  TextInput, Dimensions, KeyboardAvoidingView,
+  Animated, Image
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { graphql, compose } from 'react-apollo';
+import _ from 'lodash';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   common
 } from '../../../assets/stylesheets/common';
 import Loading from '../loading';
+import UploadImage from '../upload';
+import { setpicture } from '../sharedaction';
 import { CURRENT_USER, FETCH_USER } from '../../../queries/queryUser';
 import { BASIC_UPDATE_MERCHANT } from '../../../queries/queryMerchant';
 
@@ -24,8 +28,14 @@ class ShopSetting extends Component {
       sosmed: '',
       description: '',
       current_user: '',
-      fetchstatus: false
+      fetchstatus: false,
+      imageupload: [],
+      fetchlocal: false,
+      fetchimage: false,
+      image: [],
     }
+    this.showfetch = new Animated.Value(0);
+    this.hidefetch = new Animated.Value(0);
   }
 
   componentWillReceiveProps = (nextProps) => {
@@ -46,6 +56,7 @@ class ShopSetting extends Component {
       phone: merchant.phone ? merchant.phone : '',
       sosmed: merchant.sosmed ? merchant.sosmed : '',
       description: merchant.description ? merchant.description : '',
+      image: merchant.photos.length > 0 ? merchant.photos : []
     });
   }
 
@@ -61,6 +72,17 @@ class ShopSetting extends Component {
 
   handlebasicupdatemerchant = async() => {
     this.setState({ fetchstatus: true });
+    var choose = [];
+    if(!_.isEmpty(this.state.imageupload)) {
+      this.setpicture = await setpicture(this.state.imageupload);
+      if(this.setpicture) {
+        choose.push({
+          publicId: this.setpicture.result.data.public_id,
+          imgType: this.setpicture.result.data.format,
+          secureUrl: this.setpicture.result.data.secure_url,
+        });
+      }
+    }
     var response = await this.props.basicupdatemerchant({
       variables: {
         basicupdateprop: {
@@ -69,8 +91,9 @@ class ShopSetting extends Component {
           name: this.state.name,
           phone: this.state.phone,
           sosmed: this.state.sosmed,
-          description: this.state.description
-        }
+          description: this.state.description,
+        },
+        imageupload: choose.length > 0 ? choose : []
       },
         refetchQueries: [{
           query: FETCH_USER,
@@ -83,8 +106,52 @@ class ShopSetting extends Component {
     }
   }
 
+  showfetchservice = () => {
+    Animated.timing(this.showfetch, {
+      toValue: 1,
+      duration: 600
+    }).start(() => {
+      this.hidefetch.setValue(0);
+      this.setState({ fetchimage: true, fetchlocal: true })
+    })
+  };
+
+  hidefetchservice = () => {
+    Animated.timing(this.hidefetch, {
+      toValue: 1,
+      duration: 600
+    }).start(() => {
+      this.showfetch.setValue(0);
+      this.setState({ fetchimage: false, fetchlocal: false })
+    })
+  };
+
+  setupload = (image) => {
+    this.setState({ imageupload: image});
+  }
+
+  imagecondition = () => {
+    if(this.state.image.length > 0) {
+      return <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 80}} source={{uri: this.state.image[0].secureUrl}}/>
+    } else {
+      return (
+        <View style={{backgroundColor: '#6c7e70',borderRadius: 80, width: '100%', height: '100%', alignItems: 'center',justifyContent: 'center'}}>
+          <MaterialIcons name="landscape" color="#f6f5f3" size={64}/>
+        </View>
+      )
+    }
+  }
+
   render() {
     var { width, height } = Dimensions.get('window');
+    var showfetchsty = this.showfetch.interpolate({
+      inputRange: [0, 1],
+      outputRange: [-height, 0]
+    });
+    var hidefetchsty = this.hidefetch.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, -height]
+    });
     if(this.state.fetchstatus === true) {
       return <Loading />
     }
@@ -108,14 +175,12 @@ class ShopSetting extends Component {
             </View>
           </View>
         </View>
-        <KeyboardAvoidingView style={{height: height / 4.2, width: width, paddingHorizontal: 20}}>
+        <KeyboardAvoidingView style={{height: height / 4, width: width, paddingHorizontal: 20}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex: .4, paddingTop: 10, alignItems: 'center'}}>
               <View style={{width: 110, height: 110}}>
-                <View style={{backgroundColor: '#6c7e70',borderRadius: 80, width: '100%', height: '100%', alignItems: 'center',justifyContent: 'center'}}>
-                  <MaterialIcons name="landscape" color="#f6f5f3" size={64}/>
-                </View>
-                <TouchableOpacity style={{justifyContent:"center", alignItems: 'center',position: 'absolute', width: '100%', height: '100%', borderRadius: 100, borderWidth: 1, borderColor: '#6c7e70', backgroundColor: 'rgba(0,0,0,.1)'}}>
+                { !_.isEmpty(this.state.imageupload) ? <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 80}} source={{uri: this.state.imageupload.image.uri}}/> : this.imagecondition() }
+                <TouchableOpacity onPress={(e) => this.showfetchservice()} style={{justifyContent:"center", alignItems: 'center',position: 'absolute', width: '100%', height: '100%', borderRadius: 100, borderWidth: 1, borderColor: '#6c7e70', backgroundColor: 'rgba(0,0,0,.1)'}}>
                   <Ionicons name="ios-camera" size={32} color="rgba(255,255,255,.5)"/>
                 </TouchableOpacity>
               </View>
@@ -128,20 +193,101 @@ class ShopSetting extends Component {
             </View>
           </View>
         </KeyboardAvoidingView>
-        <KeyboardAvoidingView style={{flex: .61}}>
+        <KeyboardAvoidingView style={{width: width, height: 'auto', paddingHorizontal: 20}}>
           <View style={{flex: 1, flexDirection: 'column'}}>
-            <View style={{flex: .07, paddingHorizontal: 20}}>
+            <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>MERCHANT LOCATION</Text>
+            <View style={{width: '100%', height: 45}}>
               <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: .08, justifyContent: 'center', alignItems: 'flex-start'}}>
-                  <Ionicons name="ios-git-merge" size={22} color="#6c7e70"/>
+                <View style={{flex: .09, justifyContent: 'center'}}>
+                  <Ionicons name="ios-pin" size={24} color="#6c7e70"/>
                 </View>
-                <View style={{flex: .92, justifyContent: 'center', alignItems: 'flex-start'}}>
-                  <Text style={[common.fontitle,{color: '#444', fontSize: 13}]}>Customize Merchant</Text>
+                <View style={{flex: .81, justifyContent: 'center'}}>
+                  <Text style={[common.fontbody, { color: '#444'}]}>Share Location</Text>
+                  <Text style={[common.fontbody, { color: '#7f8082'}]}>For ease of finding your store</Text>
+                </View>
+                <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
+                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20}]}>MERCHANT TYPE</Text>
+            <View style={{width: '100%', height: 45}}>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={{flex: .09, justifyContent: 'center'}}>
+                  <Ionicons name="ios-locate" size={24} color="#6c7e70"/>
+                </View>
+                <View style={{flex: .81, justifyContent: 'center'}}>
+                  <Text style={[common.fontbody, { color: '#444'}]}>Categori</Text>
+                  <Text style={[common.fontbody, { color: '#7f8082'}]}>Choose the type of stuffs you sell</Text>
+                </View>
+                <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
+                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20}]}>EXCHANGE RULES</Text>
+            <View style={{width: '100%', height: 45}}>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={{flex: .09, justifyContent: 'center'}}>
+                  <Ionicons name="ios-clipboard" size={23} color="#6c7e70"/>
+                </View>
+                <View style={{flex: .81, justifyContent: 'center'}}>
+                  <Text style={[common.fontbody, { color: '#444'}]}>Set Rules</Text>
+                  <Text style={[common.fontbody, { color: '#7f8082'}]}>Makes it easy to exchange coupon</Text>
+                </View>
+                <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
+                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20}]}>WHAT THEY GOT?</Text>
+            <View style={{width: '100%', height: 45}}>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={{flex: .09, justifyContent: 'center'}}>
+                  <Ionicons name="ios-radio" size={23} color="#6c7e70"/>
+                </View>
+                <View style={{flex: .81, justifyContent: 'center'}}>
+                  <Text style={[common.fontbody, { color: '#444'}]}>Facilities</Text>
+                  <Text style={[common.fontbody, { color: '#7f8082'}]}>Give your customers additional service</Text>
+                </View>
+                <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
+                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20}]}>EXCHANGE PREVILEGE</Text>
+            <View style={{width: '100%', height: 45}}>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={{flex: .09, justifyContent: 'center'}}>
+                  <Ionicons name="ios-git-compare" size={23} color="#6c7e70"/>
+                </View>
+                <View style={{flex: .81, justifyContent: 'center'}}>
+                  <Text style={[common.fontbody, { color: '#444'}]}>Buyer Mode</Text>
+                  <Text style={[common.fontbody, { color: '#7f8082'}]}>Back to buyer user type</Text>
+                </View>
+                <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
+                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
           </View>
         </KeyboardAvoidingView>
+        {
+          this.state.fetchlocal === true ?
+          <Animated.View style={{transform:[{translateY: this.state.fetchimage === false ? showfetchsty : hidefetchsty}], width: '100%', height: '100%', position: 'absolute', backgroundColor: '#f6f5f3'}}>
+            <UploadImage setupload={this.setupload.bind(this)} hidefetchservice={this.hidefetchservice.bind(this)}/>
+          </Animated.View> : null
+        }
       </View>
     )
   }
