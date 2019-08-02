@@ -3,7 +3,7 @@ import {
   View, Text, TouchableOpacity,
   StatusBar, TouchableHighlight,
   TextInput, Dimensions, KeyboardAvoidingView,
-  Animated, Image
+  Animated, Image, Keyboard
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { graphql, compose } from 'react-apollo';
@@ -13,6 +13,7 @@ import {
   common
 } from '../../../assets/stylesheets/common';
 import Loading from '../loading';
+import SettingModal from './settingmodal';
 import UploadImage from '../upload';
 import { setpicture } from '../sharedaction';
 import { CURRENT_USER, FETCH_USER } from '../../../queries/queryUser';
@@ -33,9 +34,18 @@ class ShopSetting extends Component {
       fetchlocal: false,
       fetchimage: false,
       image: [],
+      modalstatus: false,
+      formchoose: '',
+      showkeybord: false,
+      latitude: '',
+      longitude: ''
     }
     this.showfetch = new Animated.Value(0);
     this.hidefetch = new Animated.Value(0);
+    this.modalshow = new Animated.Value(0);
+    this.modalhide = new Animated.Value(0);
+    this.totopform = new Animated.Value(0);
+    this.todwnform = new Animated.Value(0);
   }
 
   componentWillReceiveProps = (nextProps) => {
@@ -58,10 +68,28 @@ class ShopSetting extends Component {
       description: merchant.description ? merchant.description : '',
       image: merchant.photos.length > 0 ? merchant.photos : []
     });
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._keyboardDidHide,
+    );
   }
 
   componentWillUnmount = () => {
     this._navListener.remove();
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = () => {
+    this.totopservice();
+  }
+
+  _keyboardDidHide = () => {
+    this.todwnservice();
   }
 
   changebasicupdatemerchant = (name, value) => {
@@ -126,8 +154,59 @@ class ShopSetting extends Component {
     })
   };
 
+  showmodalservice = (formchoose) => {
+    Animated.timing(this.modalshow, {
+      toValue: 1,
+      duration: 600
+    }).start(() => {
+      this.modalhide.setValue(0);
+      this.setState({ modalstatus: true, formchoose: formchoose})
+    })
+  };
+
+  hidemodalservice = () => {
+    Animated.timing(this.modalhide, {
+      toValue: 1,
+      duration: 600
+    }).start(() => {
+      this.modalshow.setValue(0);
+      this.setState({ modalstatus: false, formchoose: '' })
+    })
+  };
+
+  totopservice = () => {
+    Animated.timing(this.totopform, {
+      toValue: 1,
+      duration: 600
+    }).start(() => {
+      this.todwnform.setValue(0);
+      this.setState({ showkeybord: true })
+    })
+  };
+
+  todwnservice = () => {
+    Animated.timing(this.todwnform, {
+      toValue: 1,
+      duration: 600
+    }).start(() => {
+      this.totopform.setValue(0);
+      this.setState({ showkeybord: false })
+    })
+  };
+
   setupload = (image) => {
     this.setState({ imageupload: image});
+  };
+
+  getcoordinate = () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setState({
+        latitude: position.coords.latitude.toString(),
+        longitude: position.coords.longitude.toString()
+      })
+    }, error => {
+      console.log(error)
+    }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 })
   }
 
   imagecondition = () => {
@@ -151,6 +230,22 @@ class ShopSetting extends Component {
     var hidefetchsty = this.hidefetch.interpolate({
       inputRange: [0, 1],
       outputRange: [0, -height]
+    });
+    var modalshowsty = this.modalshow.interpolate({
+      inputRange: [0, 1],
+      outputRange: [width, 0]
+    });
+    var modalhidesty = this.modalhide.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, width]
+    });
+    var totopformsty = this.totopform.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, -200]
+    });
+    var todwnformsty = this.todwnform.interpolate({
+      inputRange: [0, 1],
+      outputRange: [-200, 0]
     });
     if(this.state.fetchstatus === true) {
       return <Loading />
@@ -193,7 +288,7 @@ class ShopSetting extends Component {
             </View>
           </View>
         </KeyboardAvoidingView>
-        <KeyboardAvoidingView style={{width: width, height: 'auto', paddingHorizontal: 20}}>
+        <View style={{width: width, height: 'auto', paddingHorizontal: 20}}>
           <View style={{flex: 1, flexDirection: 'column'}}>
             <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>MERCHANT LOCATION</Text>
             <View style={{width: '100%', height: 45}}>
@@ -206,7 +301,7 @@ class ShopSetting extends Component {
                   <Text style={[common.fontbody, { color: '#7f8082'}]}>For ease of finding your store</Text>
                 </View>
                 <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
-                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <TouchableOpacity onPress={(e) => this.showmodalservice('location')} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                     <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
                   </TouchableOpacity>
                 </View>
@@ -223,7 +318,7 @@ class ShopSetting extends Component {
                   <Text style={[common.fontbody, { color: '#7f8082'}]}>Choose the type of stuffs you sell</Text>
                 </View>
                 <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
-                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <TouchableOpacity onPress={(e) => this.getcoordinate()} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                     <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
                   </TouchableOpacity>
                 </View>
@@ -281,13 +376,18 @@ class ShopSetting extends Component {
               </View>
             </View>
           </View>
-        </KeyboardAvoidingView>
+        </View>
         {
-          this.state.fetchlocal === true ?
+          this.state.fetchimage === true ?
           <Animated.View style={{transform:[{translateY: this.state.fetchimage === false ? showfetchsty : hidefetchsty}], width: '100%', height: '100%', position: 'absolute', backgroundColor: '#f6f5f3'}}>
             <UploadImage setupload={this.setupload.bind(this)} hidefetchservice={this.hidefetchservice.bind(this)}/>
           </Animated.View> : null
         }
+        <Animated.View style={{transform: [{translateX: this.state.modalstatus === false ? modalshowsty : modalhidesty}, {translateY: this.state.showkeybord === false ? totopformsty : todwnformsty }], position: 'absolute', width: width, height: height, justifyContent: 'flex-end', alignItems: 'center'}}>
+          <View style={{width: '100%', height: height / 1.45, backgroundColor: '#f6f5f3', paddingTop: 20}}>
+            <SettingModal formchoose={this.state.formchoose} hidemodalservice={this.hidemodalservice.bind(this)}/>
+          </View>
+        </Animated.View>
       </View>
     )
   }

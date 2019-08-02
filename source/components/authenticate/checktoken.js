@@ -29,8 +29,9 @@ class CheckToken extends Component {
 
   requestCameraPermission = async() => {
     try {
-      var granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE, {
+      var granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION], {
           title: 'PERMISSION',
           message: 'EXTERNAL STORAGE PERMISSION',
           buttonNeutral: 'ASK ME LATER',
