@@ -37,8 +37,6 @@ class ShopSetting extends Component {
       modalstatus: false,
       formchoose: '',
       showkeybord: false,
-      latitude: '',
-      longitude: ''
     }
     this.showfetch = new Animated.Value(0);
     this.hidefetch = new Animated.Value(0);
@@ -198,16 +196,7 @@ class ShopSetting extends Component {
     this.setState({ imageupload: image});
   };
 
-  getcoordinate = () => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      this.setState({
-        latitude: position.coords.latitude.toString(),
-        longitude: position.coords.longitude.toString()
-      })
-    }, error => {
-      console.log(error)
-    }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 })
-  }
+
 
   imagecondition = () => {
     if(this.state.image.length > 0) {
@@ -262,9 +251,12 @@ class ShopSetting extends Component {
             <View style={{flex:.7, justifyContent:'center', alignItems: 'flex-end'}}>
               <View style={{flex: 1, flexDirection: 'row'}}>
                 <View style={{ width: '95%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
-                  <TouchableOpacity onPress={(e) => this.handlebasicupdatemerchant()}>
-                    <Text style={[common.fontbody, { color: '#444'}]}>Save Update.</Text>
-                  </TouchableOpacity>
+                  {
+                    this.state.formchoose.length === 0 ?
+                    <TouchableOpacity onPress={(e) => this.handlebasicupdatemerchant()}>
+                      <Text style={[common.fontbody, { color: '#444'}]}>Save Update.</Text>
+                    </TouchableOpacity> : null
+                  }
                 </View>
               </View>
             </View>
@@ -318,7 +310,7 @@ class ShopSetting extends Component {
                   <Text style={[common.fontbody, { color: '#7f8082'}]}>Choose the type of stuffs you sell</Text>
                 </View>
                 <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
-                  <TouchableOpacity onPress={(e) => this.getcoordinate()} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                     <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
                   </TouchableOpacity>
                 </View>
@@ -385,7 +377,7 @@ class ShopSetting extends Component {
         }
         <Animated.View style={{transform: [{translateX: this.state.modalstatus === false ? modalshowsty : modalhidesty}, {translateY: this.state.showkeybord === false ? totopformsty : todwnformsty }], position: 'absolute', width: width, height: height, justifyContent: 'flex-end', alignItems: 'center'}}>
           <View style={{width: '100%', height: height / 1.45, backgroundColor: '#f6f5f3', paddingTop: 20}}>
-            <SettingModal formchoose={this.state.formchoose} hidemodalservice={this.hidemodalservice.bind(this)}/>
+            <SettingModal currentuser={this.state.current_user} merchantID={this.state.merchantID} formchoose={this.state.formchoose} hidemodalservice={this.hidemodalservice.bind(this)}/>
           </View>
         </Animated.View>
       </View>

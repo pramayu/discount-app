@@ -109,16 +109,20 @@ export var FETCH_USER = gql`
         merchant {
           _id
           name
-          address
-          districs
-          province
           description
           foodtype
           sosmed
           phone
-          coordinate {
-            latitude
-            longitude
+          location {
+            _id
+            address
+            distric
+            province
+            coordinate {
+              _id
+              latitude
+              longitude
+            }
           }
           photos {
             _id
