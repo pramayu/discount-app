@@ -21,6 +21,17 @@ export var ADDRESS_UPDATE_MERCHANT = gql`
         path
         message
       }
+      location {
+        _id
+        address
+        province
+        distric
+        coordinate {
+          _id
+          latitude
+          longitude
+        }
+      }
     }
   }
 `

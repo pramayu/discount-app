@@ -37,6 +37,7 @@ class ShopSetting extends Component {
       modalstatus: false,
       formchoose: '',
       showkeybord: false,
+      location: []
     }
     this.showfetch = new Animated.Value(0);
     this.hidefetch = new Animated.Value(0);
@@ -64,7 +65,8 @@ class ShopSetting extends Component {
       phone: merchant.phone ? merchant.phone : '',
       sosmed: merchant.sosmed ? merchant.sosmed : '',
       description: merchant.description ? merchant.description : '',
-      image: merchant.photos.length > 0 ? merchant.photos : []
+      image: merchant.photos.length > 0 ? merchant.photos : [],
+      location: merchant.location ? merchant.location : []
     });
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -377,7 +379,7 @@ class ShopSetting extends Component {
         }
         <Animated.View style={{transform: [{translateX: this.state.modalstatus === false ? modalshowsty : modalhidesty}, {translateY: this.state.showkeybord === false ? totopformsty : todwnformsty }], position: 'absolute', width: width, height: height, justifyContent: 'flex-end', alignItems: 'center'}}>
           <View style={{width: '100%', height: height / 1.45, backgroundColor: '#f6f5f3', paddingTop: 20}}>
-            <SettingModal currentuser={this.state.current_user} merchantID={this.state.merchantID} formchoose={this.state.formchoose} hidemodalservice={this.hidemodalservice.bind(this)}/>
+            <SettingModal location={this.state.location} currentuser={this.state.current_user} merchantID={this.state.merchantID} formchoose={this.state.formchoose} hidemodalservice={this.hidemodalservice.bind(this)}/>
           </View>
         </Animated.View>
       </View>

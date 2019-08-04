@@ -5,6 +5,7 @@ import {
   TextInput, Dimensions, KeyboardAvoidingView,
   Animated, Image
 } from 'react-native';
+import _ from 'lodash';
 import { graphql, compose } from 'react-apollo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -12,6 +13,7 @@ import {
   common
 } from '../../../assets/stylesheets/common';
 import { ADDRESS_UPDATE_MERCHANT } from '../../../queries/queryMerchant';
+import { FETCH_USER } from '../../../queries/queryUser';
 
 
 
@@ -25,12 +27,23 @@ class SettingModal extends Component {
       province: '',
       distric: '',
       address: '',
-      fetchstatus: false
+      locationID: '',
+      fetchstatus: false,
+      addlocation: false,
+      indexID: '',
+      location: []
     }
   }
 
+  componentWillReceiveProps = (nextProps) => {
+    this.setState({
+      location: nextProps.location
+    })
+  }
+
   closemodal = () => {
-    this.props.hidemodalservice()
+    this.props.hidemodalservice();
+    this.setState({ addlocation: false });
   }
 
   getcoordinate = () => {
@@ -58,14 +71,105 @@ class SettingModal extends Component {
         addressupdateprop: {
           merchantID    : this.props.merchantID,
           userID        : this.props.currentuser._id,
+          locationID    : this.state.locationID ? this.state.locationID : '',
+          indexID       : this.state.indexID ? this.state.indexID : '',
           address       : this.state.address,
           distric       : this.state.distric,
           province      : this.state.province,
           latitude      : this.state.latitude,
           longitude     : this.state.longitude
         }
-      }
+      },
+      refetchQueries: [{
+        query: FETCH_USER,
+        variables: {userID: this.props.currentuser._id}
+      }]
     });
+    var { status, error, location } = response.data.addressupdatemerchant;
+    if(status === true) {
+      if(this.state.indexID.length > 0) {
+        this.state.location.splice(this.state.indexID, 1);
+        var updated = _.filter(location, (loc) => {
+          return loc._id === this.state.locationID
+        });
+        this.state.location.push(updated[0]);
+      } else {
+        this.state.location.push(location[0]);
+      }
+      this.setState({addlocation: false});
+    }
+  }
+
+  setaddressupdate = (loc_id, indexID) => {
+    var location = _.filter(this.state.location, (location) => {
+      return location._id === loc_id
+    });
+    if(location) {
+      this.setState({
+        locationID    : location[0]._id,
+        address       : location[0].address,
+        distric       : location[0].distric,
+        province      : location[0].province,
+        latitude      : location[0].coordinate[0].latitude,
+        longitude     : location[0].coordinate[0].longitude,
+        indexID       : indexID.toString(),
+        addlocation   : true
+      });
+    }
+  }
+
+  locationform = () => {
+    return (
+      <View>
+        <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Full Address</Text>
+        <TextInput value={this.state.address} onChangeText={(txt) => this.addressonchange('address',txt)} autoCorrect={false} multiline={true} style={[common.fontbody, {marginBottom: 15, color: '#444',textAlignVertical: 'top',width: '100%', height: 65, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10, paddingVertical: 10, lineHeight: 22}]}/>
+        <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Distric</Text>
+        <TextInput value={this.state.distric} onChangeText={(txt) => this.addressonchange('distric',txt)} autoCorrect={false} style={[common.fontbody, {marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+        <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Province</Text>
+        <TextInput value={this.state.province} onChangeText={(txt) => this.addressonchange('province',txt)} autoCorrect={false} style={[common.fontbody, {marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+        <View style={{width: '100%', height: 50}}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{width: '43%', justifyContent: 'center', paddingRight: 5}}>
+              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Latitude</Text>
+              <TextInput value={this.state.latitude} onChangeText={(txt) => this.addressonchange('latitude',txt)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+            </View>
+            <View style={{width: '43%', justifyContent: 'center', paddingRight: 5}}>
+              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Longitude</Text>
+              <TextInput value={this.state.longitude} onChangeText={(txt) => this.addressonchange('longitude',txt)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+            </View>
+            <View style={{width: '14%', justifyContent: 'center', alignItems: 'flex-end'}}>
+              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 5}]}></Text>
+              <TouchableOpacity onPress={(e) => this.getcoordinate()} style={{borderRadius: 4,backgroundColor: '#6c7e70',width: 39, height: 37, justifyContent: 'center', alignItems: 'center'}}>
+                <Ionicons name="ios-pin" size={24} color="#f6f5f3"/>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
+  locationloop = () => {
+    return this.state.location.map((loc, index) => {
+      return (
+        <TouchableOpacity key={index} onPress={(e) => this.setaddressupdate(loc._id, index)} style={{marginBottom: 6, arginLeft: 3, marginRight: 3, borderWidth: 1, borderColor: 'rgba(255,255,255,.7)',width: '22%', height: 40, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={[common.fontitle, {color: '#444', fontSize: 12}]}>LOC-0{index+1}</Text>
+        </TouchableOpacity>
+      )
+    })
+  }
+
+  locationdisplay = () => {
+    return(
+      <View style={{width: '100%', height: 'auto'}}>
+        <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+          <TouchableOpacity onPress={(e) => this.setState({addlocation: true})} style={{marginBottom: 6, arginLeft: 3, marginRight: 3, borderWidth: 1, borderColor: 'rgba(255,255,255,.7)',width: '22%', height: 40, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={[common.fontitle, {color: '#444', fontSize: 12}]}>CREATE NEW</Text>
+          </TouchableOpacity>
+          { this.locationloop() }
+        </View>
+      </View>
+    )
   }
 
   locationsetup = () => {
@@ -96,30 +200,7 @@ class SettingModal extends Component {
             </View>
           </View>
         </View>
-        <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Full Address</Text>
-        <TextInput value={this.state.address} onChangeText={(txt) => this.addressonchange('address',txt)} autoCorrect={false} multiline={true} style={[common.fontbody, {marginBottom: 15, color: '#444',textAlignVertical: 'top',width: '100%', height: 65, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10, paddingVertical: 10, lineHeight: 22}]}/>
-        <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Distric</Text>
-        <TextInput value={this.state.distric} onChangeText={(txt) => this.addressonchange('distric',txt)} autoCorrect={false} style={[common.fontbody, {marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
-        <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Province</Text>
-        <TextInput value={this.state.province} onChangeText={(txt) => this.addressonchange('province',txt)} autoCorrect={false} style={[common.fontbody, {marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
-        <View style={{width: '100%', height: 50}}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={{width: '43%', justifyContent: 'center', paddingRight: 5}}>
-              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Latitude</Text>
-              <TextInput value={this.state.latitude} onChangeText={(txt) => this.addressonchange('latitude',txt)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
-            </View>
-            <View style={{width: '43%', justifyContent: 'center', paddingRight: 5}}>
-              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Longitude</Text>
-              <TextInput value={this.state.longitude} onChangeText={(txt) => this.addressonchange('longitude',txt)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
-            </View>
-            <View style={{width: '14%', justifyContent: 'center', alignItems: 'flex-end'}}>
-              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 5}]}></Text>
-              <TouchableOpacity onPress={(e) => this.getcoordinate()} style={{borderRadius: 4,backgroundColor: '#6c7e70',width: 39, height: 37, justifyContent: 'center', alignItems: 'center'}}>
-                <Ionicons name="ios-pin" size={24} color="#f6f5f3"/>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        { this.state.addlocation === true ? this.locationform() : this.locationdisplay() }
       </View>
     )
   }
