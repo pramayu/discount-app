@@ -3,7 +3,7 @@ import {
   View, Text, TouchableOpacity,
   StatusBar, TouchableHighlight,
   TextInput, Dimensions, KeyboardAvoidingView,
-  Animated, Image, Keyboard
+  Animated, Image, Keyboard, InteractionManager
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { graphql, compose } from 'react-apollo';
@@ -18,6 +18,7 @@ import UploadImage from '../upload';
 import { setpicture } from '../sharedaction';
 import { CURRENT_USER, FETCH_USER } from '../../../queries/queryUser';
 import { BASIC_UPDATE_MERCHANT } from '../../../queries/queryMerchant';
+import { FETCH_NICHE } from '../../../queries/queryNiche';
 
 class ShopSetting extends Component {
   constructor(props) {
@@ -37,7 +38,9 @@ class ShopSetting extends Component {
       modalstatus: false,
       formchoose: '',
       showkeybord: false,
-      location: []
+      location: [],
+      niches: [],
+      didFinishInitialAnimation: false,
     }
     this.showfetch = new Animated.Value(0);
     this.hidefetch = new Animated.Value(0);
@@ -54,6 +57,11 @@ class ShopSetting extends Component {
   }
 
   componentDidMount = () => {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({
+       didFinishInitialAnimation: true,
+     });
+    })
     var { merchant } = this.props.navigation.state.params;
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
@@ -154,7 +162,16 @@ class ShopSetting extends Component {
     })
   };
 
-  showmodalservice = (formchoose) => {
+  showmodalservice = async(formchoose) => {
+    if(_.isEmpty(this.state.niches)) {
+      var response = await this.props.fetchniches({
+        variables: { userID: this.state.current_user._id }
+      });
+      var { status, error, niches } = response.data.fetchniches;
+      if(status === true && niches.length > 0) {
+        this.setState({ niches: niches });
+      }
+    }
     Animated.timing(this.modalshow, {
       toValue: 1,
       duration: 600
@@ -238,7 +255,7 @@ class ShopSetting extends Component {
       inputRange: [0, 1],
       outputRange: [-200, 0]
     });
-    if(this.state.fetchstatus === true) {
+    if(this.state.fetchstatus === true || this.state.didFinishInitialAnimation === false) {
       return <Loading />
     }
     return (
@@ -312,7 +329,7 @@ class ShopSetting extends Component {
                   <Text style={[common.fontbody, { color: '#7f8082'}]}>Choose the type of stuffs you sell</Text>
                 </View>
                 <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
-                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <TouchableOpacity onPress={(e) => this.showmodalservice('merchantype')} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                     <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
                   </TouchableOpacity>
                 </View>
@@ -379,7 +396,7 @@ class ShopSetting extends Component {
         }
         <Animated.View style={{transform: [{translateX: this.state.modalstatus === false ? modalshowsty : modalhidesty}, {translateY: this.state.showkeybord === false ? totopformsty : todwnformsty }], position: 'absolute', width: width, height: height, justifyContent: 'flex-end', alignItems: 'center'}}>
           <View style={{width: '100%', height: height / 1.45, backgroundColor: '#f6f5f3', paddingTop: 20}}>
-            <SettingModal location={this.state.location} currentuser={this.state.current_user} merchantID={this.state.merchantID} formchoose={this.state.formchoose} hidemodalservice={this.hidemodalservice.bind(this)}/>
+            <SettingModal niches={this.state.niches} location={this.state.location} currentuser={this.state.current_user} merchantID={this.state.merchantID} formchoose={this.state.formchoose} hidemodalservice={this.hidemodalservice.bind(this)}/>
           </View>
         </Animated.View>
       </View>
@@ -396,5 +413,6 @@ export default compose(
     }),
     props: ({ current_user: { current_user }}) => ({ current_user })
   }),
-  graphql(BASIC_UPDATE_MERCHANT, { name: 'basicupdatemerchant' })
+  graphql(BASIC_UPDATE_MERCHANT, { name: 'basicupdatemerchant' }),
+  graphql(FETCH_NICHE, { name: 'fetchniches' })
 )(ShopSetting);

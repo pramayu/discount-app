@@ -11,7 +11,7 @@ export var BASIC_UPDATE_MERCHANT = gql`
       }
     }
   }
-`
+`;
 
 export var ADDRESS_UPDATE_MERCHANT = gql`
   mutation($addressupdateprop: addressupdateprop) {
@@ -31,6 +31,19 @@ export var ADDRESS_UPDATE_MERCHANT = gql`
           latitude
           longitude
         }
+      }
+    }
+  }
+`;
+
+
+export var DELETE_ADDRESS = gql`
+  mutation($addressdeleteprop: addressdeleteprop) {
+    addressdelete(addressdeleteprop: $addressdeleteprop) {
+      status
+      error {
+        path
+        message
       }
     }
   }
