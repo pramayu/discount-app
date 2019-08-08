@@ -13,7 +13,7 @@ import {
   common
 } from '../../../assets/stylesheets/common';
 import Loading from '../loading';
-import SettingModal from './settingmodal';
+import SettingModal from './setting.modal';
 import UploadImage from '../upload';
 import { setpicture } from '../sharedaction';
 import { CURRENT_USER, FETCH_USER } from '../../../queries/queryUser';
@@ -40,6 +40,7 @@ class ShopSetting extends Component {
       showkeybord: false,
       location: [],
       niches: [],
+      nicheID: '',
       didFinishInitialAnimation: false,
     }
     this.showfetch = new Animated.Value(0);
@@ -68,13 +69,14 @@ class ShopSetting extends Component {
       StatusBar.setBackgroundColor('#f6f5f3');
     });
     this.setState({
-      merchantID: merchant._id ? merchant._id : '',
-      name: merchant.name ? merchant.name : '',
-      phone: merchant.phone ? merchant.phone : '',
-      sosmed: merchant.sosmed ? merchant.sosmed : '',
-      description: merchant.description ? merchant.description : '',
-      image: merchant.photos.length > 0 ? merchant.photos : [],
-      location: merchant.location ? merchant.location : []
+      merchantID    : merchant._id ? merchant._id : '',
+      name          : merchant.name ? merchant.name : '',
+      phone         : merchant.phone ? merchant.phone : '',
+      sosmed        : merchant.sosmed ? merchant.sosmed : '',
+      description   : merchant.description ? merchant.description : '',
+      image         : merchant.photos.length > 0 ? merchant.photos : [],
+      location      : merchant.location ? merchant.location : [],
+      nicheID       : merchant.niche ? merchant.niche._id : ''
     });
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -162,10 +164,14 @@ class ShopSetting extends Component {
     })
   };
 
+  nicheIDfeedback = (nicheID) => {
+    this.setState({nicheID: nicheID ? nicheID : this.props.navigation.state.params.merchant.nicheID})
+  }
+
   showmodalservice = async(formchoose) => {
     if(_.isEmpty(this.state.niches)) {
       var response = await this.props.fetchniches({
-        variables: { userID: this.state.current_user._id }
+        variables: { userID: this.state.current_user._id },
       });
       var { status, error, niches } = response.data.fetchniches;
       if(status === true && niches.length > 0) {
@@ -346,7 +352,7 @@ class ShopSetting extends Component {
                   <Text style={[common.fontbody, { color: '#7f8082'}]}>Makes it easy to exchange coupon</Text>
                 </View>
                 <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
-                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <TouchableOpacity onPress={(e) => this.showmodalservice('rules')} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                     <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
                   </TouchableOpacity>
                 </View>
@@ -396,7 +402,15 @@ class ShopSetting extends Component {
         }
         <Animated.View style={{transform: [{translateX: this.state.modalstatus === false ? modalshowsty : modalhidesty}, {translateY: this.state.showkeybord === false ? totopformsty : todwnformsty }], position: 'absolute', width: width, height: height, justifyContent: 'flex-end', alignItems: 'center'}}>
           <View style={{width: '100%', height: height / 1.45, backgroundColor: '#f6f5f3', paddingTop: 20}}>
-            <SettingModal niches={this.state.niches} location={this.state.location} currentuser={this.state.current_user} merchantID={this.state.merchantID} formchoose={this.state.formchoose} hidemodalservice={this.hidemodalservice.bind(this)}/>
+            <SettingModal
+              nicheIDfeedback={this.nicheIDfeedback.bind(this)}
+              nicheID={this.state.nicheID}
+              niches={this.state.niches}
+              location={this.state.location}
+              currentuser={this.state.current_user}
+              merchantID={this.state.merchantID}
+              formchoose={this.state.formchoose}
+              hidemodalservice={this.hidemodalservice.bind(this)}/>
           </View>
         </Animated.View>
       </View>

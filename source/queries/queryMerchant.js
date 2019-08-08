@@ -47,4 +47,28 @@ export var DELETE_ADDRESS = gql`
       }
     }
   }
+`;
+
+export var CHOOSE_CATEGORI = gql`
+  mutation($categoriprop: categoriprop) {
+    choosecategori(categoriprop: $categoriprop) {
+      status
+      error {
+        path
+        message
+      }
+    }
+  }
+`;
+
+export var ADD_RULE = gql`
+  mutation($userID: ID!, $merchantID: ID!, $ruleprop: [ruleprop]) {
+    addrules(userID: $userID, merchantID: $merchantID, ruleprop: $ruleprop) {
+      status
+      error {
+        path
+        message
+      }
+    }
+  }
 `

@@ -11,8 +11,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   common
 } from '../../../assets/stylesheets/common';
-import AddressMerchant from './addressmerchant';
-import CategoriMerchant from './categorimerchant';
+import AddressMerchant from './address.merchant';
+import CategoriMerchant from './categori.merchant';
+import RuleMerchant from './rule.merchant';
 
 
 class SettingModal extends Component {
@@ -23,7 +24,8 @@ class SettingModal extends Component {
       current_user: '',
       merchantID: '',
       formchoose: '',
-      niches: []
+      niches: [],
+      nicheID: ''
     }
   }
 
@@ -33,15 +35,20 @@ class SettingModal extends Component {
       current_user  : nextProps.currentuser ? nextProps.currentuser : '',
       merchantID    : nextProps.merchantID ? nextProps.merchantID : '',
       formchoose    : nextProps.formchoose ? nextProps.formchoose : '',
-      niches        : nextProps.niches ? nextProps.niches : []
+      niches        : nextProps.niches ? nextProps.niches : [],
+      nicheID       : nextProps.nicheID ? nextProps.nicheID : ''
     })
   }
 
   choosescreen = () => {
     if(this.state.formchoose === 'location') {
       return <AddressMerchant location={this.state.location} currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
-    } else if(this.state.formchoose === 'merchantype') {
-      return <CategoriMerchant niches={this.state.niches} currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
+    }
+    if(this.state.formchoose === 'merchantype') {
+      return <CategoriMerchant nicheIDfeedback={this.props.nicheIDfeedback.bind(this)} nicheID={this.state.nicheID} niches={this.state.niches} currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
+    }
+    if(this.state.formchoose === 'rules') {
+      return <RuleMerchant currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
     }
   }
 

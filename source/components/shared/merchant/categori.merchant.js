@@ -12,19 +12,23 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   common
 } from '../../../assets/stylesheets/common';
+import { FETCH_USER } from '../../../queries/queryUser';
+import { CHOOSE_CATEGORI } from '../../../queries/queryMerchant';
 
 
 class CategoriMerchant extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      niches: []
+      niches: [],
+      nicheID: ''
     }
   }
 
   componentDidMount = () => {
     this.setState({
-      niches: this.props.niches ? this.props.niches : []
+      niches: this.props.niches ? this.props.niches : [],
+      nicheID: this.props.nicheID ? this.props.nicheID : ''
     })
   }
 
@@ -32,11 +36,38 @@ class CategoriMerchant extends Component {
     this.props.hidemodalservice();
   }
 
+  chooseniche = (_id) => {
+    this.setState({nicheID: _id})
+  }
+
+  handlechoosecategori = async(nicheID) => {
+    if(nicheID) {
+      var response = await this.props.choosecategori({
+        variables: {
+          categoriprop: {
+            userID: this.props.currentuser._id,
+            merchantID: this.props.merchantID,
+            nicheID: nicheID
+          }
+        },
+        refetchQueries: [{
+          query: FETCH_USER,
+          variables: { userID: this.props.currentuser._id}
+        }]
+      });
+      var { status, error } = response.data.choosecategori;
+      if(status === true) {
+        this.props.nicheIDfeedback(nicheID);
+        this.closemodal()
+      }
+    }
+  }
+
   nichesloop = () => {
     return this.state.niches.map((niche, index) => {
       return (
-        <TouchableOpacity key={index} style={{marginBottom: 6, marginLeft: 3, marginRight: 3, borderWidth: 1, borderColor: 'rgba(255,255,255,.7)',width: '22%', height: 40, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={[common.fontitle, {color: '#444', fontSize: 12}]}>{niche.child.toUpperCase()}</Text>
+        <TouchableOpacity onPress={(e) => this.chooseniche(niche._id)} key={index} style={{marginBottom: 6, marginLeft: 3, marginRight: 3, borderWidth: 1, borderColor: 'rgba(255,255,255,.7)',width: '22%', height: 40, borderRadius: 4, backgroundColor: this.state.nicheID !== niche._id ? 'rgba(255,255,255,.5)' : '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={[common.fontitle, {color: this.state.nicheID !== niche._id ? '#444' : '#f6f5f3', fontSize: 12}]}>{niche.child.toUpperCase()}</Text>
         </TouchableOpacity>
       )
     })
@@ -56,7 +87,7 @@ class CategoriMerchant extends Component {
               <Text style={[common.fontbody, { color: '#7f8082'}]}>Choose the type of stuff you sell</Text>
             </View>
             <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
-              <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+              <TouchableOpacity onPress={(e) => this.handlechoosecategori(this.state.nicheID)} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                 <Ionicons name="ios-checkmark" size={28} color="#6c7e70"/>
               </TouchableOpacity>
             </View>
@@ -85,4 +116,6 @@ class CategoriMerchant extends Component {
 }
 
 
-export default CategoriMerchant;
+export default compose(
+  graphql(CHOOSE_CATEGORI, { name: 'choosecategori' })
+)(CategoriMerchant);

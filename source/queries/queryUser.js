@@ -130,6 +130,10 @@ export var FETCH_USER = gql`
             secureUrl
             imgType
           }
+          niche {
+            _id
+            child
+          }
         }
       }
     }
