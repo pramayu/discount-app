@@ -69,6 +69,22 @@ export var ADD_RULE = gql`
         path
         message
       }
+      rules {
+        _id
+        child
+      }
+    }
+  }
+`;
+
+export var DELETE_RULE = gql`
+  mutation($ruledeleteprop: ruledeleteprop) {
+    ruledelete(ruledeleteprop: $ruledeleteprop) {
+      status
+      error {
+        path
+        message
+      }
     }
   }
 `

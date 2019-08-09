@@ -42,6 +42,7 @@ class ShopSetting extends Component {
       niches: [],
       nicheID: '',
       didFinishInitialAnimation: false,
+      rules: []
     }
     this.showfetch = new Animated.Value(0);
     this.hidefetch = new Animated.Value(0);
@@ -76,7 +77,8 @@ class ShopSetting extends Component {
       description   : merchant.description ? merchant.description : '',
       image         : merchant.photos.length > 0 ? merchant.photos : [],
       location      : merchant.location ? merchant.location : [],
-      nicheID       : merchant.niche ? merchant.niche._id : ''
+      nicheID       : merchant.niche ? merchant.niche._id : '',
+      rules         : merchant.rules ? merchant.rules : []
     });
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -166,6 +168,10 @@ class ShopSetting extends Component {
 
   nicheIDfeedback = (nicheID) => {
     this.setState({nicheID: nicheID ? nicheID : this.props.navigation.state.params.merchant.nicheID})
+  }
+
+  rulesfeddback = (rules) => {
+    this.setState({rules : rules ? rules : this.props.navigation.state.params.merchant.rules})
   }
 
   showmodalservice = async(formchoose) => {
@@ -404,9 +410,11 @@ class ShopSetting extends Component {
           <View style={{width: '100%', height: height / 1.45, backgroundColor: '#f6f5f3', paddingTop: 20}}>
             <SettingModal
               nicheIDfeedback={this.nicheIDfeedback.bind(this)}
+              rulesfeddback={this.rulesfeddback.bind(this)}
               nicheID={this.state.nicheID}
               niches={this.state.niches}
               location={this.state.location}
+              rules={this.state.rules}
               currentuser={this.state.current_user}
               merchantID={this.state.merchantID}
               formchoose={this.state.formchoose}

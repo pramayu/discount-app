@@ -134,6 +134,10 @@ export var FETCH_USER = gql`
             _id
             child
           }
+          rules {
+            _id
+            child
+          }
         }
       }
     }

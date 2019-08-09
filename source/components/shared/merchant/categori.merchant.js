@@ -80,7 +80,7 @@ class CategoriMerchant extends Component {
         <View style={{width: '100%', height: 45, marginBottom: 20}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex: .09, justifyContent: 'center'}}>
-              <Ionicons name="ios-pin" size={24} color="#6c7e70"/>
+              <Ionicons name="ios-locate" size={24} color="#6c7e70"/>
             </View>
             <View style={{flex: .71, justifyContent: 'center'}}>
               <Text style={[common.fontbody, { color: '#444'}]}>Categori</Text>

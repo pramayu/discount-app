@@ -25,7 +25,8 @@ class SettingModal extends Component {
       merchantID: '',
       formchoose: '',
       niches: [],
-      nicheID: ''
+      nicheID: '',
+      rules: [],
     }
   }
 
@@ -36,7 +37,8 @@ class SettingModal extends Component {
       merchantID    : nextProps.merchantID ? nextProps.merchantID : '',
       formchoose    : nextProps.formchoose ? nextProps.formchoose : '',
       niches        : nextProps.niches ? nextProps.niches : [],
-      nicheID       : nextProps.nicheID ? nextProps.nicheID : ''
+      nicheID       : nextProps.nicheID ? nextProps.nicheID : '',
+      rules         : nextProps.rules ? nextProps.rules : []
     })
   }
 
@@ -48,7 +50,7 @@ class SettingModal extends Component {
       return <CategoriMerchant nicheIDfeedback={this.props.nicheIDfeedback.bind(this)} nicheID={this.state.nicheID} niches={this.state.niches} currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
     }
     if(this.state.formchoose === 'rules') {
-      return <RuleMerchant currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
+      return <RuleMerchant rulesfeddback={this.props.rulesfeddback.bind(this)} rules={this.state.rules} currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
     }
   }
 
