@@ -8,7 +8,6 @@ import {
 import _ from 'lodash';
 import { graphql, compose } from 'react-apollo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   common
 } from '../../../assets/stylesheets/common';
@@ -113,7 +112,7 @@ class RuleMerchant extends Component {
         <View key={index} style={{width: '100%', height: 50, marginBottom: 20}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{width: '85%', height: 50}}>
-              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#RULE-0{this.state.savedrules.length + this.state.addrules.length}</Text>
+              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#RULE-0{this.state.savedrules.length + index + 1}</Text>
               <TextInput onChangeText={(xtx) => this.addruleschange(index, xtx)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
             </View>
             <View style={{width: '15%', height: 50, justifyContent: 'flex-end', alignItems: 'flex-end', transform:[{translateY: 7}]}}>

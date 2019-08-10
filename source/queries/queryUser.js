@@ -138,6 +138,10 @@ export var FETCH_USER = gql`
             _id
             child
           }
+          facilities {
+            _id
+            child
+          }
         }
       }
     }

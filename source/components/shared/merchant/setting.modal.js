@@ -14,6 +14,7 @@ import {
 import AddressMerchant from './address.merchant';
 import CategoriMerchant from './categori.merchant';
 import RuleMerchant from './rule.merchant';
+import FacilitiMerchant from './faciliti.merchant';
 
 
 class SettingModal extends Component {
@@ -27,6 +28,7 @@ class SettingModal extends Component {
       niches: [],
       nicheID: '',
       rules: [],
+      facilities: []
     }
   }
 
@@ -38,7 +40,8 @@ class SettingModal extends Component {
       formchoose    : nextProps.formchoose ? nextProps.formchoose : '',
       niches        : nextProps.niches ? nextProps.niches : [],
       nicheID       : nextProps.nicheID ? nextProps.nicheID : '',
-      rules         : nextProps.rules ? nextProps.rules : []
+      rules         : nextProps.rules ? nextProps.rules : [],
+      facilities    : nextProps.facilities ? nextProps.facilities : []
     })
   }
 
@@ -51,6 +54,9 @@ class SettingModal extends Component {
     }
     if(this.state.formchoose === 'rules') {
       return <RuleMerchant rulesfeddback={this.props.rulesfeddback.bind(this)} rules={this.state.rules} currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
+    }
+    if(this.state.formchoose === 'facilities') {
+      return <FacilitiMerchant facilitiesfeedback={this.props.facilitiesfeedback.bind(this)} facilities={this.state.facilities} currentuser={this.state.current_user} merchantID={this.state.merchantID} hidemodalservice={this.closemodal.bind(this)}/>
     }
   }
 

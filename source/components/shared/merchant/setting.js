@@ -42,7 +42,8 @@ class ShopSetting extends Component {
       niches: [],
       nicheID: '',
       didFinishInitialAnimation: false,
-      rules: []
+      rules: [],
+      facilities: []
     }
     this.showfetch = new Animated.Value(0);
     this.hidefetch = new Animated.Value(0);
@@ -78,7 +79,8 @@ class ShopSetting extends Component {
       image         : merchant.photos.length > 0 ? merchant.photos : [],
       location      : merchant.location ? merchant.location : [],
       nicheID       : merchant.niche ? merchant.niche._id : '',
-      rules         : merchant.rules ? merchant.rules : []
+      rules         : merchant.rules ? merchant.rules : [],
+      facilities    : merchant.facilities ? merchant.facilities : []
     });
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -172,6 +174,10 @@ class ShopSetting extends Component {
 
   rulesfeddback = (rules) => {
     this.setState({rules : rules ? rules : this.props.navigation.state.params.merchant.rules})
+  }
+
+  facilitiesfeedback = (facilities) => {
+    this.setState({facilities: facilities ? facilities : this.props.navigation.state.params.merchant.facilities})
   }
 
   showmodalservice = async(formchoose) => {
@@ -375,7 +381,7 @@ class ShopSetting extends Component {
                   <Text style={[common.fontbody, { color: '#7f8082'}]}>Give your customers additional service</Text>
                 </View>
                 <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
-                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <TouchableOpacity onPress={(e) => this.showmodalservice('facilities')} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                     <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
                   </TouchableOpacity>
                 </View>
@@ -411,10 +417,12 @@ class ShopSetting extends Component {
             <SettingModal
               nicheIDfeedback={this.nicheIDfeedback.bind(this)}
               rulesfeddback={this.rulesfeddback.bind(this)}
+              facilitiesfeedback={this.facilitiesfeedback.bind(this)}
               nicheID={this.state.nicheID}
               niches={this.state.niches}
               location={this.state.location}
               rules={this.state.rules}
+              facilities={this.state.facilities}
               currentuser={this.state.current_user}
               merchantID={this.state.merchantID}
               formchoose={this.state.formchoose}

@@ -87,4 +87,32 @@ export var DELETE_RULE = gql`
       }
     }
   }
+`;
+
+export var ADD_FACILITI = gql`
+  mutation($userID: ID!, $merchantID: ID!, $facilitiprop:[facilitiprop]) {
+    addfaciliti(userID: $userID, merchantID: $merchantID, facilitiprop: $facilitiprop) {
+      status
+      error {
+        path
+        message
+      }
+      facilities {
+        _id
+        child
+      }
+    }
+  }
+`;
+
+export var DELETE_FACILITI = gql`
+  mutation($facilitideleteprop: facilitideleteprop) {
+    deletefaciliti(facilitideleteprop: $facilitideleteprop) {
+      status
+      error {
+        path
+        message
+      }
+    }
+  }
 `
