@@ -61,7 +61,12 @@ var client = new ApolloClient({
 });
 
 var App = () => {
-  return <ApolloProvider client={client}><MainScreen /></ApolloProvider>
+  return (
+    <ApolloProvider client={client}>
+      <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#f6f5f3'}}>
+        <MainScreen />
+      </View>
+    </ApolloProvider>)
 }
 
 export default App;

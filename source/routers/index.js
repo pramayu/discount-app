@@ -320,5 +320,6 @@ export var MainScreen = createAppContainer(createSwitchNavigator({
   CheckToken: { screen: CheckToken },
   AuthenticateScreen: { screen: authenticateRoute },
   BuyerDashRoute: { screen: buyerDashboard },
-  MerchantDashRoute: { screen: merchantDashboard }
+  MerchantDashRoute: { screen: merchantDashboard },
+  OfflineScreen: { screen: Offline }
 }));

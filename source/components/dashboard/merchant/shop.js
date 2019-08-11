@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   View, Text, TouchableOpacity,
   StatusBar, TouchableHighlight,
-  Dimensions, Image
+  Dimensions, Image, Animated
 } from 'react-native';
 import { graphql, compose, Query } from 'react-apollo';
 import _ from 'lodash';
@@ -17,13 +17,16 @@ import {
   CURRENT_USER, FETCH_USER
 } from '../../../queries/queryUser';
 import Loading from '../../shared/loading';
+import { firstlook } from '../../shared/sharedaction';
 
 class Shop extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      current_user: ''
+      current_user: '',
+      opaciti: new Animated.Value(0)
     }
+    this.firstLook = new Animated.Value(0)
   }
 
   componentWillReceiveProps = (nextProps) => {
@@ -36,7 +39,8 @@ class Shop extends Component {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
       StatusBar.setBackgroundColor('#f6f5f3');
-    })
+    }),
+    firstlook(this.firstLook, this.state.opaciti)
   }
 
   componentWillUnmount = () => {
@@ -44,8 +48,12 @@ class Shop extends Component {
   }
 
   mainScreen = (user) => {
+    var firstLookSty = this.firstLook.interpolate({
+      inputRange: [0, 1],
+      outputRange: [50, 0]
+    });
     return (
-      <View style={{flex: 1, flexDirection: 'column'}}>
+      <Animated.View style={{flex: 1, flexDirection: 'column', transform:[{translateY: firstLookSty}], opacity: this.state.opaciti}}>
         <View style={{flex: .1, width: '100%', paddingHorizontal: 25}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex: .7, justifyContent: 'flex-end', alignItems: 'flex-start'}}>
@@ -228,7 +236,7 @@ class Shop extends Component {
             </View>
           </View>
         </View>
-      </View>
+      </Animated.View>
     )
   }
 
@@ -242,7 +250,7 @@ class Shop extends Component {
               return <View style={[common.container, { backgroundColor: '#f6f5f3' }]}></View>
             }
             return (
-              <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
+              <View style={[common.container, { backgroundColor: '#f6f5f3'}]}>
                 { this.mainScreen(data.user.user) }
               </View>
             )

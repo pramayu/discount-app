@@ -31,7 +31,8 @@ class AddressMerchant extends Component {
       fetchstatus: false,
       addlocation: false,
       indexID: '',
-      location: []
+      location: [],
+      errorcoordinate: ''
     }
   }
 
@@ -61,10 +62,14 @@ class AddressMerchant extends Component {
       this.setState({
         latitude: position.coords.latitude.toString(),
         longitude: position.coords.longitude.toString(),
-        fetchstatus: position ? false : true
+        fetchstatus: position ? false : true,
+        errorcoordinate: ''
       })
     }, error => {
       console.log(error)
+      if(error) {
+        this.setState({errorcoordinate: 'Activate your phone GPS'})
+      }
     }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 });
   }
 
@@ -255,11 +260,20 @@ class AddressMerchant extends Component {
 
   render () {
     var { width, height } = Dimensions.get('window');
-    if(this.state.fetchstatus === true) {
+    if(this.state.fetchstatus === true || this.state.errorcoordinate.length > 0) {
       return (
         <View style={{flex: 1, flexDirection: 'column', paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center'}}>
           <MaterialIcons name="landscape" color="#444" size={72}/>
           <Text style={{transform: [{translateY: -20}],margin: 0,fontSize: 22, color: '#444', letterSpacing: 3, fontFamily: 'Oswald'}}>POCENI</Text>
+          {
+            this.state.errorcoordinate.length > 0 ?
+            <View style={{width: '100%', marginTop: 10, alignItems: 'center'}}>
+              <Text style={[common.fontbody,{ color: '#444', marginBottom: 10}]}>{this.state.errorcoordinate}</Text>
+              <TouchableOpacity onPress={(e) => this.getcoordinate()} style={{width: '35%', height: 32, borderRadius: 4, backgroundColor: '#444', alignItems: 'center', justifyContent: 'center'}}>
+                <Text style={[common.fontbody,{ color: '#f6f5f3'}]}>Refresh</Text>
+              </TouchableOpacity>
+            </View> : null
+          }
         </View>
       )
     }

@@ -6,6 +6,7 @@ import {
   Animated, Image, Keyboard, InteractionManager
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-community/async-storage';
 import { graphql, compose } from 'react-apollo';
 import _ from 'lodash';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -16,7 +17,7 @@ import Loading from '../loading';
 import SettingModal from './setting.modal';
 import UploadImage from '../upload';
 import { setpicture } from '../sharedaction';
-import { CURRENT_USER, FETCH_USER } from '../../../queries/queryUser';
+import { CURRENT_USER, FETCH_USER, CHANGE_USER_TYPE } from '../../../queries/queryUser';
 import { BASIC_UPDATE_MERCHANT } from '../../../queries/queryMerchant';
 import { FETCH_NICHE } from '../../../queries/queryNiche';
 
@@ -145,6 +146,20 @@ class ShopSetting extends Component {
     var { status, error } = response.data.basicupdatemerchant;
     if(status === true) {
       this.setState({ fetchstatus: false });
+    }
+  }
+
+  changeusertype = async() => {
+    var response = await this.props.changeusertype({
+      variables: {
+        userID: this.state.current_user._id,
+        usertype: 'buyer'
+      }
+    });
+    var { status, error, token } = response.data.changeusertype;
+    if(status === true) {
+      await AsyncStorage.setItem('token', token);
+      this.props.navigation.navigate('CheckToken');
     }
   }
 
@@ -398,7 +413,7 @@ class ShopSetting extends Component {
                   <Text style={[common.fontbody, { color: '#7f8082'}]}>Back to buyer user type</Text>
                 </View>
                 <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
-                  <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <TouchableOpacity onPress={(e) => this.changeusertype()} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                     <Ionicons name="ios-arrow-round-forward" size={28} color="#dbd9d9"/>
                   </TouchableOpacity>
                 </View>
@@ -444,5 +459,6 @@ export default compose(
     props: ({ current_user: { current_user }}) => ({ current_user })
   }),
   graphql(BASIC_UPDATE_MERCHANT, { name: 'basicupdatemerchant' }),
-  graphql(FETCH_NICHE, { name: 'fetchniches' })
+  graphql(FETCH_NICHE, { name: 'fetchniches' }),
+  graphql(CHANGE_USER_TYPE, { name: 'changeusertype' })
 )(ShopSetting);
