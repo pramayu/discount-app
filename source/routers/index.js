@@ -21,6 +21,7 @@ import Shop from '../components/dashboard/merchant/shop';
 import Stuff from '../components/dashboard/merchant/stuff';
 import Upload from '../components/dashboard/merchant/upload';
 import ShopSetting from '../components/shared/merchant/setting';
+import StuffUpload from '../components/shared/merchant/upload.stuff';
 
 import CheckToken from '../components/authenticate/checktoken';
 import Offline from '../components/offline/offline';
@@ -213,12 +214,34 @@ var buyerDashboard = createBottomTabNavigator({
   }
 });
 
+var uploadStuff = createStackNavigator({
+  Upload: {
+    screen: Upload
+  },
+  StuffUpload: {
+    screen: StuffUpload
+  }
+}, {
+  headerMode: 'none',
+  transitionConfig: TransitionConfiguration,
+});
+
+uploadStuff.navigationOptions = ({ navigation }) => {
+  var tabBarVisible = true;
+  if(navigation.state.index > 0) {
+    tabBarVisible = false
+  }
+  return {
+    tabBarVisible
+  }
+}
+
 var merchantDashboard = createBottomTabNavigator({
   Shop: {
     screen: shopScreen
   },
   Upload: {
-    screen: Upload
+    screen: uploadStuff
   },
   Scan: {
     screen: Scan
@@ -299,7 +322,8 @@ var merchantDashboard = createBottomTabNavigator({
     tabStyle: {
       backgroundColor: '#f6f5f3'
     }
-  }
+  },
+  tabBarComponent: TabBarComponent
 });
 
 var style = StyleSheet.create({

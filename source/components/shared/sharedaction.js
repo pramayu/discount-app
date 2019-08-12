@@ -18,7 +18,17 @@ export var firstlook = (translate, opaciti) => {
       delay: 150
     })
   ]).start()
-}
+};
+
+export var absoluteform = (translate1, translate2) => {
+  Animated.timing(translate1, {
+    toValue: 2,
+    duration: 900
+  }).start(() => {
+    translate2.setValue(0)
+  });
+  return true
+};
 
 
 export var setpicture = async(file) => {
