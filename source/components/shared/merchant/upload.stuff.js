@@ -6,6 +6,7 @@ import {
   Image, ScrollView
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import _ from 'lodash';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   common
@@ -19,12 +20,13 @@ class StuffUpload extends Component {
       choosed: [],
       fetchstatus: false,
       screenheight: 0,
+      choosedstatus: false
     }
   }
 
   componentDidMount = () => {
     this.cameraRoll();
-  }
+  };
 
   cameraRoll = () => {
     this.setState({ fetchstatus: true })
@@ -34,31 +36,47 @@ class StuffUpload extends Component {
     }).then((xyz) => {
       this.setState({ picture: xyz.edges, fetchstatus: false })
     })
-  }
+  };
 
-  pushbeobj = (node) => {
+  pushbeobj = (node, index) => {
     var choosed = [];
-    choosed.push(...this.state.choosed, node)
+    this.state.picture[index].choosed = true;
+    var monode = Object.assign({}, node);
+    monode['indexID'] = index.toString();
+    choosed.push(...this.state.choosed, monode)
     this.setState({
       choosed: choosed
-    })
+    });
   };
+
+  popbeobj = (index) => {
+    delete this.state.picture[index]['choosed'];
+    this.setState({ picture: this.state.picture});
+    var indexe = this.state.choosed.findIndex(choose => choose.indexID === index.toString())
+    this.state.choosed.splice(indexe, 1);
+  }
 
   handleupload = () => {
     alert(JSON.stringify(this.state.choosed))
-  }
+  };
 
   contentsizechange = (contentWidth, contentHeight) => {
     this.setState({ screenheight: contentHeight })
-  }
+  };
 
   looppicture = (picture) => {
     return picture.map((picture, index) => {
       return (
-        <View key={index} style={{width: '33.33%', height: 120, padding: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <View key={index} style={{width: '33.33%', height: 120, justifyContent: 'center', alignItems: 'center'}}>
           <Image source={{uri: picture.node.image.uri}} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
-          <TouchableOpacity onLongPress={(e) => this.pushbeobj(picture.node)} style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,.2)'}}>
-          </TouchableOpacity>
+          {
+            picture.choosed === true ?
+            <TouchableOpacity onLongPress={(e) => this.popbeobj(index)} style={{paddingVertical: 10, paddingHorizontal: 10, position: 'absolute', width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,.2)'}}>
+              <Ionicons name="ios-checkmark-circle-outline" size={24} color="#f6f5f3"/>
+            </TouchableOpacity> :
+            <TouchableOpacity onLongPress={(e) => this.pushbeobj(picture.node, index)} style={{paddingVertical: 10, paddingHorizontal: 10, position: 'absolute', width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,.2)'}}>
+            </TouchableOpacity>
+          }
         </View>
       )
     })
