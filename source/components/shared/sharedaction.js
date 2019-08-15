@@ -30,7 +30,6 @@ export var absoluteform = (translate1, translate2) => {
   return true
 };
 
-
 export var setpicture = async(file) => {
   var status = true;
   var upload = new FormData();
@@ -43,4 +42,4 @@ export var setpicture = async(file) => {
   upload.append('api_key', CLOUDINARY.API_KEY_CLOUDINARY);
   var result = await axios.post(CLOUDINARY.CLOUDINARY_FETCH_POST, upload);
   return {result};
-}
+};

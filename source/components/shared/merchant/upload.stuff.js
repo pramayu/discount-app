@@ -11,6 +11,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   common
 } from '../../../assets/stylesheets/common';
+import {
+  setpicture
+} from '../sharedaction';
 
 class StuffUpload extends Component {
   constructor(props) {
@@ -18,6 +21,7 @@ class StuffUpload extends Component {
     this.state = {
       picture: [],
       choosed: [],
+      response: [],
       fetchstatus: false,
       screenheight: 0,
       choosedstatus: false
@@ -56,8 +60,13 @@ class StuffUpload extends Component {
     this.state.choosed.splice(indexe, 1);
   }
 
-  handleupload = () => {
-    alert(JSON.stringify(this.state.choosed))
+  handleupload = async() => {
+    this.setState({ fetchstatus: true })
+    var fresult = await Promise.all(this.state.choosed.map(async(choose, index) => {
+      this.result = await setpicture(choose);
+      return this.result
+    }));
+    alert(JSON.stringify(fresult))
   };
 
   contentsizechange = (contentWidth, contentHeight) => {
