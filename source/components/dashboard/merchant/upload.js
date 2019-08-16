@@ -4,11 +4,14 @@ import {
   StatusBar, Dimensions, Animated,
   TextInput, Keyboard
 } from 'react-native';
+import { compose, graphql } from 'react-apollo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   common
 } from '../../../assets/stylesheets/common';
 import { firstlook, absoluteform } from '../../shared/sharedaction';
+import { CURRENT_USER } from '../../../queries/queryUser';
+import { USERMERCHANT } from '../../../queries/queryStuff';
 
 class Upload extends Component {
   constructor(props) {
@@ -16,12 +19,25 @@ class Upload extends Component {
     this.state = {
       opaciti: new Animated.Value(0),
       screenstatus: false,
-      keystatus: false
+      keystatus: false,
+      modalstatus: false,
+      current_user: '',
+      categories: [],
+      setcategori: []
     }
-    this.firstLook = new Animated.Value(0),
-    this.formtoup = new Animated.Value(0),
-    this.formtodown = new Animated.Value(0)
+    this.firstLook = new Animated.Value(0);
+    this.formtoup = new Animated.Value(0);
+    this.formtodown = new Animated.Value(0);
+    this.modalshow = new Animated.Value(0);
+    this.modalhide = new Animated.Value(0);
   }
+
+  componentWillReceiveProps = (nextProps) => {
+    this.setState({
+      current_user: nextProps.current_user ? nextProps.current_user : ''
+    })
+  }
+
   componentDidMount = () => {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
@@ -44,6 +60,30 @@ class Upload extends Component {
     this.keyboardDidHideListener.remove();
   }
 
+  usermerchantservice = async() => {
+    try {
+      var res = await this.props.usermerchant({
+        variables: {
+          userID: this.state.current_user._id
+        }
+      })
+      var { status, error, merchant } = res.data.usermerchant;
+      if(status === true) {
+        this.setState({
+          categories: merchant.niche ? merchant.niche.categori : [],
+          screenstatus: true
+        })
+      }
+    } catch (e) {
+      this.props.navigation.navigate('OfflineScreen')
+    }
+  }
+
+  setcategoriservice = (categori, index) => {
+    this.state.categories[index].choose = true;
+    this.setState({setcategori: [...this.state.setcategori, categori._id]})
+  }
+
   _keyboardDidShow = () => {
     this.setState({keystatus: false})
     absoluteform(this.formtoup, this.formtodown);
@@ -54,15 +94,43 @@ class Upload extends Component {
     absoluteform(this.formtodown, this.formtoup);
   }
 
+  showmodalservice = () => {
+    this.setState({modalstatus: false})
+    absoluteform(this.modalshow, this.modalhide);
+  }
+
+  hidemodalservice = () => {
+    this.setState({modalstatus: true})
+    absoluteform(this.modalhide, this.modalshow);
+  }
+
   emptyfield = (width, height) => {
     return (
       <View style={{width: width, height: height - 102, justifyContent: 'center', alignItems: 'center'}}>
         <Ionicons name="ios-repeat" size={32} color="#444" />
-        <TouchableOpacity onPress={(e) => this.setState({screenstatus: true})} style={{marginTop: 15, width: 90, height: 32, borderRadius: 4, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
+        <TouchableOpacity onPress={(e) => this.usermerchantservice()} style={{marginTop: 15, width: 90, height: 32, borderRadius: 4, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
           <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 12}]}>UPLOAD</Text>
         </TouchableOpacity>
       </View>
     )
+  }
+
+  mapcategori = (categories) => {
+    return categories.map((categori, index) => {
+      return (
+        <View key={index} style={{marginRight: 6, marginBottom: 6}}>
+          {
+            categori.choose === true ?
+            <TouchableOpacity>
+              <Text style={[common.fontbody, {color: '#f6f5f3',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: '#6c7e70', alignSelf: 'flex-start'}]}>{categori.child}</Text>
+            </TouchableOpacity>:
+            <TouchableOpacity onPress={(e) => this.setcategoriservice(categori, index)}>
+              <Text style={[common.fontbody, {color: '#444',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', alignSelf: 'flex-start'}]}>{categori.child}</Text>
+            </TouchableOpacity>
+          }
+        </View>
+      )
+    })
   }
 
   uploadform = (width, height) => {
@@ -96,13 +164,13 @@ class Upload extends Component {
                 <TextInput autoCorrect={false} style={[common.fontbody, {borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082', marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
               </View>
               <View style={{flex: .4}}>
-                <TouchableOpacity style={{width: '100%', height: 38, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>
+                <TouchableOpacity onPress={(e) => this.showmodalservice()} style={{width: '100%', height: 38, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>
                   <Text style={[common.fontbody, {color: '#f6f5f3', fontSize: 12}]}>EXTRA FIELD</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
-          <TouchableOpacity style={{width: '100%', height: 38, borderRadius: 4, backgroundColor: '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
+          <TouchableOpacity style={{width: '100%', height: 38, borderRadius: 4, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
             <Text style={[common.fontbody, {color: '#f6f5f3', fontSize: 12}]}>CONTINUE</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -115,6 +183,14 @@ class Upload extends Component {
     var firstLookSty = this.firstLook.interpolate({
       inputRange: [0, 1],
       outputRange: [50, 0]
+    });
+    var modalshowsty = this.modalshow.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [height, 20, 0]
+    });
+    var modalhidesty = this.modalhide.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [0, 20, height]
     });
     return (
       <Animated.View style={[common.container, { backgroundColor: '#f6f5f3', transform:[{translateY: firstLookSty}], opacity: this.state.opaciti}]}>
@@ -134,9 +210,41 @@ class Upload extends Component {
           </View>
         </View>
         { this.state.screenstatus === false ? this.emptyfield(width, height) : this.uploadform(width, height) }
+        <Animated.View style={{paddingHorizontal: 20, justifyContent: 'flex-end',width: width, height: height, position: 'absolute', transform: [{translateY: this.state.modalstatus === false ? modalshowsty : modalhidesty}]}}>
+          <View style={{width: '100%', height: height / 1.7, backgroundColor: '#f6f5f3', borderRadius: 4}}>
+            <View style={{flex: 1, flexDirection: 'column'}}>
+              <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end'}}>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                  <View style={{flex: .7, justifyContent: 'center'}}>
+                    <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#SET CATEGORI</Text>
+                  </View>
+                  <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <TouchableOpacity onPress={(e) => this.hidemodalservice()} style={{width: '80%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
+                      <Ionicons name="ios-arrow-round-down" size={24} color="#444"/>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              <View style={{flex: .9}}>
+                <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+                  {this.mapcategori(this.state.categories)}
+                </View>
+              </View>
+            </View>
+          </View>
+        </Animated.View>
       </Animated.View>
     )
   }
 }
 
-export default Upload;
+export default compose(
+  graphql(CURRENT_USER, {
+    name: 'current_user',
+    options: (ownProps) => ({
+      fetchPolicy: 'network-only'
+    }),
+    props: ({current_user: {current_user}}) => ({current_user})
+  }),
+  graphql(USERMERCHANT, {name: 'usermerchant'})
+)(Upload);
