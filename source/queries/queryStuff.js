@@ -56,4 +56,16 @@ export var MADE_STUFF = gql`
       }
     }
   }
+`;
+
+export var STUFF_PUBLISH = gql`
+  mutation($userID: ID!, $stuffID: ID!) {
+    stuffpublish(userID: $userID, stuffID: $stuffID) {
+      status
+      error {
+        path
+        message
+      }
+    }
+  }
 `

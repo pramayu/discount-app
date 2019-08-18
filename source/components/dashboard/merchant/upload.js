@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   View, Text, TouchableOpacity,
   StatusBar, Dimensions, Animated,
-  TextInput, Keyboard
+  TextInput, Keyboard, ScrollView,
+  Image
 } from 'react-native';
 import { compose, graphql } from 'react-apollo';
 import _ from 'lodash';
@@ -12,7 +13,7 @@ import {
 } from '../../../assets/stylesheets/common';
 import { firstlook, absoluteform } from '../../shared/sharedaction';
 import { CURRENT_USER } from '../../../queries/queryUser';
-import { USERMERCHANT, MADE_STUFF } from '../../../queries/queryStuff';
+import { USERMERCHANT, MADE_STUFF, STUFF_PUBLISH } from '../../../queries/queryStuff';
 
 class Upload extends Component {
   constructor(props) {
@@ -161,6 +162,29 @@ class Upload extends Component {
     }
   }
 
+  stuffpublishservice = async() => {
+    var res = await this.props.stuffpublish({
+      variables: {
+        userID: this.state.current_user._id,
+        stuffID: this.state.stuffID
+      }
+    });
+    var { status } = res.data.stuffpublish;
+    if(status === true) {
+      this.setState({
+        screenstatus: false,
+        setcategori: [],
+        stuffID: '',
+        merchantID: '',
+        picture: [],
+        title: '',
+        description: '',
+        price: '',
+        savecategori: []
+      })
+    }
+  }
+
   emptyfield = (width, height) => {
     return (
       <View style={{width: width, height: height - 102, justifyContent: 'center', alignItems: 'center'}}>
@@ -183,6 +207,17 @@ class Upload extends Component {
       )
     })
   };
+
+  mappicture = (picture) => {
+    var {width, height} = Dimensions.get('window');
+    return picture.map((res, index) => {
+      return (
+        <View key={index} style={{width: width - 40, height: height/3.3, justifyContent: 'center', alignItems: 'center'}}>
+          <Image source={{uri: res.secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 4}}/>
+        </View>
+      )
+    });
+  }
 
   mapcategori = (categories) => {
     return categories.map((categori, index) => {
@@ -214,10 +249,19 @@ class Upload extends Component {
     return (
       <View style={{width: width, height: height - 102, paddingHorizontal: 20, paddingVertical: 20}}>
         <View style={{width: '100%', height: height / 3.3, marginBottom: 20}}>
-          <View style={{borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082',width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f0efed', borderRadius: 4}}>
-            <Ionicons name="ios-images" size={48} color="#444"/>
-            <Text style={[common.fontbody, {color: '#444', fontSize: 12, marginTop: 10}]}>MAX FILE SIZE 1 MB</Text>
-          </View>
+          {
+            this.state.picture.length > 0 ?
+            <View style={{flex: 1, flexDirection: 'row', borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082', borderRadius: 4}}>
+              <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
+                {this.mappicture(this.state.picture)}
+              </ScrollView>
+            </View>
+            :
+            <View style={{borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082',width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f0efed', borderRadius: 4}}>
+              <Ionicons name="ios-images" size={48} color="#444"/>
+              <Text style={[common.fontbody, {color: '#444', fontSize: 12, marginTop: 10}]}>MAX FILE SIZE 1 MB</Text>
+            </View>
+          }
         </View>
         <Animated.View style={{transform: [{translateY: this.state.keystatus === false ? toupsty : todownsty}], width: '100%', height: 'auto', backgroundColor: '#f6f5f3'}}>
           <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#TITLE</Text>
@@ -238,6 +282,10 @@ class Upload extends Component {
             </View>
           </View>
           {
+            this.state.title.length > 0 && this.state.price.length > 0 && this.state.picture.length > 0 && this.state.savecategori.length > 0 ?
+            <TouchableOpacity onPress={(e) => this.stuffpublishservice()} style={{width: '100%', height: 38, borderRadius: 4, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={[common.fontbody, {color: '#f6f5f3', fontSize: 12}]}>PUBLISH</Text>
+            </TouchableOpacity> :
             this.state.title.length > 0 && this.state.price.length > 0 && !_.isEmpty(this.state.setcategori) ?
             <TouchableOpacity onPress={(e) => this.handlebasestuff()} style={{width: '100%', height: 38, borderRadius: 4, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
               <Text style={[common.fontbody, {color: '#f6f5f3', fontSize: 12}]}>SET PICTURE</Text>
@@ -329,5 +377,6 @@ export default compose(
     props: ({current_user: {current_user}}) => ({current_user})
   }),
   graphql(USERMERCHANT, {name: 'usermerchant'}),
-  graphql(MADE_STUFF, {name: 'madestuff'})
+  graphql(MADE_STUFF, {name: 'madestuff'}),
+  graphql(STUFF_PUBLISH, {name: 'stuffpublish'})
 )(Upload);
