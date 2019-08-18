@@ -6,14 +6,16 @@ import {
   Image, ScrollView
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import _ from 'lodash';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import _ from 'lodash';
+import { compose, graphql } from 'react-apollo';
 import {
   common
 } from '../../../assets/stylesheets/common';
 import {
   setpicture
 } from '../sharedaction';
+import { MADE_STUFF } from '../../../queries/queryStuff';
 
 class StuffUpload extends Component {
   constructor(props) {
@@ -24,13 +26,23 @@ class StuffUpload extends Component {
       response: [],
       fetchstatus: false,
       screenheight: 0,
-      choosedstatus: false
+      choosedstatus: false,
+      userID: '',
+      merchantID: '',
+      stuffID: ''
     }
   }
 
   componentDidMount = () => {
     this.cameraRoll();
+    var {passdata} = this.props.navigation.state.params;
+    this.setState({
+      userID: passdata ? passdata.current_user_id : '',
+      merchantID: passdata ? passdata.merchantID : '',
+      stuffID: passdata ? passdata.stuffID : ''
+    });
   };
+
 
   cameraRoll = () => {
     this.setState({ fetchstatus: true })
@@ -61,12 +73,37 @@ class StuffUpload extends Component {
   }
 
   handleupload = async() => {
+    var picture = [];
     this.setState({ fetchstatus: true })
     var fresult = await Promise.all(this.state.choosed.map(async(choose, index) => {
       this.result = await setpicture(choose);
       return this.result
     }));
-    alert(JSON.stringify(fresult))
+    if(fresult) {
+      fresult.map((res, index) => {
+        picture.push({
+          publicId: res.result.data.public_id,
+          imgType: res.result.data.format,
+          secureUrl: res.result.data.secure_url,
+        })
+      });
+      var res = await this.props.madestuff({
+        variables: {
+          basestuff: {
+            userID: this.state.userID,
+            merchantID: this.state.merchantID,
+            stuffID: this.state.stuffID,
+            upstatus: 'pictureupload'
+          },
+          picture: picture
+        }
+      });
+      var { status, error, stuff } = res.data.madestuff;
+      if(status === true) {
+        // alert(JSON.stringify(stuff))
+        this.props.navigation.navigate('Upload', {stuff});
+      }
+    }
   };
 
   contentsizechange = (contentWidth, contentHeight) => {
@@ -112,7 +149,7 @@ class StuffUpload extends Component {
           <View style={{height: 50, width: width, paddingHorizontal: 20}}>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-start'}}>
-                <TouchableOpacity onPress={(e) => this.props.navigation.goBack()} style={{width: '50%', height: 38, justifyContent: 'center'}}>
+                <TouchableOpacity onPress={(e) => this.props.navigation.navigate('Upload')} style={{width: '50%', height: 38, justifyContent: 'center'}}>
                   <Ionicons name="ios-arrow-round-back" size={28} color="#444"/>
                 </TouchableOpacity>
               </View>
@@ -134,4 +171,6 @@ class StuffUpload extends Component {
   }
 }
 
-export default StuffUpload;
+export default compose(
+  graphql(MADE_STUFF, {name: 'madestuff'})
+)(StuffUpload);
