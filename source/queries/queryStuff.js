@@ -68,4 +68,36 @@ export var STUFF_PUBLISH = gql`
       }
     }
   }
+`;
+
+export var GET_STUFFS = gql`
+  query($userID: ID!) {
+    getstuffs(userID: $userID) {
+      status
+      stuffs {
+        _id
+        title
+        description
+        price
+        discountstatus
+        stuffstatus
+        photos {
+          _id
+          secureUrl
+        }
+        manager {
+          _id
+          username
+          photos {
+            _id
+            secureUrl
+          }
+        }
+        categori {
+          _id
+          child
+        }
+      }
+    }
+  }
 `

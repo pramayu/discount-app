@@ -10,7 +10,7 @@ export var firstlook = (translate, opaciti) => {
   Animated.parallel([
     Animated.timing(translate, {
       toValue: 1,
-      duration: 800
+      duration: 1000
     }),
     Animated.timing(opaciti, {
       toValue: 1,

@@ -314,56 +314,58 @@ class Upload extends Component {
       outputRange: [0, -20, height]
     });
     return (
-      <Animated.View style={[common.container, { backgroundColor: '#f6f5f3', transform:[{translateY: firstLookSty}], opacity: this.state.opaciti}]}>
-        <View style={{height: 50, width: width, paddingHorizontal: 20}}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={{flex: .7, alignItems: 'flex-start', justifyContent: 'center'}}>
-              <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 3}]}>UPLOAD STUFF</Text>
-            </View>
-            <View style={{flex: .3}}>
-              {
-                this.state.screenstatus === true ?
-                <TouchableOpacity onPress={(e) => this.setState({screenstatus: false})} style={{width: '100%', height: '100%', alignItems: 'flex-end', justifyContent: 'center'}}>
-                  <Ionicons name="ios-repeat" size={24} color="#444"/>
-                </TouchableOpacity> : null
-              }
-            </View>
-          </View>
-        </View>
-        { this.state.screenstatus === false ? this.emptyfield(width, height) : this.uploadform(width, height) }
-        <Animated.View style={{paddingHorizontal: 20, justifyContent: 'flex-end',width: width, height: height, position: 'absolute', transform: [{translateY: this.state.modalstatus === false ? modalshowsty : modalhidesty}]}}>
-          <View style={{width: '100%', height: height, backgroundColor: '#f6f5f3', borderRadius: 4}}>
-            <View style={{flex: 1, flexDirection: 'column'}}>
-              <View style={{flex: .08, justifyContent: 'center', alignItems: 'flex-end'}}>
-                <View style={{flex: 1, flexDirection: 'row'}}>
-                  <View style={{flex: .7, justifyContent: 'center'}}>
-                    <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#SET CATEGORI</Text>
-                  </View>
-                  <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
-                    <TouchableOpacity onPress={(e) => this.hidemodalservice()} style={{width: '80%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
-                      <Ionicons name="ios-arrow-round-down" size={24} color="#444"/>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+      <View style={[common.container, { backgroundColor: '#f6f5f3'}]}>
+        <Animated.View style={[common.container, { backgroundColor: '#f6f5f3', transform:[{translateY: firstLookSty}], opacity: this.state.opaciti}]}>
+          <View style={{height: 50, width: width, paddingHorizontal: 20}}>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <View style={{flex: .7, alignItems: 'flex-start', justifyContent: 'center'}}>
+                <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 3}]}>UPLOAD STUFF</Text>
               </View>
-              <View style={{flex: .92}}>
-                <View style={{flex: 1, flexDirection: 'column'}}>
-                  <View style={{flexDirection: 'row',width: '100%', height: 'auto', flexWrap: 'wrap', marginBottom: 30}}>
-                    {this.mapcategori(this.state.categories)}
-                  </View>
-                  {
-                    this.state.savecategori.length > 0 ?
-                    <View style={{flexDirection: 'row',width: '100%', height: 'auto', flexWrap: 'wrap'}}>
-                      <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#SAVED CATEGORI</Text>
-                      {this.mapsavecagori(this.state.savecategori)}
-                    </View> : null
-                  }
-                </View>
+              <View style={{flex: .3}}>
+                {
+                  this.state.screenstatus === true ?
+                  <TouchableOpacity onPress={(e) => this.setState({screenstatus: false})} style={{width: '100%', height: '100%', alignItems: 'flex-end', justifyContent: 'center'}}>
+                    <Ionicons name="ios-repeat" size={24} color="#444"/>
+                  </TouchableOpacity> : null
+                }
               </View>
             </View>
           </View>
+          { this.state.screenstatus === false ? this.emptyfield(width, height) : this.uploadform(width, height) }
+          <Animated.View style={{paddingHorizontal: 20, justifyContent: 'flex-end',width: width, height: height, position: 'absolute', transform: [{translateY: this.state.modalstatus === false ? modalshowsty : modalhidesty}]}}>
+            <View style={{width: '100%', height: height, backgroundColor: '#f6f5f3', borderRadius: 4}}>
+              <View style={{flex: 1, flexDirection: 'column'}}>
+                <View style={{flex: .08, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <View style={{flex: .7, justifyContent: 'center'}}>
+                      <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#SET CATEGORI</Text>
+                    </View>
+                    <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
+                      <TouchableOpacity onPress={(e) => this.hidemodalservice()} style={{width: '80%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
+                        <Ionicons name="ios-arrow-round-down" size={24} color="#444"/>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+                <View style={{flex: .92}}>
+                  <View style={{flex: 1, flexDirection: 'column'}}>
+                    <View style={{flexDirection: 'row',width: '100%', height: 'auto', flexWrap: 'wrap', marginBottom: 30}}>
+                      {this.mapcategori(this.state.categories)}
+                    </View>
+                    {
+                      this.state.savecategori.length > 0 ?
+                      <View style={{flexDirection: 'row',width: '100%', height: 'auto', flexWrap: 'wrap'}}>
+                        <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#SAVED CATEGORI</Text>
+                        {this.mapsavecagori(this.state.savecategori)}
+                      </View> : null
+                    }
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Animated.View>
         </Animated.View>
-      </Animated.View>
+      </View>
     )
   }
 }
