@@ -85,6 +85,14 @@ export var GET_STUFFS = gql`
           _id
           secureUrl
         }
+        merchant {
+          _id
+          name
+          photos {
+            _id
+            secureUrl
+          }
+        }
         manager {
           _id
           username

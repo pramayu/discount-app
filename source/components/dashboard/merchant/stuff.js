@@ -92,7 +92,7 @@ class Stuff extends Component {
                   <Text style={[common.fontbody, {color: '#444'}]}>{stuff.manager.username}</Text>
                 </View>
                 <View style={{flex: .18, justifyContent: 'flex-start', alignItems: 'flex-end'}}>
-                  <TouchableOpacity style={{borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', width: '100%', height: 28, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', justifyContent: 'center', alignItems: 'center'}}>
+                  <TouchableOpacity onPress={(e) => this.props.navigation.navigate('StuffDetail', {stuff})} style={{borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', width: '100%', height: 28, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', justifyContent: 'center', alignItems: 'center'}}>
                     <Ionicons name="ios-arrow-round-forward" size={24} color="#444"/>
                   </TouchableOpacity>
                 </View>

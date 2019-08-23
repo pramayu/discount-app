@@ -22,6 +22,7 @@ import Stuff from '../components/dashboard/merchant/stuff';
 import Upload from '../components/dashboard/merchant/upload';
 import ShopSetting from '../components/shared/merchant/setting';
 import StuffUpload from '../components/shared/merchant/upload.stuff';
+import StuffDetail from '../components/shared/stuff.detail';
 
 import CheckToken from '../components/authenticate/checktoken';
 import Offline from '../components/offline/offline';
@@ -226,7 +227,25 @@ var uploadStuff = createStackNavigator({
   transitionConfig: TransitionConfiguration,
 });
 
+var stuffDetail = createStackNavigator({
+  Stuff: { screen: Stuff },
+  StuffDetail: { screen: StuffDetail }
+}, {
+  headerMode: 'none',
+  transitionConfig: TransitionConfiguration,
+});
+
 uploadStuff.navigationOptions = ({ navigation }) => {
+  var tabBarVisible = true;
+  if(navigation.state.index > 0) {
+    tabBarVisible = false
+  }
+  return {
+    tabBarVisible
+  }
+};
+
+stuffDetail.navigationOptions = ({ navigation }) => {
   var tabBarVisible = true;
   if(navigation.state.index > 0) {
     tabBarVisible = false
@@ -250,7 +269,7 @@ var merchantDashboard = createBottomTabNavigator({
     screen: Notif
   },
   Stuff: {
-    screen: Stuff
+    screen: stuffDetail
   }
 }, {
   defaultNavigationOptions: ({ navigation }) => ({
