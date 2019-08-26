@@ -92,6 +92,14 @@ export var GET_STUFFS = gql`
             _id
             secureUrl
           }
+          rules {
+            _id
+            child
+          }
+          facilities {
+            _id
+            child
+          }
         }
         manager {
           _id
@@ -108,4 +116,31 @@ export var GET_STUFFS = gql`
       }
     }
   }
-`
+`;
+
+export var GET_STUFF = gql`
+  query($stuffID: ID!) {
+    stuff(stuffID: $stuffID) {
+      status
+      stuff {
+        _id
+        title
+        description
+        price
+        discountstatus
+        stuffstatus
+        photos {
+          _id
+          secureUrl
+        }
+        categori {
+          _id
+          child
+        }
+        manager {
+          _id
+        }
+      }
+    }
+  }
+`;

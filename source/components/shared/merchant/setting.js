@@ -296,9 +296,12 @@ class ShopSetting extends Component {
         <View style={{height: 50, width: width, paddingHorizontal: 20}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex:.3, justifyContent:'center'}}>
-              <TouchableOpacity onPress={(e) => this.props.navigation.goBack()}>
-                <Ionicons name="ios-arrow-round-back" size={28} color="#444"/>
-              </TouchableOpacity>
+              {
+                this.state.formchoose.length === 0 ?
+                <TouchableOpacity onPress={(e) => this.props.navigation.goBack()}>
+                  <Ionicons name="ios-arrow-round-back" size={28} color="#444"/>
+                </TouchableOpacity> : null
+              }
             </View>
             <View style={{flex:.7, justifyContent:'center', alignItems: 'flex-end'}}>
               <View style={{flex: 1, flexDirection: 'row'}}>

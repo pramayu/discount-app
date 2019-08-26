@@ -23,6 +23,7 @@ import Upload from '../components/dashboard/merchant/upload';
 import ShopSetting from '../components/shared/merchant/setting';
 import StuffUpload from '../components/shared/merchant/upload.stuff';
 import StuffDetail from '../components/shared/stuff.detail';
+import StuffUpdate from '../components/shared/merchant/stuff.update';
 
 import CheckToken from '../components/authenticate/checktoken';
 import Offline from '../components/offline/offline';
@@ -229,10 +230,10 @@ var uploadStuff = createStackNavigator({
 
 var stuffDetail = createStackNavigator({
   Stuff: { screen: Stuff },
-  StuffDetail: { screen: StuffDetail }
+  StuffDetail: { screen: StuffDetail },
+  StuffUpdate: { screen: StuffUpdate }
 }, {
-  headerMode: 'none',
-  transitionConfig: TransitionConfiguration,
+  headerMode: 'none'
 });
 
 uploadStuff.navigationOptions = ({ navigation }) => {

@@ -174,7 +174,7 @@ class RuleMerchant extends Component {
               }
             <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
               <TouchableOpacity onPress={(e) => this.closemodal()} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
-                <Ionicons name="ios-arrow-round-back" size={28} color="#6c7e70"/>
+                <Ionicons name="ios-arrow-round-forward" size={28} color="#6c7e70"/>
               </TouchableOpacity>
             </View>
           </View>

@@ -30,6 +30,8 @@ class StuffDetail extends Component {
       m_id: '',
       mname: '',
       mpicture: [],
+      rules: [],
+      facilities: [],
       discountstatus: false,
       stuffstatus: false,
       current_user: ''
@@ -39,19 +41,21 @@ class StuffDetail extends Component {
   componentDidMount = () => {
     var { stuff } = this.props.navigation.state.params;
     this.setState({
-      picture         : stuff ? stuff.photos            : [],
-      title           : stuff ? stuff.title             : '',
-      price           : stuff ? stuff.price             : '',
-      description     : stuff ? stuff.description       : '',
-      categori        : stuff ? stuff.categori          : [],
-      c_id            : stuff ? stuff.manager._id       : '',
-      cusername       : stuff ? stuff.manager.username  : '',
-      cpicture        : stuff ? stuff.manager.photos  : [],
-      m_id            : stuff ? stuff.merchant._id      : '',
-      mname           : stuff ? stuff.merchant.name     : '',
-      mpicture        : stuff ? stuff.merchant.photos   : [],
-      discountstatus  : stuff ? stuff.discountstatus    : false,
-      stuffstatus     : stuff ? stuff.stuffstatus       : false
+      picture         : stuff ? stuff.photos              : [],
+      title           : stuff ? stuff.title               : '',
+      price           : stuff ? stuff.price               : '',
+      description     : stuff ? stuff.description         : '',
+      categori        : stuff ? stuff.categori            : [],
+      c_id            : stuff ? stuff.manager._id         : '',
+      cusername       : stuff ? stuff.manager.username    : '',
+      cpicture        : stuff ? stuff.manager.photos      : [],
+      m_id            : stuff ? stuff.merchant._id        : '',
+      mname           : stuff ? stuff.merchant.name       : '',
+      mpicture        : stuff ? stuff.merchant.photos     : [],
+      rules           : stuff ? stuff.merchant.rules      : [],
+      facilities      : stuff ? stuff.merchant.facilities : [],
+      discountstatus  : stuff ? stuff.discountstatus      : false,
+      stuffstatus     : stuff ? stuff.stuffstatus         : false,
     })
   }
 
@@ -70,11 +74,27 @@ class StuffDetail extends Component {
   categorimap = (categori) => {
     var and = [];
     for(var i=0; i<categori.length; i++) {
-      and.push(" / ")
+      and.push(" * ")
     }
     return categori.map((ctg, index) => {
       return <Text key={index} style={[common.fontbody, {color: '#7f8082',alignSelf: 'flex-start', paddingVertical: 5}]}>{ctg.child.charAt(0).toUpperCase() + ctg.child.substring(1)}{index < categori.length - 1 ? and[index] : null}</Text>
     })
+  }
+
+  truncate = (str, limit) => {
+    return str.split(" ").splice(0, limit).join(" ");
+  }
+
+  rulemap = (rules) => {
+    return rules.map((rule, index) => {
+      return <Text key={index} style={[common.fontbody, {color: '#444', marginBottom: 5}]}>#{rule.child}</Text>
+    });
+  }
+
+  facilitimap = (facilities) => {
+    return facilities.map((faciliti, index) => {
+      return <Text key={index} style={[common.fontbody, {color: '#444', marginBottom: 5}]}>#{faciliti.child}</Text>
+    });
   }
 
   render() {
@@ -82,7 +102,7 @@ class StuffDetail extends Component {
     return (
       <View style={[common.container, { backgroundColor: '#f6f5f3'}]}>
         <StatusBar translucent backgroundColor={'transparent'} barStyle="light-content"/>
-        <View style={{width: width, height: height / 2}}>
+        <View style={{width: width, flex: .5}}>
           <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-start'}}>
             <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
               { this.stuffpicture(this.state.picture) }
@@ -106,7 +126,7 @@ class StuffDetail extends Component {
             </View>
           </View>
         </View>
-        <View style={{width: width, height: height, marginTop: -30, paddingHorizontal: 20, paddingTop: 25, borderRadius: 25, backgroundColor: '#f6f5f3'}}>
+        <View style={{width: width, flex: .5, marginTop: -45, paddingHorizontal: 20, paddingTop: 25, borderRadius: 25, backgroundColor: '#f6f5f3'}}>
           <View style={{flex: 1, flexDirection: 'column'}}>
             <View style={{width: '100%', height: 45, flexDirection: 'row'}}>
               <View style={{width: '70%'}}>
@@ -133,8 +153,41 @@ class StuffDetail extends Component {
                 <Text style={[common.fontbody, {color: '#f6f5f3', alignSelf: 'flex-start', fontSize: 11}]}>43#REVIEWS</Text>
               </View>
               <View style={{marginLeft: 5,alignSelf: 'flex-start', paddingHorizontal: 8, borderRadius: 3, paddingVertical: 4, flexDirection: 'row', backgroundColor: '#e2a85c'}}>
-                <Text style={[common.fontbody, {color: '#f6f5f3', alignSelf: 'flex-start', fontSize: 11}]}>14#LIKES</Text>
+                <Text style={[common.fontbody, {color: '#f6f5f3', alignSelf: 'flex-start', fontSize: 11}]}>14#BOUGHT</Text>
               </View>
+            </View>
+            <View style={{flex: .15}}>
+              <View style={{width: '100%', flexDirection: 'row'}}>
+                <Text style={[common.fontitle, {color: '#444', fontSize: 16, alignSelf: 'flex-start'}]}>IDR{this.state.price - (this.state.price * 34 / 100)}</Text>
+                <Text style={[common.fontitle, {color: '#7f8082', fontSize: 12, paddingTop: 2.7, marginLeft: 5}]}>IDR{this.state.price} (25 days left)</Text>
+              </View>
+            </View>
+            <View style={{flex: .35}}>
+              <View style={{width: '80%'}}>
+                <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 5}]}>DESCRIPTION</Text>
+                <Text style={[common.fontbody, {color: '#444', lineHeight: 20}]}>
+                  {this.truncate(this.state.description, 18)}
+                  {this.state.description.split(" ").length > 18 ? ' ...' : null}
+                </Text>
+              </View>
+            </View>
+            <View style={{flex: .4}}>
+              <View style={{width: '100%'}}>
+                <View style={{flexDirection: 'row', flex: 1}}>
+                  <View style={{flex: 1, paddingRight: 20}}>
+                    <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 5}]}>EXCHANGE RULE</Text>
+                    {
+                      this.state.rules.length > 0 ?
+                      this.rulemap(this.state.rules) : null
+                    }
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View style={{width: '100%'}}>
+              <TouchableHighlight style={{width: '100%', height: 40, borderRadius: 20, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3'}]}>MADE DISCOUNT</Text>
+              </TouchableHighlight>
             </View>
           </View>
         </View>

@@ -79,7 +79,7 @@ class Stuff extends Component {
           <View style={{flex: 1, flexDirection: 'column'}}>
             <View style={{flex: .82}}>
               <Image source={{uri: stuff.photos[0].secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 4}}/>
-              <View style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 4, backgroundColor: 'rgba(0,0,0,.09)'}}></View>
+              <TouchableOpacity onPress={(e) => this.props.navigation.navigate('StuffDetail', {stuff})} style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 4, backgroundColor: 'rgba(0,0,0,.1)'}}></TouchableOpacity>
             </View>
             <View style={{flex: .18, paddingTop: 15}}>
               <View style={{flex: 1, flexDirection: 'row'}}>
@@ -92,8 +92,8 @@ class Stuff extends Component {
                   <Text style={[common.fontbody, {color: '#444'}]}>{stuff.manager.username}</Text>
                 </View>
                 <View style={{flex: .18, justifyContent: 'flex-start', alignItems: 'flex-end'}}>
-                  <TouchableOpacity onPress={(e) => this.props.navigation.navigate('StuffDetail', {stuff})} style={{borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', width: '100%', height: 28, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', justifyContent: 'center', alignItems: 'center'}}>
-                    <Ionicons name="ios-arrow-round-forward" size={24} color="#444"/>
+                  <TouchableOpacity onPress={(e) => this.props.navigation.navigate('StuffUpdate',{ stuffID: stuff._id })} style={{borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', width: '100%', height: 28, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', justifyContent: 'center', alignItems: 'center'}}>
+                    <Ionicons name="ios-repeat" size={24} color="#444"/>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -122,7 +122,7 @@ class Stuff extends Component {
       return (
         <Query query={GET_STUFFS} variables={{userID: this.state.current_user._id}}>
           {({ loading, error, data }) => {
-            if(loading || data.getstuffs.tatus === false) {
+            if(loading || data.getstuffs.status === false) {
               return <View style={[common.container, { backgroundColor: '#f6f5f3' }]}></View>
             }
             return (
