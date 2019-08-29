@@ -5,16 +5,20 @@ import {
   TextInput, Dimensions,
   Animated, Image, ScrollView
 } from 'react-native';
-import { graphql, compose, Query } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import _ from 'lodash';
 import {
   common
 } from '../../../assets/stylesheets/common';
 import {
-  setpicture
+  setpicture, absoluteform
 } from '../sharedaction';
 import UploadImage from '../upload';
+import {
+  MADE_STUFF
+} from '../../../queries/queryStuff';
+
 
 class StuffUpdateChild extends Component {
   constructor(props) {
@@ -25,11 +29,28 @@ class StuffUpdateChild extends Component {
       price: '',
       description: '',
       categori: [],
+      categories: [],
       stuffID: '',
       merchantID: '',
       updatestatus: false,
       current_user: '',
+      modalstatus: false,
+      upicture: [],
+      fetchstatus: false,
+      ucategori: []
     }
+    this.modalshow = new Animated.Value(0);
+    this.modalhide = new Animated.Value(0);
+  }
+
+  modalshowservice = () => {
+    absoluteform(this.modalshow, this.modalhide);
+    this.setState({ modalstatus: true })
+  }
+
+  modalhideservice = () => {
+    absoluteform(this.modalhide, this.modalshow);
+    this.setState({ modalstatus: false })
   }
 
   componentDidMount = () => {
@@ -40,6 +61,8 @@ class StuffUpdateChild extends Component {
       description: this.props.stuff ? this.props.stuff.description : '',
       categori: this.props.stuff ? this.props.stuff.categori : [],
       stuffID: this.props.stuff ? this.props.stuff._id : '',
+      merchantID: this.props.stuff ? this.props.stuff.merchant._id : '',
+      categories: this.props.stuff.merchant.niche ? this.props.stuff.merchant.niche.categori : [],
       current_user: this.props.currentuser ? this.props.currentuser : ''
     })
   }
@@ -67,8 +90,76 @@ class StuffUpdateChild extends Component {
     });
   }
 
+  mapcategori = (categories, categori) => {
+    var lookup = _.keyBy(categori, (categorix) => categorix._id);
+    var filtercategories = _.filter(categories, (categorix) => !lookup[categorix._id])
+    return filtercategories.map((categorix, index) => {
+      return (
+        <View key={index} style={{marginRight: 6, marginBottom: 6}}>
+          <TouchableOpacity>
+            <Text style={[common.fontbody, {color: '#444',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', alignSelf: 'flex-start'}]}>{categorix.child}</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    })
+  }
+
+  mapsavecagori = (savecategori) => {
+    return savecategori.map((categori, index) => {
+      return (
+        <View key={index} style={{marginRight: 6, marginBottom: 6}}>
+          <TouchableOpacity>
+            <Text style={[common.fontbody, {color: '#f6f5f3',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: '#6c7e70', alignSelf: 'flex-start'}]}>{categori.child}</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    })
+  };
+
+  setupload = async(data) => {
+    this.setState({ fetchstatus: true })
+    var upicture = [];
+    this.setpicture = await setpicture(data);
+    if(this.setpicture) {
+      upicture.push({
+        secureUrl: this.setpicture.result.data.secure_url,
+        publicId: this.setpicture.result.data.public_id,
+        imgType: this.setpicture.result.data.format
+      });
+      this.setState({
+        upicture: upicture,
+        fetchstatus: false
+      })
+    }
+  }
+
+  handleupdate = async() => {
+    var response = await this.props.madestuff({
+      variables: {
+        basestuff: {
+          userID: this.state.current_user._id,
+          merchantID: this.state.merchantID,
+          stuffID: this.state.stuffID,
+          title: this.state.title,
+          description: this.state.description,
+          price: this.state.price,
+        },
+        picture: this.state.upicture,
+        categori: this.state.ucategori
+      }
+    })
+  }
+
   render() {
-    var {width, height} = Dimensions.get('window');
+    var { width, height } = Dimensions.get('window');
+    var modalshowsty = this.modalshow.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [height, -20, 0]
+    });
+    var modalhidesty = this.modalhide.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [0, -20, height]
+    });
     return (
       <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
         <View style={{flex: .07, paddingHorizontal: 20}}>
@@ -105,12 +196,27 @@ class StuffUpdateChild extends Component {
                     {this.mappicture(this.state.picture ? this.state.picture : [])}
                   </ScrollView>
                 </View> :
-                <View style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f0efed', borderRadius: 4}}>
-                  <Ionicons name="ios-images" size={48} color="#444"/>
-                  <Text style={[common.fontbody, {color: '#444', fontSize: 12, marginTop: 10}]}>MAX FILE SIZE 1 MB</Text>
-                  <TouchableHighlight style={{width: '100%', height: '100%', position: 'absolute', borderRadius: 4}}>
-                    <Text></Text>
-                  </TouchableHighlight>
+                <View style={{width: '100%', height: '100%', borderRadius: 4}}>
+                  {
+                    this.state.upicture.length > 0 ?
+                    <View style={{width: '100%', height: 'auto', justifyContent: 'center', alignItems: 'center'}}>
+                      <Image source={{uri: this.state.upicture[0].secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 10}}/>
+                      <View style={{paddingHorizontal: 10, width: '100%', height: '100%', position: 'absolute', borderRadius: 10, backgroundColor: 'rgba(0,0,0,.1)'}}>
+                        <View style={{width: '100%', height: '15%', justifyContent: 'center', alignItems: 'flex-end'}}>
+                          <TouchableHighlight onPress={(e) => this.setState({ setpicture: []})} style={{width: 22, height: 22, borderRadius: 40, backgroundColor: 'rgba(0,0,0,.3)', justifyContent: 'center', alignItems: 'center'}}>
+                            <Ionicons name="ios-close" size={24} color="#ffffff"/>
+                          </TouchableHighlight>
+                        </View>
+                      </View>
+                    </View> :
+                    <View style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#f0efed', width: '100%', height: '100%'}}>
+                      <Ionicons name="ios-images" size={48} color="#444"/>
+                      <Text style={[common.fontbody, {color: '#444', fontSize: 12, marginTop: 10}]}>{this.state.fetchstatus === false ? 'MAX FILE SIZE 1 MB' : 'PLEASE WAIT..'}</Text>
+                      <TouchableHighlight onPress={(e) => this.modalshowservice()} style={{width: '100%', height: '100%', position: 'absolute', borderRadius: 4}}>
+                        <Text></Text>
+                      </TouchableHighlight>
+                    </View>
+                  }
                 </View>
               }
             </View>
@@ -135,12 +241,48 @@ class StuffUpdateChild extends Component {
             </View>
           </View>
         </View>
-        <View style={{width: width, height: height, position: 'absolute', backgroundColor: 'rgba(255,255,255,.4)'}}>
-          <UploadImage />
-        </View>
+        <Animated.View style={{transform: [{translateY: this.state.modalstatus === false ? modalshowsty : modalhidesty}],width: width, height: height, position: 'absolute', backgroundColor: 'rgba(255,255,255,.4)'}}>
+          {
+            this.state.modalstatus === true ?
+            <UploadImage setupload={this.setupload.bind(this)} hidefetchservice={this.modalhideservice.bind(this)} /> : null
+          }
+        </Animated.View>
+        <Animated.View style={{paddingHorizontal: 20, justifyContent: 'flex-end',width: width, height: height, position: 'absolute'}}>
+          <View style={{width: '100%', height: height, backgroundColor: '#f6f5f3', borderRadius: 4}}>
+            <View style={{flex: 1, flexDirection: 'column'}}>
+              <View style={{flex: .08, justifyContent: 'center', alignItems: 'flex-end'}}>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                  <View style={{flex: .7, justifyContent: 'center'}}>
+                    <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#SET CATEGORI</Text>
+                  </View>
+                  <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <TouchableOpacity style={{width: '80%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
+                      <Ionicons name="ios-arrow-round-down" size={24} color="#444"/>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              <View style={{flex: .92}}>
+                <View style={{flex: 1, flexDirection: 'column'}}>
+                  <View style={{flexDirection: 'row',width: '100%', height: 'auto', flexWrap: 'wrap', marginBottom: 30}}>
+                    {this.mapcategori(this.state.categories, this.state.categori)}
+                  </View>
+                  {
+                    this.state.categori.length > 0 ?
+                    <View style={{flexDirection: 'row',width: '100%', height: 'auto', flexWrap: 'wrap'}}>
+                      {this.mapsavecagori(this.state.categori)}
+                    </View> : null
+                  }
+                </View>
+              </View>
+            </View>
+          </View>
+        </Animated.View>
       </View>
     )
   }
 }
 
-export default StuffUpdateChild;
+export default compose(
+  graphql(MADE_STUFF, {name: 'madestuff'})
+)(StuffUpdateChild);

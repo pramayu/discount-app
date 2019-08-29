@@ -140,6 +140,16 @@ export var GET_STUFF = gql`
         manager {
           _id
         }
+        merchant {
+          _id
+          niche {
+            _id
+            categori {
+              _id
+              child
+            }
+          }
+        }
       }
     }
   }
