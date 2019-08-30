@@ -12,11 +12,11 @@ import {
   common
 } from '../../../assets/stylesheets/common';
 import {
-  setpicture, absoluteform
+  setpicture, absoluteform, setcategoriservice
 } from '../sharedaction';
 import UploadImage from '../upload';
 import {
-  MADE_STUFF
+  MADE_STUFF, UNSET_CATEGORI, GET_STUFF
 } from '../../../queries/queryStuff';
 
 
@@ -37,10 +37,13 @@ class StuffUpdateChild extends Component {
       modalstatus: false,
       upicture: [],
       fetchstatus: false,
-      ucategori: []
+      ucategori: [],
+      categorimodal: false
     }
     this.modalshow = new Animated.Value(0);
     this.modalhide = new Animated.Value(0);
+    this.categorishow = new Animated.Value(0);
+    this.categorihide = new Animated.Value(0);
   }
 
   modalshowservice = () => {
@@ -51,6 +54,16 @@ class StuffUpdateChild extends Component {
   modalhideservice = () => {
     absoluteform(this.modalhide, this.modalshow);
     this.setState({ modalstatus: false })
+  }
+
+  categorishowservice = () => {
+    this.setState({ categorimodal: false });
+    absoluteform(this.categorishow, this.categorihide);
+  }
+
+  categorihideservice = () => {
+    this.setState({ categorimodal: true });
+    absoluteform(this.categorihide, this.categorishow);
   }
 
   componentDidMount = () => {
@@ -90,20 +103,65 @@ class StuffUpdateChild extends Component {
     });
   }
 
+  setcategori = (categori, indexID) => {
+    this.state.categories[indexID].choose = true;
+    this.categorix = setcategoriservice(categori, indexID);
+    this.setState({
+      ucategori: [...this.state.ucategori, this.categorix]
+    });
+  }
+
+  unsetcategori = (index) => {
+    delete this.state.categories[index]['choose'];
+    this.setState({ categories: this.state.categories });
+    var indexe = this.state.ucategori.findIndex(categori => categori.indexID === index.toString());
+    this.state.ucategori.splice(indexe, 1)
+  }
+
+  removecategori = async(categoriID) => {
+    var res = await this.props.unsetcategori({
+      variables: {
+        userID: this.state.current_user._id,
+        stuffID: this.state.stuffID,
+        categoriID: categoriID
+      },
+      refetchQueries: [{
+        query: GET_STUFF,
+        variables: { stuffID: this.state.stuffID }
+      }]
+    });
+    var { status } = res.data.unsetcategori;
+    if(status === true) {
+      var indexe = this.state.categori.findIndex(categori => categori._id === categoriID);
+      this.state.categori.splice(indexe, 1);
+      this.setState({ categori: this.state.categori })
+    }
+  }
+
   mapcategori = (categories, categori) => {
     var lookup = _.keyBy(categori, (categorix) => categorix._id);
-    var filtercategories = _.filter(categories, (categorix) => !lookup[categorix._id])
-    return filtercategories.map((categorix, index) => {
+    // var filtercategories = _.filter(categories, (categorix) => !lookup[categorix._id])
+    return categories.map((categorix, index) => {
       return (
         <View key={index} style={{marginRight: 6, marginBottom: 6}}>
-          <TouchableOpacity>
-            <Text style={[common.fontbody, {color: '#444',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', alignSelf: 'flex-start'}]}>{categorix.child}</Text>
-          </TouchableOpacity>
+          {
+            lookup[categorix._id] ?
+            <TouchableOpacity onPress={(e) => this.removecategori(categorix._id)}>
+              <Text style={[common.fontbody, {color: '#f6f5f3',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: '#7f8082', alignSelf: 'flex-start'}]}>{categorix.child}</Text>
+            </TouchableOpacity> : categorix.choose === true ?
+            <TouchableOpacity onPress={(e) => this.unsetcategori(index)}>
+              <Text style={[common.fontbody, {color: '#f6f5f3',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: '#6c7e70', alignSelf: 'flex-start'}]}>{categorix.child}</Text>
+            </TouchableOpacity> :
+            <TouchableOpacity onPress={(e) => this.setcategori(categorix, index)}>
+              <Text style={[common.fontbody, {color: '#444',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', alignSelf: 'flex-start'}]}>{categorix.child}</Text>
+            </TouchableOpacity>
+          }
         </View>
       )
     })
   }
 
+//disabled
   mapsavecagori = (savecategori) => {
     return savecategori.map((categori, index) => {
       return (
@@ -133,6 +191,8 @@ class StuffUpdateChild extends Component {
     }
   }
 
+
+
   handleupdate = async() => {
     var response = await this.props.madestuff({
       variables: {
@@ -157,6 +217,14 @@ class StuffUpdateChild extends Component {
       outputRange: [height, -20, 0]
     });
     var modalhidesty = this.modalhide.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [0, -20, height]
+    });
+    var categorishowsty = this.categorishow.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [height, -20, 0]
+    });
+    var categorihidesty = this.categorihide.interpolate({
       inputRange: [0, 1, 2],
       outputRange: [0, -20, height]
     });
@@ -232,7 +300,7 @@ class StuffUpdateChild extends Component {
                     <TextInput value={this.state.price} autoCorrect={false} style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
                   </View>
                   <View style={{flex: .4}}>
-                    <TouchableOpacity style={{width: '100%', height: 38, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>
+                    <TouchableOpacity onPress={(e) => this.categorishowservice()} style={{width: '100%', height: 38, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>
                       <Text style={[common.fontbody, {color: '#f6f5f3', fontSize: 12}]}>EXTRA FIELD</Text>
                     </TouchableOpacity>
                   </View>
@@ -247,7 +315,7 @@ class StuffUpdateChild extends Component {
             <UploadImage setupload={this.setupload.bind(this)} hidefetchservice={this.modalhideservice.bind(this)} /> : null
           }
         </Animated.View>
-        <Animated.View style={{paddingHorizontal: 20, justifyContent: 'flex-end',width: width, height: height, position: 'absolute'}}>
+        <Animated.View style={{transform: [{translateY: this.state.categorimodal === false ? categorishowsty : categorihidesty}],paddingHorizontal: 20, justifyContent: 'flex-end',width: width, height: height, position: 'absolute'}}>
           <View style={{width: '100%', height: height, backgroundColor: '#f6f5f3', borderRadius: 4}}>
             <View style={{flex: 1, flexDirection: 'column'}}>
               <View style={{flex: .08, justifyContent: 'center', alignItems: 'flex-end'}}>
@@ -256,7 +324,7 @@ class StuffUpdateChild extends Component {
                     <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#SET CATEGORI</Text>
                   </View>
                   <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
-                    <TouchableOpacity style={{width: '80%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <TouchableOpacity onPress={(e) => this.categorihideservice()} style={{width: '80%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
                       <Ionicons name="ios-arrow-round-down" size={24} color="#444"/>
                     </TouchableOpacity>
                   </View>
@@ -267,12 +335,6 @@ class StuffUpdateChild extends Component {
                   <View style={{flexDirection: 'row',width: '100%', height: 'auto', flexWrap: 'wrap', marginBottom: 30}}>
                     {this.mapcategori(this.state.categories, this.state.categori)}
                   </View>
-                  {
-                    this.state.categori.length > 0 ?
-                    <View style={{flexDirection: 'row',width: '100%', height: 'auto', flexWrap: 'wrap'}}>
-                      {this.mapsavecagori(this.state.categori)}
-                    </View> : null
-                  }
                 </View>
               </View>
             </View>
@@ -284,5 +346,6 @@ class StuffUpdateChild extends Component {
 }
 
 export default compose(
-  graphql(MADE_STUFF, {name: 'madestuff'})
+  graphql(MADE_STUFF, {name: 'madestuff'}),
+  graphql(UNSET_CATEGORI, {name: 'unsetcategori'})
 )(StuffUpdateChild);

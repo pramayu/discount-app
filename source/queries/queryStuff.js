@@ -154,3 +154,11 @@ export var GET_STUFF = gql`
     }
   }
 `;
+
+export var UNSET_CATEGORI = gql`
+  mutation($userID: ID!, $stuffID: ID!, $categoriID: ID!) {
+    unsetcategori(userID: $userID, stuffID: $stuffID, categoriID: $categoriID) {
+      status
+    }
+  }
+`

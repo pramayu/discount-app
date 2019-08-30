@@ -43,3 +43,9 @@ export var setpicture = async(file) => {
   var result = await axios.post(CLOUDINARY.CLOUDINARY_FETCH_POST, upload);
   return {result};
 };
+
+export var setcategoriservice = (categori, indexID) => {
+  var categorix = Object.assign({}, categori);
+  categorix['indexID'] = indexID.toString();
+  return categorix
+}
