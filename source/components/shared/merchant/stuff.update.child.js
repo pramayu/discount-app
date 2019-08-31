@@ -66,6 +66,15 @@ class StuffUpdateChild extends Component {
     absoluteform(this.categorihide, this.categorishow);
   }
 
+  gobackservice = () => {
+    this.setState({
+      upicture: [],
+      ucategori: []
+    });
+    _.filter(this.state.categories, (categori) => delete categori['choose'])
+    this.props.gobackservice()
+  }
+
   componentDidMount = () => {
     this.setState({
       picture: this.props.stuff ? this.props.stuff.photos : [],
@@ -147,7 +156,7 @@ class StuffUpdateChild extends Component {
           {
             lookup[categorix._id] ?
             <TouchableOpacity onPress={(e) => this.removecategori(categorix._id)}>
-              <Text style={[common.fontbody, {color: '#f6f5f3',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: '#7f8082', alignSelf: 'flex-start'}]}>{categorix.child}</Text>
+              <Text style={[common.fontbody, {color: '#f6f5f3',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: '#ea4c89', alignSelf: 'flex-start'}]}>{categorix.child}</Text>
             </TouchableOpacity> : categorix.choose === true ?
             <TouchableOpacity onPress={(e) => this.unsetcategori(index)}>
               <Text style={[common.fontbody, {color: '#f6f5f3',borderWidth: 1, borderColor: 'rgba(255,255,255,.7)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 4, backgroundColor: '#6c7e70', alignSelf: 'flex-start'}]}>{categorix.child}</Text>
@@ -191,9 +200,9 @@ class StuffUpdateChild extends Component {
     }
   }
 
-
-
   handleupdate = async() => {
+    var categories = [];
+    _.map(this.state.ucategori, (categorix) => { categories.push({ categoriID: categorix._id }) })
     var response = await this.props.madestuff({
       variables: {
         basestuff: {
@@ -203,10 +212,15 @@ class StuffUpdateChild extends Component {
           title: this.state.title,
           description: this.state.description,
           price: this.state.price,
+          upstatus: 'allupdate'
         },
         picture: this.state.upicture,
-        categori: this.state.ucategori
-      }
+        categori: categories
+      },
+      refetchQueries: [{
+        query: GET_STUFF,
+        variables: { stuffID: this.state.stuffID }
+      }]
     })
   }
 
@@ -235,20 +249,29 @@ class StuffUpdateChild extends Component {
             <View style={{flex:.3, justifyContent:'center'}}>
               {
                 this.state.updatestatus === false ?
-                <TouchableOpacity onPress={(e) => this.props.gobackservice()}>
+                <TouchableOpacity onPress={(e) => this.gobackservice()}>
                   <Ionicons name="ios-arrow-round-back" size={28} color="#444"/>
                 </TouchableOpacity> :
                 <TouchableOpacity onPress={(e) => this.setState({ updatestatus: false })}>
-                  <Ionicons name="ios-repeat" size={24} color="#444"/>
+                  <Ionicons name="ios-repeat" size={24} color="#ea4c89"/>
                 </TouchableOpacity>
               }
             </View>
             <View style={{flex:.7, justifyContent:'center', alignItems: 'flex-end'}}>
               <View style={{flex: 1, flexDirection: 'row'}}>
                 <View style={{ width: '95%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
-                    <TouchableOpacity>
-                      <Text style={[common.fontbody, { color: '#444'}]}>Save Update.</Text>
+                  {
+                    this.state.upicture.length > 0 || this.state.ucategori.length > 0 ?
+                    <TouchableOpacity onPress={(e) => this.handleupdate()} style={{paddingRight: 7}}>
+                      <Text style={[common.fontbody, { color: '#ea4c89' }]}>Save Update.</Text>
+                    </TouchableOpacity> :
+                    <TouchableOpacity style={{paddingRight: 7}}>
+                      <Text style={[common.fontbody, { color: '#444' }]}>Save Update.</Text>
                     </TouchableOpacity>
+                  }
+                    <View style={{marginTop: 5, position: 'absolute', width: 5, height: 5, borderRadius: 30,
+                      backgroundColor: this.state.upicture.length > 0 || this.state.ucategori.length > 0 ? '#ea4c89' : '#f6f5f3'
+                    }}></View>
                 </View>
               </View>
             </View>
@@ -290,17 +313,17 @@ class StuffUpdateChild extends Component {
             </View>
             <View style={{width: '100%', height: 'auto', paddingHorizontal: 20, paddingTop: 20}}>
               <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#TITLE</Text>
-              <TextInput value={this.state.title} style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+              <TextInput onChangeText={(txt) => this.setState({title: txt})} value={this.state.title} style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10}]}/>
               <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#DESCRIPTION</Text>
-              <TextInput value={this.state.description} autoCorrect={false} multiline={true} style={[common.fontbody, {borderWidth: 1, borderColor: '#fff', marginBottom: 15, color: '#444',textAlignVertical: 'top',width: '100%', height: 85, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10, paddingVertical: 10, lineHeight: 22}]}/>
+              <TextInput onChangeText={(txt) => this.setState({description: txt})} value={this.state.description} autoCorrect={false} multiline={true} style={[common.fontbody, {borderWidth: 1, borderColor: '#fff', marginBottom: 15, color: '#444',textAlignVertical: 'top',width: '100%', height: 85, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10, paddingVertical: 10, lineHeight: 22}]}/>
               <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#PRICE</Text>
               <View style={{width: '100%', height: 38, marginBottom: 30}}>
                 <View style={{flex: 1, flexDirection: 'row'}}>
                   <View style={{flex: .6,paddingRight: 10}}>
-                    <TextInput value={this.state.price} autoCorrect={false} style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+                    <TextInput onChangeText={(txt) => this.setState({price: txt})} value={this.state.price} autoCorrect={false} style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10}]}/>
                   </View>
                   <View style={{flex: .4}}>
-                    <TouchableOpacity onPress={(e) => this.categorishowservice()} style={{width: '100%', height: 38, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>
+                    <TouchableOpacity onPress={(e) => this.categorishowservice()} style={{width: '100%', height: 38, backgroundColor: this.state.ucategori.length > 0 ? '#ea4c89' : '#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>
                       <Text style={[common.fontbody, {color: '#f6f5f3', fontSize: 12}]}>EXTRA FIELD</Text>
                     </TouchableOpacity>
                   </View>
