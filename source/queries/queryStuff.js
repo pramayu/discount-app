@@ -132,6 +132,8 @@ export var GET_STUFF = gql`
         photos {
           _id
           secureUrl
+          publicId
+          imgType
         }
         categori {
           _id
@@ -163,8 +165,8 @@ export var UNSET_CATEGORI = gql`
   }
 `
 
-export var UNSED_PICTURE = gql`
-  mutation($userID: ID!, $stuffID: ID!, $picture: [picture]) {
+export var UNUSED_PICTURE = gql`
+  mutation($userID: ID!, $stuffID: ID, $picture: [picture]) {
     unusedpicture(userID: $userID, stuffID: $stuffID, picture: $picture) {
       status
     }

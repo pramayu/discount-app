@@ -140,7 +140,7 @@ class AccountBuyer extends Component {
                       <View style={{width: '100%', alignItems: 'center', height: '85%', justifyContent: 'center'}}>
                         <View style={{backgroundColor: '#f6f5f3',borderRadius: 80, width: 110, height: 110, alignItems: 'center',justifyContent: 'center'}}>
                           {
-                            data.user.user.photos ?
+                            data.user.user.photos.length > 0 ?
                             <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 80, borderWidth: 1, borderColor: '#444'}} source={{uri: data.user.user.photos[0].secureUrl}}/> :
                             <MaterialIcons name="landscape" color="#6c7e70" size={64}/>
                           }

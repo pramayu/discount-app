@@ -15,7 +15,7 @@ import {
 import {
   setpicture
 } from '../sharedaction';
-import { MADE_STUFF } from '../../../queries/queryStuff';
+import { MADE_STUFF, GET_STUFFS } from '../../../queries/queryStuff';
 
 class StuffUpload extends Component {
   constructor(props) {
@@ -96,7 +96,10 @@ class StuffUpload extends Component {
             upstatus: 'pictureupload'
           },
           picture: picture
-        }
+        },
+        refetchQueries: [{
+          query: GET_STUFFS, variables: { userID: this.state.userID }
+        }]
       });
       var { status, error, stuff } = res.data.madestuff;
       if(status === true) {

@@ -16,7 +16,7 @@ import {
 } from '../sharedaction';
 import UploadImage from '../upload';
 import {
-  MADE_STUFF, UNSET_CATEGORI, GET_STUFF
+  MADE_STUFF, UNSET_CATEGORI, GET_STUFF, UNUSED_PICTURE
 } from '../../../queries/queryStuff';
 
 
@@ -66,13 +66,19 @@ class StuffUpdateChild extends Component {
     absoluteform(this.categorihide, this.categorishow);
   }
 
-  gobackservice = () => {
+  gobackservice = async () => {
     this.setState({
       upicture: [],
       ucategori: []
     });
-    _.filter(this.state.categories, (categori) => delete categori['choose'])
-    this.props.gobackservice()
+    _.filter(this.state.categories, (categori) => delete categori['choose']);
+    if(this.state.upicture.length > 0) {
+      var status = await this.removepictureservice(this.state.upicture);
+      if(status === true) {
+        this.setState({ upicture: [] })
+      }
+    }
+    this.props.gobackservice();
   }
 
   componentDidMount = () => {
@@ -89,6 +95,38 @@ class StuffUpdateChild extends Component {
     })
   }
 
+  removepictureservice = async(picture) => {
+    if(picture.length > 0) {
+      var res = await this.props.unusedpicture({
+        variables: {
+          userID: this.state.current_user._id,
+          stuffID: this.state.stuffID,
+          picture: picture
+        },
+        refetchQueries: [{
+          query: GET_STUFF, variables: {stuffID: this.state.stuffID}
+        }]
+      })
+    }
+    var { status } = res.data.unusedpicture;
+    return status
+  }
+
+  removesavedpicture = async(picture, index) => {
+    var picturex = [];
+    picturex.push({
+      _id: picture._id,
+      secureUrl: picture.secureUrl,
+      publicId: picture.publicId,
+      imgType: picture.imgType
+    });
+    var status = await this.removepictureservice(picturex);
+    if(status === true) {
+      this.state.picture.splice(index, 1);
+      this.setState({ picture: this.state.picture, upicture: [] })
+    }
+  }
+
   mappicture = (picture) => {
     var {width, height} = Dimensions.get('window');
     return picture.map((res, index) => {
@@ -97,7 +135,7 @@ class StuffUpdateChild extends Component {
           <Image source={{uri: res.secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 10}}/>
           <View style={{paddingHorizontal: 10, width: '100%', height: '100%', position: 'absolute', borderRadius: 10, backgroundColor: 'rgba(0,0,0,.1)'}}>
             <View style={{width: '100%', height: '15%', justifyContent: 'center', alignItems: 'flex-end'}}>
-              <TouchableHighlight style={{width: 22, height: 22, borderRadius: 40, backgroundColor: 'rgba(0,0,0,.3)', justifyContent: 'center', alignItems: 'center'}}>
+              <TouchableHighlight onPress={(e) => this.removesavedpicture(res, index)} style={{width: 22, height: 22, borderRadius: 40, backgroundColor: 'rgba(0,0,0,.3)', justifyContent: 'center', alignItems: 'center'}}>
                 <Ionicons name="ios-close" size={24} color="#ffffff"/>
               </TouchableHighlight>
             </View>
@@ -146,6 +184,8 @@ class StuffUpdateChild extends Component {
       this.setState({ categori: this.state.categori })
     }
   }
+
+
 
   mapcategori = (categories, categori) => {
     var lookup = _.keyBy(categori, (categorix) => categorix._id);
@@ -221,7 +261,17 @@ class StuffUpdateChild extends Component {
         query: GET_STUFF,
         variables: { stuffID: this.state.stuffID }
       }]
-    })
+    });
+    var { status, stuff, error } = response.data.madestuff;
+    if(status === true) {
+      this.setState({
+        updatestatus: false,
+        upicture: [],
+        ucategori: [],
+        picture: stuff.photos ? stuff.photos : this.state.picture,
+        categori: stuff.categori ? stuff.categori : this.state.categori
+      });
+    }
   }
 
   render() {
@@ -370,5 +420,6 @@ class StuffUpdateChild extends Component {
 
 export default compose(
   graphql(MADE_STUFF, {name: 'madestuff'}),
-  graphql(UNSET_CATEGORI, {name: 'unsetcategori'})
+  graphql(UNSET_CATEGORI, {name: 'unsetcategori'}),
+  graphql(UNUSED_PICTURE, {name: 'unusedpicture'})
 )(StuffUpdateChild);
