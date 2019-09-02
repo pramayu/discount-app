@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   View, Text, TouchableOpacity,
   StatusBar, TouchableHighlight,
-  TextInput, Dimensions,
+  TextInput, Dimensions, Keyboard,
   Animated, Image, ScrollView
 } from 'react-native';
 import { graphql, compose } from 'react-apollo';
@@ -16,7 +16,8 @@ import {
 } from '../sharedaction';
 import UploadImage from '../upload';
 import {
-  MADE_STUFF, UNSET_CATEGORI, GET_STUFF, UNUSED_PICTURE
+  MADE_STUFF, UNSET_CATEGORI, GET_STUFF, UNUSED_PICTURE,
+  STUFF_PUBLISH
 } from '../../../queries/queryStuff';
 
 
@@ -32,18 +33,23 @@ class StuffUpdateChild extends Component {
       categories: [],
       stuffID: '',
       merchantID: '',
+      stuffstatus: false,
+      discountstatus: false,
       updatestatus: false,
       current_user: '',
       modalstatus: false,
       upicture: [],
       fetchstatus: false,
       ucategori: [],
-      categorimodal: false
+      categorimodal: false,
+      keyboardstatus: false
     }
     this.modalshow = new Animated.Value(0);
     this.modalhide = new Animated.Value(0);
     this.categorishow = new Animated.Value(0);
     this.categorihide = new Animated.Value(0);
+    this.formslideup = new Animated.Value(0);
+    this.formslidedw = new Animated.Value(0);
   }
 
   modalshowservice = () => {
@@ -64,6 +70,16 @@ class StuffUpdateChild extends Component {
   categorihideservice = () => {
     this.setState({ categorimodal: true });
     absoluteform(this.categorihide, this.categorishow);
+  }
+
+  formslideupservice = () => {
+    this.setState({ keyboardstatus: false });
+    absoluteform(this.formslideup, this.formslidedw);
+  }
+
+  formslidedwservice = () => {
+    this.setState({ keyboardstatus: true });
+    absoluteform(this.formslidedw, this.formslideup);
   }
 
   gobackservice = async () => {
@@ -91,8 +107,31 @@ class StuffUpdateChild extends Component {
       stuffID: this.props.stuff ? this.props.stuff._id : '',
       merchantID: this.props.stuff ? this.props.stuff.merchant._id : '',
       categories: this.props.stuff.merchant.niche ? this.props.stuff.merchant.niche.categori : [],
+      stuffstatus: this.props.stuff ? this.props.stuff.stuffstatus : false,
+      discountstatus: this.props.stuff ? this.props.stuff.discountstatus : false,
       current_user: this.props.currentuser ? this.props.currentuser : ''
-    })
+    });
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._keyboardDidHide,
+    );
+  }
+
+  _keyboardDidShow = () => {
+    this.formslideupservice()
+  }
+
+  _keyboardDidHide = () => {
+    this.formslidedwservice()
+  }
+
+  componentWillUnmount = () => {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
   }
 
   removepictureservice = async(picture) => {
@@ -274,7 +313,24 @@ class StuffUpdateChild extends Component {
     }
   }
 
+  stuffstatus = async() => {
+    var res = await this.props.stuffpublish({
+      variables: {
+        userID: this.state.current_user._id,
+        stuffID: this.state.stuffID
+      },
+      refetchQueries: [{
+        query: GET_STUFF, variables: { stuffID: this.state.stuffID }
+      }]
+    });
+    var { status } = res.data.stuffpublish;
+    if(status === true) {
+      this.setState({ stuffstatus: !this.state.stuffstatus });
+    }
+  }
+
   render() {
+    var { stuff } = this.props;
     var { width, height } = Dimensions.get('window');
     var modalshowsty = this.modalshow.interpolate({
       inputRange: [0, 1, 2],
@@ -291,6 +347,14 @@ class StuffUpdateChild extends Component {
     var categorihidesty = this.categorihide.interpolate({
       inputRange: [0, 1, 2],
       outputRange: [0, -20, height]
+    });
+    var formslideupsty = this.formslideup.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [0, -height / 2.6, -height / 2.8]
+    });
+    var formslidedwsty = this.formslidedw.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [-height / 2.8, -height / 2.6, 0]
     });
     return (
       <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
@@ -311,7 +375,7 @@ class StuffUpdateChild extends Component {
               <View style={{flex: 1, flexDirection: 'row'}}>
                 <View style={{ width: '95%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
                   {
-                    this.state.upicture.length > 0 || this.state.ucategori.length > 0 ?
+                    this.state.upicture.length > 0 || this.state.ucategori.length > 0 || stuff.title !== this.state.title || stuff.description !== this.state.description || stuff.price !== this.state.price ?
                     <TouchableOpacity onPress={(e) => this.handleupdate()} style={{paddingRight: 7}}>
                       <Text style={[common.fontbody, { color: '#ea4c89' }]}>Save Update.</Text>
                     </TouchableOpacity> :
@@ -320,7 +384,7 @@ class StuffUpdateChild extends Component {
                     </TouchableOpacity>
                   }
                     <View style={{marginTop: 5, position: 'absolute', width: 5, height: 5, borderRadius: 30,
-                      backgroundColor: this.state.upicture.length > 0 || this.state.ucategori.length > 0 ? '#ea4c89' : '#f6f5f3'
+                      backgroundColor: this.state.upicture.length > 0 || this.state.ucategori.length > 0 || stuff.title !== this.state.title || stuff.description !== this.state.description || stuff.price !== this.state.price ? '#ea4c89' : '#f6f5f3'
                     }}></View>
                 </View>
               </View>
@@ -361,7 +425,7 @@ class StuffUpdateChild extends Component {
                 </View>
               }
             </View>
-            <View style={{width: '100%', height: 'auto', paddingHorizontal: 20, paddingTop: 20}}>
+            <Animated.View style={{transform: [{translateY: this.state.keyboardstatus === false ? formslideupsty : formslidedwsty}],width: '100%', height: 'auto', paddingHorizontal: 20, paddingTop: 20, backgroundColor: '#f6f5f3'}}>
               <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#TITLE</Text>
               <TextInput onChangeText={(txt) => this.setState({title: txt})} value={this.state.title} style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10}]}/>
               <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#DESCRIPTION</Text>
@@ -379,7 +443,14 @@ class StuffUpdateChild extends Component {
                   </View>
                 </View>
               </View>
-            </View>
+              <TouchableOpacity onPress={(e) => this.stuffstatus()} style={{width: '100%', height: 40, borderRadius: 20, backgroundColor: this.state.stuffstatus === true ? '#ea4c89' : '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
+                {
+                  this.state.stuffstatus === true ?
+                  <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3'}]}>UNPUBLISH</Text> :
+                  <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3'}]}>PUBLISH</Text>
+                }
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         </View>
         <Animated.View style={{transform: [{translateY: this.state.modalstatus === false ? modalshowsty : modalhidesty}],width: width, height: height, position: 'absolute', backgroundColor: 'rgba(255,255,255,.4)'}}>
@@ -421,5 +492,6 @@ class StuffUpdateChild extends Component {
 export default compose(
   graphql(MADE_STUFF, {name: 'madestuff'}),
   graphql(UNSET_CATEGORI, {name: 'unsetcategori'}),
-  graphql(UNUSED_PICTURE, {name: 'unusedpicture'})
+  graphql(UNUSED_PICTURE, {name: 'unusedpicture'}),
+  graphql(STUFF_PUBLISH, {name: 'stuffpublish'})
 )(StuffUpdateChild);
