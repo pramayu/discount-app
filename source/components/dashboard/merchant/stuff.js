@@ -75,7 +75,7 @@ class Stuff extends Component {
     }
     return _.map(_stuffs, (stuff, index) => {
       return (
-        <View key={index} style={{width: '100%', height: height / 2.4, marginBottom: 10}}>
+        <View key={index} style={{width: '100%', height: height / 2.4, marginBottom: 15}}>
           <View style={{flex: 1, flexDirection: 'column'}}>
             <View style={{flex: .82}}>
               <Image source={{uri: stuff.photos[0].secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 4}}/>
@@ -171,7 +171,7 @@ class Stuff extends Component {
                         </View>
                       </View>
                       <View style={{flex: .81}}>
-                        <ScrollView contentContainerStyle={{alignItems: 'flex-end', paddingRight: 20, paddingTop: 10}} style={{flex: 1, flexDirection: 'column'}}>
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{alignItems: 'flex-end', paddingRight: 20, paddingTop: 10}} style={{flex: 1, flexDirection: 'column'}}>
                           { this.mapstuffs(data.getstuffs.stuffs) }
                         </ScrollView>
                       </View>

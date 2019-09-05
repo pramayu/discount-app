@@ -14,11 +14,13 @@ import {
 import {
   CURRENT_USER
 } from '../../queries/queryUser';
+import MadeDiskon from './merchant/madediskon';
 
 class StuffDetail extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      stuffID: '',
       picture: [],
       title: '',
       price: '',
@@ -34,13 +36,17 @@ class StuffDetail extends Component {
       facilities: [],
       discountstatus: false,
       stuffstatus: false,
-      current_user: ''
+      current_user: '',
+      madediskon: false
     }
+    this.madediskonvalue   = new Animated.Value(0);
+    this.closediskonvalue  = new Animated.Value(0);
   }
 
   componentDidMount = () => {
     var { stuff } = this.props.navigation.state.params;
     this.setState({
+      stuffID         : stuff ? stuff._id                 : '',
       picture         : stuff ? stuff.photos              : [],
       title           : stuff ? stuff.title               : '',
       price           : stuff ? stuff.price               : '',
@@ -56,7 +62,7 @@ class StuffDetail extends Component {
       facilities      : stuff ? stuff.merchant.facilities : [],
       discountstatus  : stuff ? stuff.discountstatus      : false,
       stuffstatus     : stuff ? stuff.stuffstatus         : false,
-    })
+    });
   }
 
   stuffpicture = (picture) => {
@@ -97,12 +103,40 @@ class StuffDetail extends Component {
     });
   }
 
+  madediskonservice = () => {
+    Animated.timing(this.madediskonvalue, {
+      toValue: 2,
+      duration: 900
+    }).start(() => {
+      this.closediskonvalue.setValue(0);
+      this.setState({ madediskon: true })
+    });
+  }
+
+  closediskonservice = () => {
+    Animated.timing(this.closediskonvalue, {
+      toValue: 2,
+      duration: 900
+    }).start(() => {
+      this.madediskonvalue.setValue(0);
+      this.setState({ madediskon: false })
+    });
+  }
+
   render() {
     var { width, height } = Dimensions.get('window');
+    var madediskonsty = this.madediskonvalue.interpolate({
+      inputRange:   [0, 1, 2],
+      outputRange:  [height, -20, 0]
+    });
+    var closediskonsty = this.closediskonvalue.interpolate({
+      inputRange:   [0, 1, 2],
+      outputRange:  [0, -20, height]
+    });
     return (
       <View style={[common.container, { backgroundColor: '#f6f5f3'}]}>
         <StatusBar translucent backgroundColor={'transparent'} barStyle="light-content"/>
-        <View style={{width: width, flex: .5}}>
+        <View style={{width: width, height: height / 2}}>
           <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-start'}}>
             <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
               { this.stuffpicture(this.state.picture) }
@@ -126,7 +160,7 @@ class StuffDetail extends Component {
             </View>
           </View>
         </View>
-        <View style={{width: width, flex: .5, marginTop: -45, paddingHorizontal: 20, paddingTop: 25, borderRadius: 25, backgroundColor: '#f6f5f3'}}>
+        <View style={{width: width, height: height / 1.7, marginTop: -45, paddingHorizontal: 20, paddingTop: 25, borderRadius: 25, backgroundColor: '#f6f5f3'}}>
           <View style={{flex: 1, flexDirection: 'column'}}>
             <View style={{width: '100%', height: 45, flexDirection: 'row'}}>
               <View style={{width: '70%'}}>
@@ -184,13 +218,45 @@ class StuffDetail extends Component {
                 </View>
               </View>
             </View>
-            <View style={{width: '100%'}}>
-              <TouchableHighlight style={{width: '100%', height: 40, borderRadius: 20, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3'}]}>MADE DISCOUNT</Text>
-              </TouchableHighlight>
+            <View style={{width: '100%', flexDirection: 'row'}}>
+              <View style={{width: '50%'}}>
+
+              </View>
+              <View style={{width: '50%', alignItems: 'flex-end'}}>
+                <TouchableOpacity onPress={(e) => this.madediskonservice()} style={{marginTop: -8, width: 28, height: 28 , borderRadius: 50, backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center'}}>
+                  <Ionicons name="ios-arrow-round-up" size={24} color="#444"/>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
+        <Animated.View style={{transform: [{translateY: this.state.madediskon === false ? madediskonsty : closediskonsty}],position: 'absolute', width: width, height: height, backgroundColor: 'rgba(255,255,255,0)'}}>
+          <View style={{flex: 1, flexDirection: 'column'}}>
+            <View style={{flex: .35}}></View>
+            <View style={{flex: .65, borderTopLeftRadius: 25, borderTopRightRadius: 25, backgroundColor: '#f6f5f3', paddingTop: 20}}>
+              <View style={{flex: 1, flexDirection: 'column'}}>
+                <View style={{width: '100%', height: 30, paddingHorizontal: 20}}>
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <View style={{flex: .5, justifyContent: 'center', alignItems: 'flex-start'}}>
+                      <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 5}]}>SET DISCOUNT</Text>
+                    </View>
+                    <View style={{flex: .5, justifyContent: 'center', alignItems: 'flex-end'}}>
+                      <TouchableOpacity onPress={(e) => this.closediskonservice()} style={{marginTop: -8, width: 28, height: 28 , borderRadius: 50, backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center'}}>
+                        <Ionicons name="ios-arrow-round-down" size={24} color="#444"/>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+                <View style={{width: '100%', height: 'auto', paddingHorizontal: 20}}>
+                  {
+                    this.state.madediskon === true ?
+                    <MadeDiskon current_user={this.state.current_user} stuffID={this.state.stuffID}/> : null
+                  }
+                </View>
+              </View>
+            </View>
+          </View>
+        </Animated.View>
       </View>
     )
   }

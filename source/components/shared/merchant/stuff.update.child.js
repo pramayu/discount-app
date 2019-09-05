@@ -148,6 +148,12 @@ class StuffUpdateChild extends Component {
       })
     }
     var { status } = res.data.unusedpicture;
+    if(status === true) {
+      this.setState({
+        upicture: [],
+        fetchstatus: false
+      })
+    }
     return status
   }
 
@@ -408,7 +414,7 @@ class StuffUpdateChild extends Component {
                       <Image source={{uri: this.state.upicture[0].secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 10}}/>
                       <View style={{paddingHorizontal: 10, width: '100%', height: '100%', position: 'absolute', borderRadius: 10, backgroundColor: 'rgba(0,0,0,.1)'}}>
                         <View style={{width: '100%', height: '15%', justifyContent: 'center', alignItems: 'flex-end'}}>
-                          <TouchableHighlight onPress={(e) => this.setState({ setpicture: []})} style={{width: 22, height: 22, borderRadius: 40, backgroundColor: 'rgba(0,0,0,.3)', justifyContent: 'center', alignItems: 'center'}}>
+                          <TouchableHighlight onPress={(e) => this.removepictureservice(this.state.upicture)} style={{width: 22, height: 22, borderRadius: 40, backgroundColor: 'rgba(0,0,0,.3)', justifyContent: 'center', alignItems: 'center'}}>
                             <Ionicons name="ios-close" size={24} color="#ffffff"/>
                           </TouchableHighlight>
                         </View>
