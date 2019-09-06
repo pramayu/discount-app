@@ -232,8 +232,8 @@ class StuffDetail extends Component {
         </View>
         <Animated.View style={{transform: [{translateY: this.state.madediskon === false ? madediskonsty : closediskonsty}],position: 'absolute', width: width, height: height, backgroundColor: 'rgba(255,255,255,0)'}}>
           <View style={{flex: 1, flexDirection: 'column'}}>
-            <View style={{flex: .35}}></View>
-            <View style={{flex: .65, borderTopLeftRadius: 25, borderTopRightRadius: 25, backgroundColor: '#f6f5f3', paddingTop: 20}}>
+            <View style={{flex: .25}}></View>
+            <View style={{flex: .75, borderTopLeftRadius: 25, borderTopRightRadius: 25, backgroundColor: '#f6f5f3', paddingTop: 20}}>
               <View style={{flex: 1, flexDirection: 'column'}}>
                 <View style={{width: '100%', height: 30, paddingHorizontal: 20}}>
                   <View style={{flex: 1, flexDirection: 'row'}}>

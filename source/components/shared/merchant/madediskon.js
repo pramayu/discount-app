@@ -12,6 +12,9 @@ import _ from 'lodash';
 import {
   common
 } from '../../../assets/stylesheets/common';
+import {
+  DISCOUNT_TYPE
+} from '../../../queries/queryDiscountype';
 
 class MadeDiskon extends Component {
   constructor(props) {
@@ -20,6 +23,10 @@ class MadeDiskon extends Component {
       selecteday: '',
       stuffID: '',
       current_user: '',
+      discount: '',
+      discountypes: [],
+      discountypeID: '',
+      discountypeChild: ''
     }
   }
 
@@ -27,6 +34,7 @@ class MadeDiskon extends Component {
     this.setState({
       stuffID         : nextProps.stuffID ? nextProps.stuffID : '',
       current_user    : nextProps.current_user ? nextProps.current_user : '',
+      discountypes    : nextProps.discountypes ? nextProps.discountypes : []
     })
   }
 
@@ -36,6 +44,16 @@ class MadeDiskon extends Component {
     } else {
       return <Ionicons name="ios-arrow-round-back" size={24} color="#444"/>
     }
+  }
+
+  renderDiscountype = (discountypes) => {
+    return discountypes.map((discountype, index) => {
+      return(
+        <TouchableOpacity onPress={(e) => this.setState({discountypeID: discountype._id, discountypeChild: discountype.child})} key={index} style={{marginRight: 5, marginBottom: 5, paddingVertical: 5, paddingHorizontal: 8, borderRadius: 4, backgroundColor: this.state.discountypeID === discountype._id ? '#ea4c89':'#f6f5f3', alignSelf: 'flex-start'}}>
+          <Text style={[common.fontbody, {fontSize: 14, color: this.state.discountypeID === discountype._id ? '#f6f5f3' : '#444'}]}>{discountype.child}</Text>
+        </TouchableOpacity>
+      )
+    })
   }
 
 
@@ -49,8 +67,17 @@ class MadeDiskon extends Component {
           </View>
           <View style={{flex: .3}}>
             <TouchableOpacity style={{width: '100%', height: 38, borderRadius: 4, backgroundColor: '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3'}]}>DISCOUNTYPE</Text>
+              <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3'}]}>LET'S SAVE</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{width: '100%', height: 65, backgroundColor: '#ffffff', marginBottom: 20, borderRadius: 4, paddingVertical: 5, paddingHorizontal: 5}}>
+          <View style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap'}}>
+            { this.renderDiscountype(this.state.discountypes) }
+            {
+              this.state.discountypeChild === 'limit people' || this.state.discountypeChild === 'purchase quantity' ?
+              <TextInput placeholder={`type ${this.state.discountypeChild}`} style={[common.fontbody, {color: '#444', width: '50%', height: 24, backgroundColor: '#f6f5f3', borderRadius: 4, paddingLeft: 10, paddingVertical: 2}]}/> : null
+            }
           </View>
         </View>
         <View style={{width: '100%', height: height / 2.5}}>
@@ -67,7 +94,7 @@ var calendarStyle = {
   backgroundColor: '#fff',
   calendarBackground: '#fff',
   textDayFontFamily: 'PT_Sans-Web-Regular',
-  textDayFontSize: 14,
+  textDayFontSize: 12,
   dayTextColor: '#7f8082',
   todayTextColor: '#ea4c89',
   textMonthFontFamily: 'FjallaOne-Regular',
@@ -80,11 +107,21 @@ var selectedStyle = {
     backgroundColor: '#ea4c89',
     width: 28,
     height: 28,
-    borderRadius: 4
+    borderRadius: 4,
+    paddingTop: 2,
+    marginTop: -2
   },
   text: {
     color: '#f6f5f3'
   }
 }
 
-export default MadeDiskon;
+export default compose(
+  graphql(DISCOUNT_TYPE, {
+    name: 'discountypes',
+    options: (props) => ({
+      fetchPolicy: 'network-only'
+    }),
+    props: ({ discountypes: {discountypes}}) => ({ discountypes })
+  })
+)(MadeDiskon);
