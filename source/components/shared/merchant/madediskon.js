@@ -15,18 +15,23 @@ import {
 import {
   DISCOUNT_TYPE
 } from '../../../queries/queryDiscountype';
+import {
+  MADE_DISCOUNT
+} from '../../../queries/queryDiscount';
 
 class MadeDiskon extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      discounts: [],
       selecteday: '',
       stuffID: '',
       current_user: '',
       discount: '',
       discountypes: [],
       discountypeID: '',
-      discountypeChild: ''
+      discountypeChild: '',
+      quantity: ''
     }
   }
 
@@ -34,7 +39,40 @@ class MadeDiskon extends Component {
     this.setState({
       stuffID         : nextProps.stuffID ? nextProps.stuffID : '',
       current_user    : nextProps.current_user ? nextProps.current_user : '',
-      discountypes    : nextProps.discountypes ? nextProps.discountypes : []
+      discountypes    : nextProps.discountypes ? nextProps.discountypes : [],
+      discounts       : nextProps.discounts ? nextProps.discounts : []
+    })
+  }
+
+  sethandleDiscount = async() => {
+    var response = await this.props.madediskon({
+      variables: {
+        reqdiscount: {
+          stuffID: this.state.stuffID,
+          userID: this.state.current_user._id,
+          discountypeID: this.state.discountypeID,
+          enddate: this.state.selecteday,
+          discount: this.state.discount,
+          quantity: this.state.quantity,
+        }
+      }
+    });
+    var { status, error, discount } = response.data.madediskon;
+    if(status === true) {
+      this.setState({
+        discountypeID: '',
+        enddate: '',
+        discount: '',
+        quantity: '',
+        discountypeChild: '',
+        discounts: [...this.state.discounts, discount]
+      })
+    }
+  }
+
+  sethandleInput = (name, value) => {
+    this.setState({
+      [name]: value
     })
   }
 
@@ -63,10 +101,10 @@ class MadeDiskon extends Component {
       <View style={{flex: 1, flexDirection: 'column', paddingTop: 15}}>
         <View style={{width: '100%', flexDirection: 'row', height: 60}}>
           <View style={{flex: .7, paddingRight: 10}}>
-            <TextInput placeholder="Discount 50%" style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10}]}/>
+            <TextInput onChangeText={(txt) => this.sethandleInput('discount', txt)} placeholder="Discount 50%" style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10}]}/>
           </View>
           <View style={{flex: .3}}>
-            <TouchableOpacity style={{width: '100%', height: 38, borderRadius: 4, backgroundColor: '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity onPress={(e) => this.sethandleDiscount()} style={{width: '100%', height: 38, borderRadius: 4, backgroundColor: '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
               <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3'}]}>LET'S SAVE</Text>
             </TouchableOpacity>
           </View>
@@ -76,7 +114,7 @@ class MadeDiskon extends Component {
             { this.renderDiscountype(this.state.discountypes) }
             {
               this.state.discountypeChild === 'limit people' || this.state.discountypeChild === 'purchase quantity' ?
-              <TextInput placeholder={`type ${this.state.discountypeChild}`} style={[common.fontbody, {color: '#444', width: '50%', height: 24, backgroundColor: '#f6f5f3', borderRadius: 4, paddingLeft: 10, paddingVertical: 2}]}/> : null
+              <TextInput onChangeText={(txt) => this.sethandleInput('quantity', txt)} placeholderTextColor={color='#f6f5f3'} placeholder={`type quantity...`} style={[common.fontbody, {color: '#f6f5f3', width: '40%', height: 24, backgroundColor: '#ea4c89', borderRadius: 4, paddingLeft: 10, paddingVertical: 2}]}/> : null
             }
           </View>
         </View>
@@ -123,5 +161,6 @@ export default compose(
       fetchPolicy: 'network-only'
     }),
     props: ({ discountypes: {discountypes}}) => ({ discountypes })
-  })
+  }),
+  graphql(MADE_DISCOUNT, {name: 'madediskon'})
 )(MadeDiskon);

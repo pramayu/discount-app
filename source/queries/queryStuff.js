@@ -113,6 +113,12 @@ export var GET_STUFFS = gql`
           _id
           child
         }
+        discounts {
+          _id
+          discount
+          enddate
+          status
+        }
       }
     }
   }

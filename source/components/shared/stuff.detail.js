@@ -37,7 +37,8 @@ class StuffDetail extends Component {
       discountstatus: false,
       stuffstatus: false,
       current_user: '',
-      madediskon: false
+      madediskon: false,
+      discounts: []
     }
     this.madediskonvalue   = new Animated.Value(0);
     this.closediskonvalue  = new Animated.Value(0);
@@ -62,7 +63,14 @@ class StuffDetail extends Component {
       facilities      : stuff ? stuff.merchant.facilities : [],
       discountstatus  : stuff ? stuff.discountstatus      : false,
       stuffstatus     : stuff ? stuff.stuffstatus         : false,
+      discounts       : stuff ? stuff.discounts           : []
     });
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    this.setState({
+      current_user: nextProps.current_user ? nextProps.current_user : ''
+    })
   }
 
   stuffpicture = (picture) => {
@@ -250,7 +258,7 @@ class StuffDetail extends Component {
                 <View style={{width: '100%', height: 'auto', paddingHorizontal: 20}}>
                   {
                     this.state.madediskon === true ?
-                    <MadeDiskon current_user={this.state.current_user} stuffID={this.state.stuffID}/> : null
+                    <MadeDiskon discounts={this.state.discounts} current_user={this.state.current_user} stuffID={this.state.stuffID}/> : null
                   }
                 </View>
               </View>
