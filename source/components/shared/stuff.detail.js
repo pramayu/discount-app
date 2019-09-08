@@ -15,6 +15,9 @@ import {
   CURRENT_USER
 } from '../../queries/queryUser';
 import MadeDiskon from './merchant/madediskon';
+import {
+  countDiscount
+} from './sharedaction';
 
 class StuffDetail extends Component {
   constructor(props) {
@@ -38,7 +41,9 @@ class StuffDetail extends Component {
       stuffstatus: false,
       current_user: '',
       madediskon: false,
-      discounts: []
+      discounts: [],
+      activediscount: [],
+      discounthistory: false
     }
     this.madediskonvalue   = new Animated.Value(0);
     this.closediskonvalue  = new Animated.Value(0);
@@ -46,6 +51,9 @@ class StuffDetail extends Component {
 
   componentDidMount = () => {
     var { stuff } = this.props.navigation.state.params;
+    if(stuff) {
+      var activediscount = _.filter(stuff.discounts, (discount) => discount.status === true);
+    }
     this.setState({
       stuffID         : stuff ? stuff._id                 : '',
       picture         : stuff ? stuff.photos              : [],
@@ -63,7 +71,8 @@ class StuffDetail extends Component {
       facilities      : stuff ? stuff.merchant.facilities : [],
       discountstatus  : stuff ? stuff.discountstatus      : false,
       stuffstatus     : stuff ? stuff.stuffstatus         : false,
-      discounts       : stuff ? stuff.discounts           : []
+      discounts       : stuff ? stuff.discounts           : [],
+      activediscount  : activediscount ? activediscount   : []
     });
   }
 
@@ -131,6 +140,15 @@ class StuffDetail extends Component {
     });
   }
 
+  unsetDiscount = (discounts) => {
+    var activediscount = _.filter(discounts, (discount) => discount.status === true)
+    this.setState({
+      discounts: discounts,
+      activediscount: activediscount ? activediscount : [],
+      discountstatus: activediscount.length > 0
+    })
+  }
+
   render() {
     var { width, height } = Dimensions.get('window');
     var madediskonsty = this.madediskonvalue.interpolate({
@@ -183,8 +201,13 @@ class StuffDetail extends Component {
                 </View>
               </View>
               <View style={{width: '30%', alignItems: 'flex-end'}}>
-                <Text style={[common.fontitle, {fontSize: 24, color: '#444', paddingRight:3}]}>34%</Text>
-                <Text style={[common.fontbody, {color: '#444', fontSize: 12}]}>DISCOUNT</Text>
+                {
+                  this.state.discountstatus === true && this.state.activediscount.length > 0 ?
+                  <View style={{flex: 1, flexDirection: 'column'}}>
+                    <Text style={[common.fontitle, {fontSize: 24, color: '#444', paddingRight:3}]}>{this.state.activediscount[0].discount}%</Text>
+                    <Text style={[common.fontbody, {color: '#444', fontSize: 12}]}>DISCOUNT</Text>
+                  </View> : null
+                }
               </View>
             </View>
             <View style={{width: '100%', height: 35, flexDirection: 'row', alignItems: 'flex-end', paddingTop: 5}}>
@@ -198,11 +221,18 @@ class StuffDetail extends Component {
                 <Text style={[common.fontbody, {color: '#f6f5f3', alignSelf: 'flex-start', fontSize: 11}]}>14#BOUGHT</Text>
               </View>
             </View>
-            <View style={{flex: .15}}>
-              <View style={{width: '100%', flexDirection: 'row'}}>
-                <Text style={[common.fontitle, {color: '#444', fontSize: 16, alignSelf: 'flex-start'}]}>IDR{this.state.price - (this.state.price * 34 / 100)}</Text>
-                <Text style={[common.fontitle, {color: '#7f8082', fontSize: 12, paddingTop: 2.7, marginLeft: 5}]}>IDR{this.state.price} (25 days left)</Text>
-              </View>
+            <View style={{flex: .11, paddingTop: 5}}>
+              {
+                this.state.discountstatus === true && this.state.activediscount.length > 0 ?
+                <View style={{width: '100%', flexDirection: 'row'}}>
+                  <Text style={[common.fontitle, {color: '#444', fontSize: 16, alignSelf: 'flex-start'}]}>IDR{Math.round(this.state.price - (this.state.price * this.state.activediscount[0].discount / 100))}</Text>
+                  <Text style={[common.fontitle, {color: '#7f8082', fontSize: 12, paddingTop: 2.7, marginLeft: 5}]}>IDR{this.state.price} ({countDiscount(this.state.activediscount[0].enddate)} days left)</Text>
+                </View> :
+                <View style={{width: '100%', flexDirection: 'row'}}>
+                  <Text style={[common.fontitle, {color: '#444', fontSize: 16, alignSelf: 'flex-start'}]}>IDR{this.state.price}</Text>
+                  <Text style={[common.fontitle, {color: '#7f8082', fontSize: 12, paddingTop: 2.7, marginLeft: 5}]}>(Discount Coming Soon)</Text>
+                </View>
+              }
             </View>
             <View style={{flex: .35}}>
               <View style={{width: '80%'}}>
@@ -227,13 +257,14 @@ class StuffDetail extends Component {
               </View>
             </View>
             <View style={{width: '100%', flexDirection: 'row'}}>
-              <View style={{width: '50%'}}>
-
-              </View>
+              <View style={{width: '50%'}}></View>
               <View style={{width: '50%', alignItems: 'flex-end'}}>
-                <TouchableOpacity onPress={(e) => this.madediskonservice()} style={{marginTop: -8, width: 28, height: 28 , borderRadius: 50, backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center'}}>
-                  <Ionicons name="ios-arrow-round-up" size={24} color="#444"/>
-                </TouchableOpacity>
+                {
+                  this.state.stuffstatus === true ?
+                  <TouchableOpacity onPress={(e) => this.madediskonservice()} style={{marginTop: -8, width: 28, height: 28 , borderRadius: 50, backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center'}}>
+                    <Ionicons name="ios-arrow-round-up" size={24} color="#444"/>
+                  </TouchableOpacity> : null
+                }
               </View>
             </View>
           </View>
@@ -246,19 +277,37 @@ class StuffDetail extends Component {
                 <View style={{width: '100%', height: 30, paddingHorizontal: 20}}>
                   <View style={{flex: 1, flexDirection: 'row'}}>
                     <View style={{flex: .5, justifyContent: 'center', alignItems: 'flex-start'}}>
-                      <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 5}]}>SET DISCOUNT</Text>
+                      {
+                        this.state.discounthistory === false ?
+                        <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 5}]}>DISCOUNT HISTORY</Text>:
+                        <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 5}]}>SET DISCOUNT</Text>
+                      }
                     </View>
-                    <View style={{flex: .5, justifyContent: 'center', alignItems: 'flex-end'}}>
-                      <TouchableOpacity onPress={(e) => this.closediskonservice()} style={{marginTop: -8, width: 28, height: 28 , borderRadius: 50, backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center'}}>
-                        <Ionicons name="ios-arrow-round-down" size={24} color="#444"/>
-                      </TouchableOpacity>
+                    <View style={{flex: .5}}>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <View style={{flex: .4, justifyContent: 'center', alignItems: 'flex-end'}}></View>
+                        <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
+                          {
+                            this.state.discountstatus === true && this.state.activediscount.length > 0 ?
+                            null :
+                            <TouchableOpacity onPress={(e) => this.setState({discounthistory: !this.state.discounthistory})} style={{marginTop: -8, width: 28, height: 28 , borderRadius: 50, backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center'}}>
+                              <Ionicons name="ios-repeat" size={24} color="#444"/>
+                            </TouchableOpacity>
+                          }
+                        </View>
+                        <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
+                          <TouchableOpacity onPress={(e) => this.closediskonservice()} style={{marginTop: -8, width: 28, height: 28 , borderRadius: 50, backgroundColor: '#ffffff', justifyContent: 'center', alignItems: 'center'}}>
+                            <Ionicons name="ios-arrow-round-down" size={24} color="#444"/>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                     </View>
                   </View>
                 </View>
                 <View style={{width: '100%', height: 'auto', paddingHorizontal: 20}}>
                   {
                     this.state.madediskon === true ?
-                    <MadeDiskon discounts={this.state.discounts} current_user={this.state.current_user} stuffID={this.state.stuffID}/> : null
+                    <MadeDiskon unsetDiscount={this.unsetDiscount.bind(this)} discounthistory={this.state.discounthistory} discounts={this.state.discounts} current_user={this.state.current_user} stuffID={this.state.stuffID}/> : null
                   }
                 </View>
               </View>

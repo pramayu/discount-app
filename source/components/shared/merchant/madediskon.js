@@ -16,8 +16,14 @@ import {
   DISCOUNT_TYPE
 } from '../../../queries/queryDiscountype';
 import {
-  MADE_DISCOUNT
+  MADE_DISCOUNT, TERMINATE_DISCOUNT
 } from '../../../queries/queryDiscount';
+import {
+  GET_STUFFS
+} from '../../../queries/queryStuff';
+import {
+  titleCase, getTextMonth
+} from '../sharedaction';
 
 class MadeDiskon extends Component {
   constructor(props) {
@@ -31,7 +37,8 @@ class MadeDiskon extends Component {
       discountypes: [],
       discountypeID: '',
       discountypeChild: '',
-      quantity: ''
+      quantity: '',
+      discounthistory: false
     }
   }
 
@@ -40,12 +47,15 @@ class MadeDiskon extends Component {
       stuffID         : nextProps.stuffID ? nextProps.stuffID : '',
       current_user    : nextProps.current_user ? nextProps.current_user : '',
       discountypes    : nextProps.discountypes ? nextProps.discountypes : [],
-      discounts       : nextProps.discounts ? nextProps.discounts : []
+      discounts       : nextProps.discounts ? nextProps.discounts : [],
+      discounthistory : nextProps.discounthistory ? nextProps.discounthistory : false
     })
   }
 
+
+
   sethandleDiscount = async() => {
-    var response = await this.props.madediskon({
+    var res = await this.props.madediskon({
       variables: {
         reqdiscount: {
           stuffID: this.state.stuffID,
@@ -55,9 +65,12 @@ class MadeDiskon extends Component {
           discount: this.state.discount,
           quantity: this.state.quantity,
         }
-      }
+      },
+      refetchQueries: [{
+        query: GET_STUFFS, variables: {userID: this.state.current_user._id}
+      }]
     });
-    var { status, error, discount } = response.data.madediskon;
+    var { status, error, discount } = res.data.madediskon;
     if(status === true) {
       this.setState({
         discountypeID: '',
@@ -65,8 +78,29 @@ class MadeDiskon extends Component {
         discount: '',
         quantity: '',
         discountypeChild: '',
-        discounts: [...this.state.discounts, discount]
-      })
+        discounts: [...this.state.discounts, discount],
+        discounthistory: false
+      });
+      this.props.unsetDiscount(this.state.discounts)
+    }
+  }
+
+  sethandleTerminate = async(discountID, index) => {
+    var res = await this.props.terminatediscount({
+      variables: {
+        userID      : this.state.current_user._id,
+        stuffID     : this.state.stuffID,
+        discountID  : discountID
+      },
+      refetchQueries: [{
+        query: GET_STUFFS, variables: {userID: this.state.current_user._id}
+      }]
+    });
+    var { status, error } = res.data.terminatediscount;
+    if(status === true) {
+      this.state.discounts[index].status = false;
+      this.setState({ discounts: this.state.discounts });
+      this.props.unsetDiscount(this.state.discounts)
     }
   }
 
@@ -94,11 +128,34 @@ class MadeDiskon extends Component {
     })
   }
 
+  renderDiscountHistory = (discounts) => {
+    return discounts.map((discount, index) => {
+      return (
+        <View key={index} style={{marginRight: 5, marginBottom: 5, borderLeftWidth: 4, borderLeftColor: discount.status === true ? '#948bff' : '#7f8082',alignSelf: 'flex-start',width: '48%', height: 70, backgroundColor: discount.status === true ? '#dbe4fe':'#dbd9d9', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 5}}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{flex: .8}}>
+              <Text style={[common.fontbody, {fontSize:12, color: '#7f8082'}]}>{titleCase(discount.discountype.child)}</Text>
+              <Text style={[common.fontitle, {fontSize:18, color: '#7f8082', marginTop: 5}]}>{discount.discount}% OFF</Text>
+              <Text style={[common.fontbody, {fontSize:12, color: '#7f8082', marginTop: 5}]}>Expired: {getTextMonth(discount.enddate)}</Text>
+            </View>
+            <View style={{flex: .2, alignItems: 'flex-end'}}>
+              {
+                discount.status === true ?
+                <TouchableOpacity onPress={(e) => this.sethandleTerminate(discount._id, index)}>
+                  <Ionicons name="ios-flame" size={20} color="#948bff"/>
+                </TouchableOpacity> : null
+              }
+            </View>
+          </View>
+        </View>
+      )
+    })
+  }
 
-  render () {
+  renderFormDiscount = () => {
     var { width, height } = Dimensions.get('window');
     return (
-      <View style={{flex: 1, flexDirection: 'column', paddingTop: 15}}>
+      <View style={{flex:1, flexDirection: 'column'}}>
         <View style={{width: '100%', flexDirection: 'row', height: 60}}>
           <View style={{flex: .7, paddingRight: 10}}>
             <TextInput onChangeText={(txt) => this.sethandleInput('discount', txt)} placeholder="Discount 50%" style={[common.fontbody, {borderWidth: 1, borderColor: '#fff',marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10}]}/>
@@ -123,6 +180,15 @@ class MadeDiskon extends Component {
             onDayPress={(day) => this.setState({selecteday: day.dateString})} renderArrow={(left) => this.renderArrow(left)}
             theme={calendarStyle} style={{borderRadius: 4}}/>
         </View>
+      </View>
+    )
+  }
+
+
+  render () {
+    return (
+      <View style={{flex: 1, flexDirection: this.state.discounthistory === false && this.state.discounts.length > 0 ? 'row' : 'column', paddingTop: 15, flexWrap: 'wrap'}}>
+        { this.state.discounthistory === false && this.state.discounts.length > 0 ?  this.renderDiscountHistory(this.state.discounts) : this.renderFormDiscount()}
       </View>
     )
   }
@@ -162,5 +228,6 @@ export default compose(
     }),
     props: ({ discountypes: {discountypes}}) => ({ discountypes })
   }),
-  graphql(MADE_DISCOUNT, {name: 'madediskon'})
+  graphql(MADE_DISCOUNT, {name: 'madediskon'}),
+  graphql(TERMINATE_DISCOUNT, {name: 'terminatediscount'})
 )(MadeDiskon);

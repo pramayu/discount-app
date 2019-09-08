@@ -24,3 +24,15 @@ export var MADE_DISCOUNT=gql`
     }
   }
 `
+
+export var TERMINATE_DISCOUNT=gql`
+  mutation($userID: ID!, $stuffID: ID!, $discountID: ID!) {
+    terminatediscount(userID: $userID, stuffID: $stuffID, discountID: $discountID) {
+      status
+      error {
+        path
+        message
+      }
+    }
+  }
+`

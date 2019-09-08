@@ -49,3 +49,30 @@ export var setcategoriservice = (categori, indexID) => {
   categorix['indexID'] = indexID.toString();
   return categorix
 }
+
+export var titleCase = (str) => {
+ var splitStr = str.toLowerCase().split(' ');
+ for (var i = 0; i < splitStr.length; i++) {
+     // You do not need to check if i is larger than splitStr length, as your for does that for you
+     // Assign it back to the array
+     splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+ }
+ // Directly return the joined string
+ return splitStr.join(' ');
+}
+
+
+export var getTextMonth = (date) => {
+  var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var enddate = new Date(date);
+  return `${monthNames[enddate.getMonth()]}, ${enddate.getDate()} ${enddate.getFullYear()}`
+}
+
+
+export var countDiscount = (date) => {
+  var toDay = new Date();
+  var targetDay = new Date(date);
+  var oneDay = 1000 * 3600 * 24;
+  var finalDay = Math.round((targetDay.getTime() - toDay.getTime()) / oneDay);
+  return finalDay;
+}
