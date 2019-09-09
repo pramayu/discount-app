@@ -32,7 +32,7 @@ var authLink = setContext(async (_, {headers}) => {
 });
 
 var httpLink = new HttpLink({
-  uri: 'http://192.168.1.7:3000/graphql'
+  uri: 'http://192.168.1.8:3000/graphql'
 });
 
 var cache = new InMemoryCache();
