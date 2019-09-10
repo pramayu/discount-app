@@ -189,7 +189,7 @@ class Upload extends Component {
     return (
       <View style={{width: width, height: height - 102, justifyContent: 'center', alignItems: 'center'}}>
         <Ionicons name="ios-repeat" size={32} color="#444" />
-        <TouchableOpacity onPress={(e) => this.usermerchantservice()} style={{marginTop: 15, width: 90, height: 32, borderRadius: 4, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
+        <TouchableOpacity onPress={(e) => this.usermerchantservice()} style={{marginTop: 15, width: 90, height: 32, borderRadius: 4, backgroundColor: '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
           <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 12}]}>UPLOAD</Text>
         </TouchableOpacity>
       </View>
@@ -275,7 +275,7 @@ class Upload extends Component {
                 <TextInput onChangeText={(txt) => this.fieldonchange('price',txt)} autoCorrect={false} style={[common.fontbody, {borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082', marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
               </View>
               <View style={{flex: .4}}>
-                <TouchableOpacity onPress={(e) => this.showmodalservice()} style={{width: '100%', height: 38, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>
+                <TouchableOpacity onPress={(e) => this.showmodalservice()} style={{width: '100%', height: 38, backgroundColor: this.state.setcategori.length > 0 ? '#ea4c89':'#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>
                   <Text style={[common.fontbody, {color: '#f6f5f3', fontSize: 12}]}>EXTRA FIELD</Text>
                 </TouchableOpacity>
               </View>
