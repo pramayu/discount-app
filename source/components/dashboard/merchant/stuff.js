@@ -136,7 +136,7 @@ class Stuff extends Component {
                         </TouchableOpacity>
                       </View>
                       <View style={{flex: .8, justifyContent: 'center', alignItems: 'flex-end'}}>
-                        <Text style={[common.fontitle, {color:'#444', fontSize: 12}]}>OWN STUFFS</Text>
+                        <Text style={[common.fontbody, {color:'#444', fontSize: 14}]}>OWN STUFFS</Text>
                       </View>
                     </View>
                   </View>
@@ -146,27 +146,27 @@ class Stuff extends Component {
                         <View style={{flex: 1, flexDirection: 'column'}}>
                           <View style={{flex: .2, justifyContent: 'center', alignItems: 'center'}}>
                             <TouchableOpacity onPress={(e) => this.menupressed('allstuff')} style={{width: '80%', height: '80%', borderRadius: 4, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center'}}>
-                              <Text style={[common.fontitle, {color: this.state.btnpressed === 'allstuff' ? '#ea4c89' : '#444', fontSize: 12, transform: [{rotate: '90deg'}]}]}>ALL STUFF</Text>
+                              <Text style={[common.fontitle, {color: this.state.btnpressed === 'allstuff' ? '#444' : '#7f8082', fontSize: 12, transform: [{rotate: '90deg'}]}]}>ALL STUFF</Text>
                             </TouchableOpacity>
-                            <Animated.View style={{transform: [{translateX: this.state.btnpressed === 'allstuff' ? -15 : hidecirlesty}], position: 'absolute',width: 6, height: 6, borderRadius: 20, backgroundColor: '#ea4c89'}}></Animated.View>
+                            <Animated.View style={{transform: [{translateX: this.state.btnpressed === 'allstuff' ? -15 : hidecirlesty}], position: 'absolute',width: 6, height: 6, borderRadius: 20, backgroundColor: '#444'}}></Animated.View>
                           </View>
                           <View style={{flex: .2, justifyContent: 'center', alignItems: 'center'}}>
                             <TouchableOpacity onPress={(e) => this.menupressed('pending')} style={{width: '80%', height: '80%', borderRadius: 4, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center'}}>
-                              <Text style={[common.fontitle, {color: this.state.btnpressed === 'pending' ? '#ea4c89' : '#444', fontSize: 12, transform: [{rotate: '90deg'}]}]}>PENDING</Text>
+                              <Text style={[common.fontitle, {color: this.state.btnpressed === 'pending' ? '#444' : '#7f8082', fontSize: 12, transform: [{rotate: '90deg'}]}]}>PENDING</Text>
                             </TouchableOpacity>
-                            <Animated.View style={{transform: [{translateX: this.state.btnpressed === 'pending' ? showcirlesty : hidecirlesty}], position: 'absolute',width: 6, height: 6, borderRadius: 20, backgroundColor: '#ea4c89'}}></Animated.View>
+                            <Animated.View style={{transform: [{translateX: this.state.btnpressed === 'pending' ? showcirlesty : hidecirlesty}], position: 'absolute',width: 6, height: 6, borderRadius: 20, backgroundColor: '#444'}}></Animated.View>
                           </View>
                           <View style={{flex: .2, justifyContent: 'center', alignItems: 'center'}}>
                             <TouchableOpacity onPress={(e) => this.menupressed('published')} style={{width: '80%', height: '80%', borderRadius: 4, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center'}}>
-                              <Text style={[common.fontitle, {color: this.state.btnpressed === 'published' ? '#ea4c89' : '#444', fontSize: 12, transform: [{rotate: '90deg'}]}]}>PUBLISHED</Text>
+                              <Text style={[common.fontitle, {color: this.state.btnpressed === 'published' ? '#444' : '#7f8082', fontSize: 12, transform: [{rotate: '90deg'}]}]}>PUBLISHED</Text>
                             </TouchableOpacity>
-                            <Animated.View style={{transform: [{translateX: this.state.btnpressed === 'published' ? showcirlesty : hidecirlesty}], position: 'absolute',width: 6, height: 6, borderRadius: 20, backgroundColor: '#ea4c89'}}></Animated.View>
+                            <Animated.View style={{transform: [{translateX: this.state.btnpressed === 'published' ? showcirlesty : hidecirlesty}], position: 'absolute',width: 6, height: 6, borderRadius: 20, backgroundColor: '#444'}}></Animated.View>
                           </View>
                           <View style={{flex: .2, justifyContent: 'center', alignItems: 'center'}}>
                             <TouchableOpacity onPress={(e) => this.menupressed('discount')} style={{width: '80%', height: '80%', borderRadius: 4, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center'}}>
-                              <Text style={[common.fontitle, {color: this.state.btnpressed === 'discount' ? '#ea4c89' : '#444', fontSize: 12, transform: [{rotate: '90deg'}]}]}>DISCOUNT</Text>
+                              <Text style={[common.fontitle, {color: this.state.btnpressed === 'discount' ? '#444' : '#7f8082', fontSize: 12, transform: [{rotate: '90deg'}]}]}>DISCOUNT</Text>
                             </TouchableOpacity>
-                            <Animated.View style={{transform: [{translateX: this.state.btnpressed === 'discount' ? showcirlesty : hidecirlesty}], position: 'absolute',width: 6, height: 6, borderRadius: 20, backgroundColor: '#ea4c89'}}></Animated.View>
+                            <Animated.View style={{transform: [{translateX: this.state.btnpressed === 'discount' ? showcirlesty : hidecirlesty}], position: 'absolute',width: 6, height: 6, borderRadius: 20, backgroundColor: '#444'}}></Animated.View>
                           </View>
                         </View>
                       </View>

@@ -68,7 +68,7 @@ class Notif extends Component {
         <View style={{flex: .08, justifyContent: 'center', paddingHorizontal: 20}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex: .7, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={[common.fontitle, {color: '#444', fontSize: 12}]}>NOTIFICATIONS</Text>
+              <Text style={[common.fontbody, {color: '#444', fontSize: 14}]}>NOTIFICATIONS</Text>
             </View>
             <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
               <TouchableOpacity>
@@ -83,7 +83,7 @@ class Notif extends Component {
               <View style={{flex: 1, flexDirection: 'row'}}>
                 {
                   this.state.menustatus === false ?
-                  <TouchableOpacity style={{marginRight: 5, borderWidth: 1, borderColor: 'rgba(255,255,255,.8)',width: '27%', height: 32, borderRadius: 4, justifyContent:'center', alignItems: 'center', backgroundColor: '#6c7e70'}}>
+                  <TouchableOpacity style={{marginRight: 5, borderWidth: 1, borderColor: 'rgba(255,255,255,.8)',width: '27%', height: 32, borderRadius: 4, justifyContent:'center', alignItems: 'center', backgroundColor: '#444'}}>
                     <Text style={[common.fontbody, {color: '#f6f5f3', fontSize: 12}]}>RECENT</Text>
                   </TouchableOpacity> : <TouchableOpacity onPress={(e) => this.slideKananService()} style={{marginRight: 5, borderWidth: 1, borderColor: 'rgba(255,255,255,.8)',width: '15%', height: 32, borderRadius: 4, justifyContent:'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,.5)'}}>
                     <Ionicons name="ios-more" size={20} color="#444"/>

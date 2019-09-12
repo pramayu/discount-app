@@ -8,6 +8,7 @@ import {
 import { compose, graphql } from 'react-apollo';
 import _ from 'lodash';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   common
 } from '../../../assets/stylesheets/common';
@@ -188,8 +189,8 @@ class Upload extends Component {
   emptyfield = (width, height) => {
     return (
       <View style={{width: width, height: height - 102, justifyContent: 'center', alignItems: 'center'}}>
-        <Ionicons name="ios-repeat" size={32} color="#444" />
-        <TouchableOpacity onPress={(e) => this.usermerchantservice()} style={{marginTop: 15, width: 90, height: 32, borderRadius: 4, backgroundColor: '#6c7e70', justifyContent: 'center', alignItems: 'center'}}>
+        <MaterialCommunityIcons name="image-filter-drama" size={32} color="#444" />
+        <TouchableOpacity onPress={(e) => this.usermerchantservice()} style={{marginTop: 15, width: '35%', height: 35, borderRadius: 30, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
           <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 12}]}>UPLOAD</Text>
         </TouchableOpacity>
       </View>
@@ -319,7 +320,7 @@ class Upload extends Component {
           <View style={{height: 50, width: width, paddingHorizontal: 20}}>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <View style={{flex: .7, alignItems: 'flex-start', justifyContent: 'center'}}>
-                <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 3}]}>UPLOAD STUFF</Text>
+                <Text style={[common.fontbody, {fontSize: 14, color: '#444', marginBottom: 3}]}>UPLOAD STUFF</Text>
               </View>
               <View style={{flex: .3}}>
                 {
