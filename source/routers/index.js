@@ -25,6 +25,8 @@ import StuffUpload from '../components/shared/merchant/upload.stuff';
 import StuffDetail from '../components/shared/stuff.detail';
 import StuffUpdate from '../components/shared/merchant/stuff.update';
 
+import ModalBill from '../components/shared/merchant/modalBill';
+
 import CheckToken from '../components/authenticate/checktoken';
 import Offline from '../components/offline/offline';
 import Maintenance from '../components/authenticate/maintenance';
@@ -236,6 +238,32 @@ var stuffDetail = createStackNavigator({
   headerMode: 'none'
 });
 
+var scanQrCode = createStackNavigator({
+  Scan: { screen: Scan },
+  ModalBill: { screen: ModalBill }
+}, {
+  headerMode: 'none',
+  transparentCard: true,
+  mode: 'modal',
+  defaultNavigationOptions: {
+      gesturesEnabled: false
+    },
+    cardStyle: {
+      // makes transparentCard work for android
+      opacity: 1.0
+    },
+});
+
+scanQrCode.navigationOptions = ({ navigation }) => {
+  var tabBarVisible = true;
+  if(navigation.state.index > 0) {
+    tabBarVisible = false
+  }
+  return {
+    tabBarVisible
+  }
+};
+
 uploadStuff.navigationOptions = ({ navigation }) => {
   var tabBarVisible = true;
   if(navigation.state.index > 0) {
@@ -264,7 +292,7 @@ var merchantDashboard = createBottomTabNavigator({
     screen: uploadStuff
   },
   Scan: {
-    screen: Scan
+    screen: scanQrCode
   },
   Notif: {
     screen: Notif

@@ -39,6 +39,7 @@ class Shop extends Component {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
       StatusBar.setBackgroundColor('#f6f5f3');
+      StatusBar.setTranslucent(false)
     }),
     firstlook(this.firstLook, this.state.opaciti)
   }

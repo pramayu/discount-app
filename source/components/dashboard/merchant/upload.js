@@ -58,6 +58,7 @@ class Upload extends Component {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
       StatusBar.setBackgroundColor('#f6f5f3');
+      StatusBar.setTranslucent(false)
     });
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
