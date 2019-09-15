@@ -6,6 +6,9 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
+  titleCase
+} from '../sharedaction';
+import {
   common
 } from '../../../assets/stylesheets/common';
 
@@ -32,7 +35,7 @@ class ModalBill extends Component {
             <View style={{flex: 1, flexDirection: 'row',borderStyle: 'dashed', borderWidth: 1, borderColor: '#c5c4c2', borderRadius: 6}}></View>
             <View style={{zIndex: 19,width: '100%', height: 60 -2, position: 'absolute', backgroundColor: '#f6f5f3', borderRadius: 6}}>
               <View style={{flex: 1, flexDirection: 'row'}}>
-                <View style={{flex: .7, justifyContent: 'flex-end', alignItems: 'flex-start'}}>
+                <View style={{flex: .6, justifyContent: 'flex-end', alignItems: 'flex-start'}}>
                   <View style={{flex: 1, flexDirection: 'row',paddingLeft: 10}}>
                     <View style={{flex: .23, justifyContent: 'center'}}>
                       <View style={{width: 34, height: 34, justifyContent: 'center', alignItems: 'center'}}>
@@ -46,11 +49,58 @@ class ModalBill extends Component {
                   </View>
                   <View style={{position: 'absolute', zIndex: 20, width: 12, height: 12, borderRadius: 20, backgroundColor: '#c5c4c2', transform: [{translateY: 7},{translateX: -5}]}}></View>
                 </View>
-                <View style={{flex: .3, justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-                  <TouchableOpacity style={{width: '60%', height: '100%', justifyContent: 'center', alignItems: 'flex-end', paddingRight: 10}}>
-                    <Ionicons name="ios-close-circle-outline" size={20} color="#7f8082"/>
-                  </TouchableOpacity>
+                <View style={{flex: .4, justifyContent: 'flex-end', alignItems: 'flex-end'}}>
+                  <View style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'flex-end', paddingRight: 10}}>
+                    <Text style={[common.fontbody, {color: '#444', fontSize: 14}]}>October,</Text>
+                    <Text style={[common.fontbody, {color: '#7f8082', fontSize: 12}]}>12 2019</Text>
+                  </View>
                   <View style={{position: 'absolute', zIndex: 20, width: 12, height: 12, borderRadius: 20, backgroundColor: '#c5c4c2', transform: [{translateY: 7},{translateX: 5}]}}></View>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View style={{width: '100%', height: height / 1.8 -60}}>
+            <View style={{flex: 1, flexDirection: 'column', paddingHorizontal: 10, paddingTop: 10}}>
+              <View style={{width: '100%', height: 40}}>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                  <View style={{flex: .6, justifyContent: 'center'}}>
+                    <Text style={[common.fontbody, {color: '#444', fontSize: 16}]}>Customer Bill</Text>
+                    <Text style={[common.fontbody, {color: '#7f8082', fontSize: 12}]}>3 items should paid</Text>
+                  </View>
+                  <View style={{flex: .4, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  </View>
+                </View>
+              </View>
+              <View style={{width: '100%', height: height / 1.8 - 220, marginTop: 10}}>
+                <View style={{flex: 1, flexDirection: 'column'}}>
+                  <View style={{width: '100%', height: 55, marginBottom: 5}}>
+                    <View style={{flex: 1, flexDirection: 'row'}}>
+                      <View style={{width: '24%', justifyContent: 'center'}}>
+                        <View style={{width: 55, height: 55}}>
+                          <Image source={{uri: 'https://cdn.dribbble.com/users/44338/screenshots/5980292/kosh_drib_1x.png'}} style={{width: '100%', height: '100%', borderRadius: 4, resizeMode: 'cover'}}/>
+                        </View>
+                      </View>
+                      <View style={{width: '55%', justifyContent: 'center'}}>
+                        <Text style={[common.fontbody, {color: '#444'}]}>{titleCase('Pumpkin Cheesecake...')}</Text>
+                        <Text style={[common.fontitle, {color: '#444', fontSize: 12, marginTop: 5}]}>IDR40000 * 45% OFF</Text>
+                      </View>
+                      <View style={{width: '21%', justifyContent: 'center', alignItems: 'flex-end'}}>
+                        <View style={{width: 30, height: 30, borderRadius: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#dbd9d9'}}>
+                          <Text style={[common.fontbody, {color: '#444'}]}>x1</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={{width: '100%', height: 24}}>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                  <View style={{flex: .6, justifyContent: 'center'}}>
+                    <Text style={[common.fontbody, {color: '#7f8082', fontSize: 12}]}>TOTAL PAYMENT:</Text>
+                  </View>
+                  <View style={{flex: .4, justifyContent: 'center', alignItems: 'flex-end'}}>
+                    <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 12, alignSelf: 'flex-end',borderWidth: 1, borderColor: '#6c7e70', paddingHorizontal: 15, paddingVertical: 4, paddingTop: 6, borderRadius: 6, backgroundColor: 'rgba(108,126,112,.9)'}]}>IDR22000</Text>
+                  </View>
                 </View>
               </View>
             </View>
