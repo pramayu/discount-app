@@ -30,7 +30,7 @@ class ModalBill extends Component {
     var {width, height} = Dimensions.get('window');
     return (
       <View style={[common.container, {backgroundColor: 'rgba(0,0,0,.2)', justifyContent: 'center', alignItems: 'center'}]}>
-        <View style={{width: '80%', height: height / 1.8, backgroundColor: '#f6f5f3', borderRadius: 6}}>
+        <View style={{width: '80%', height: height / 1.75, backgroundColor: '#f6f5f3', borderRadius: 6}}>
           <View style={{width: '100%', height: 60}}>
             <View style={{flex: 1, flexDirection: 'row',borderStyle: 'dashed', borderWidth: 1, borderColor: '#c5c4c2', borderRadius: 6}}></View>
             <View style={{zIndex: 19,width: '100%', height: 60 -2, position: 'absolute', backgroundColor: '#f6f5f3', borderRadius: 6}}>
@@ -93,13 +93,27 @@ class ModalBill extends Component {
                   </View>
                 </View>
               </View>
-              <View style={{width: '100%', height: 24}}>
+              <View style={{width: '100%', height: 28}}>
                 <View style={{flex: 1, flexDirection: 'row'}}>
                   <View style={{flex: .6, justifyContent: 'center'}}>
                     <Text style={[common.fontbody, {color: '#7f8082', fontSize: 12}]}>TOTAL PAYMENT:</Text>
                   </View>
                   <View style={{flex: .4, justifyContent: 'center', alignItems: 'flex-end'}}>
-                    <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 12, alignSelf: 'flex-end',borderWidth: 1, borderColor: '#6c7e70', paddingHorizontal: 15, paddingVertical: 4, paddingTop: 6, borderRadius: 6, backgroundColor: 'rgba(108,126,112,.9)'}]}>IDR22000</Text>
+                    <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 12, alignSelf: 'flex-end',borderWidth: 1, borderColor: '#fff', paddingHorizontal: 15, paddingVertical: 4, paddingTop: 6, borderRadius: 6, backgroundColor: '#444'}]}>IDR22000</Text>
+                  </View>
+                </View>
+              </View>
+              <View style={{width: '100%', height: 'auto', paddingTop: 40}}>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                  <View style={{flex: .5, justifyContent: 'center', paddingRight: 5}}>
+                    <TouchableOpacity style={{width: '100%', height: 32, backgroundColor: '#444', borderRadius: 6, justifyContent: 'center', alignItems: 'center'}}>
+                      <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3'}]}>ANOTHER COUPON</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{flex: .5, justifyContent: 'center', paddingLeft: 5}}>
+                    <TouchableOpacity style={{width: '100%', height: 32, backgroundColor: '#6c7e70', borderRadius: 6, justifyContent: 'center', alignItems: 'center'}}>
+                      <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3'}]}>COMPLETE</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>

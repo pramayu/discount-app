@@ -46,7 +46,8 @@ class Scan extends Component {
   }
 
   onSuccess = (e) => {
-    alert(JSON.stringify(e))
+    this.props.navigation.navigate('ModalBill');
+    this.setState({ scanstatus: false })
   }
 
   render() {
@@ -88,10 +89,10 @@ class Scan extends Component {
               </View>
               {
                 this.state.scanstatus === true ?
-                <TouchableOpacity onPress={(e) => this.setState({scanstatus: false})} style={{marginTop: 60, width: '38%', height: 35, borderRadius: 30, backgroundColor: '#ea4c89', justifyContent: 'center', alignItems: 'center'}}>
+                <TouchableOpacity onPress={(e) => this.setState({ scanstatus: false })} style={{marginTop: 60, width: '38%', height: 35, borderRadius: 30, backgroundColor: '#ea4c89', justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3'}]}>TERMINATE</Text>
                 </TouchableOpacity> :
-                <TouchableOpacity onPress={(e) => this.props.navigation.navigate('ModalBill')} style={{marginTop: 60, width: '38%', height: 35, borderRadius: 30, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
+                <TouchableOpacity onPress={(e) => this.scannerAnimated()} style={{marginTop: 60, width: '38%', height: 35, borderRadius: 30, backgroundColor: '#444', justifyContent: 'center', alignItems: 'center'}}>
                   <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3'}]}>START</Text>
                 </TouchableOpacity>
               }

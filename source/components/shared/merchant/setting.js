@@ -262,7 +262,13 @@ class ShopSetting extends Component {
     }
   }
 
+  logout = async() => {
+    await AsyncStorage.removeItem('token');
+    this.props.navigation.navigate('CheckToken');
+  }
+
   render() {
+    var { merchant } = this.props.navigation.state.params;
     var { width, height } = Dimensions.get('window');
     var showfetchsty = this.showfetch.interpolate({
       inputRange: [0, 1],
@@ -307,10 +313,13 @@ class ShopSetting extends Component {
               <View style={{flex: 1, flexDirection: 'row'}}>
                 <View style={{ width: '95%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
                   {
-                    this.state.formchoose.length === 0 ?
+                    this.state.name !== merchant.name || this.state.phone !== merchant.phone || this.state.sosmed !== merchant.sosmed || this.state.description !== merchant.description ?
                     <TouchableOpacity onPress={(e) => this.handlebasicupdatemerchant()}>
                       <Text style={[common.fontbody, { color: '#444'}]}>Save Update.</Text>
-                    </TouchableOpacity> : null
+                    </TouchableOpacity> :
+                    <TouchableOpacity onPress={(e) => this.logout()}>
+                      <Text style={[common.fontbody, { color: '#444'}]}>Log Out.</Text>
+                    </TouchableOpacity>
                   }
                 </View>
               </View>
