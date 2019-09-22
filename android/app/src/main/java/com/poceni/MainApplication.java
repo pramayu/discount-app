@@ -3,6 +3,7 @@ package com.poceni;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.BV.LinearGradient.LinearGradientPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.reactnativecommunity.netinfo.NetInfoPackage;
@@ -29,6 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new LinearGradientPackage(),
             new RNCameraPackage(),
             new RNScreensPackage(),
             new NetInfoPackage(),

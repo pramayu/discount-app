@@ -58,7 +58,8 @@ class Upload extends Component {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
       StatusBar.setBackgroundColor('#f6f5f3');
-      StatusBar.setTranslucent(false)
+      StatusBar.setTranslucent(false);
+      this.setState({screenstatus: false})
     });
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -253,13 +254,13 @@ class Upload extends Component {
         <View style={{width: '100%', height: height / 3.3, marginBottom: 20}}>
           {
             this.state.picture.length > 0 ?
-            <View style={{flex: 1, flexDirection: 'row', borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082', borderRadius: 4}}>
+            <View style={{flex: 1, flexDirection: 'row', borderRadius: 4}}>
               <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
                 {this.mappicture(this.state.picture)}
               </ScrollView>
             </View>
             :
-            <View style={{borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082',width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f0efed', borderRadius: 4}}>
+            <View style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 4}}>
               <Ionicons name="ios-images" size={48} color="#444"/>
               <Text style={[common.fontbody, {color: '#444', fontSize: 12, marginTop: 10}]}>MAX FILE SIZE 1 MB</Text>
             </View>
@@ -267,14 +268,14 @@ class Upload extends Component {
         </View>
         <Animated.View style={{transform: [{translateY: this.state.keystatus === false ? toupsty : todownsty}], width: '100%', height: 'auto', backgroundColor: '#f6f5f3'}}>
           <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#TITLE</Text>
-          <TextInput onChangeText={(txt) => this.fieldonchange('title',txt)} autoCorrect={false} style={[common.fontbody, {borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082', marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+          <TextInput onChangeText={(txt) => this.fieldonchange('title',txt)} autoCorrect={false} style={[common.fontbody, {marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10}]}/>
           <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#DESCRIPTION</Text>
-          <TextInput onChangeText={(txt) => this.fieldonchange('description',txt)} autoCorrect={false} multiline={true} style={[common.fontbody, {borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082', marginBottom: 15, color: '#444',textAlignVertical: 'top',width: '100%', height: 65, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10, paddingVertical: 10, lineHeight: 22}]}/>
+          <TextInput onChangeText={(txt) => this.fieldonchange('description',txt)} autoCorrect={false} multiline={true} style={[common.fontbody, {marginBottom: 15, color: '#444',textAlignVertical: 'top',width: '100%', height: 65, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10, paddingVertical: 10, lineHeight: 22}]}/>
           <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#PRICE</Text>
           <View style={{width: '100%', height: 38, marginBottom: 30}}>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <View style={{flex: .6,paddingRight: 10}}>
-                <TextInput onChangeText={(txt) => this.fieldonchange('price',txt)} autoCorrect={false} style={[common.fontbody, {borderStyle: 'dashed',borderWidth: 1, borderColor: '#7f8082', marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+                <TextInput onChangeText={(txt) => this.fieldonchange('price',txt)} autoCorrect={false} style={[common.fontbody, {marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#fff', paddingHorizontal: 10}]}/>
               </View>
               <View style={{flex: .4}}>
                 <TouchableOpacity onPress={(e) => this.showmodalservice()} style={{width: '100%', height: 38, backgroundColor: this.state.setcategori.length > 0 ? '#ea4c89':'#444', justifyContent: 'center', alignItems: 'center', borderRadius: 4}}>

@@ -2,19 +2,26 @@ import React, { Component } from 'react';
 import {
   View, Text, TouchableOpacity,
   StatusBar, Dimensions, Image,
-  Animated, TextInput
+  Animated, TextInput, TouchableHighlight
 } from 'react-native';
+import { graphql, compose } from 'react-apollo';
+import _ from 'lodash';
 import AsyncStorage from '@react-native-community/async-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import LinearGradient from 'react-native-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   common
 } from '../../../assets/stylesheets/common';
+import {
+  CURRENT_USER
+} from '../../../queries/queryUser';
 
 class BuyerDashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      current_user: '',
       rotatestatus: false,
       opaciti: new Animated.Value(1),
       opaciti2:  new Animated.Value(0)
@@ -29,6 +36,13 @@ class BuyerDashboard extends Component {
     this.schinputHide    = new Animated.Value(0);
   }
 
+  componentWillReceiveProps = (nextProps) => {
+    this.setState({
+      current_user        : nextProps.current_user ? nextProps.current_user : '',
+      niches              : nextProps.niches ? nextProps.niches : []
+    })
+  }
+
   componentDidMount = () => {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
@@ -39,6 +53,7 @@ class BuyerDashboard extends Component {
   componentWillUnmount = () => {
     this._navListener.remove();
   }
+
 
   rotateUsernameXA = () => {
     Animated.parallel([
@@ -195,12 +210,59 @@ class BuyerDashboard extends Component {
             </View>
           </View>
         </View>
-        <View style={{width: '100%', height: (height / 4) - 50, justifyContent: 'flex-start', paddingHorizontal: 20, paddingRight: '28%', paddingTop: 20}}>
-          <Text style={[{fontFamily:'Oswald',color: '#444', fontSize: 28, lineHeight: 40}]}>Being Unlucky! Find your Luck Here.</Text>
+        <View style={{width: width-20, height: (height / 4) - 50, justifyContent: 'flex-start', paddingHorizontal: 20, paddingRight: '20%', paddingTop: 30}}>
+          <TouchableHighlight>
+            <Text style={[{fontFamily:'Oswald',color: '#444', fontSize: 24, lineHeight: 42}]}>DISCOUNT HUNTERS JOIN HERE & GET YOUR LUCK</Text>
+          </TouchableHighlight>
+          <View style={{width: width-20, height: '50%', backgroundColor: 'rgba(255,255,255,.0)', position: 'absolute', marginTop: 25}}></View>
+        </View>
+        <View style={{width: width, height: height / 1.5, justifyContent: 'flex-start', paddingTop: 20}}>
+          <View style={{flex: 1, flexDirection: 'column'}}>
+            <View style={{width: width, height: height / 2.8, paddingHorizontal: 20}}>
+              <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginBottom: 15}]}>RECENT DISCOUNT</Text>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={{width: width / 3, height: '100%', marginRight: 15}}>
+                  <View style={{width: '100%', height: 180}}>
+                    <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 4}} source={{uri: 'https://images.unsplash.com/photo-1556694679-bfd2743bfc4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60'}}/>
+                    <LinearGradient colors={['rgba(255,255,255,.0)', '#393b47']} style={{padding:10, justifyContent: 'flex-end', backgroundColor: 'rgba(255,255,255,.15)',width: '100%', height: '100%', position: 'absolute', borderRadius: 4}}>
+                      <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 14, marginTop: 10}]}>30% OFF <Text style={{fontSize: 10, color: '#fbb43a'}}>/ 5 DAYS LEFT</Text></Text>
+                      <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3', marginTop: 5}]}>Creami Seafood Soup</Text>
+                    </LinearGradient>
+                  </View>
+                </View>
+                <View style={{width: width / 3, height: '100%', marginRight: 15}}>
+                  <View style={{width: '100%', height: 180}}>
+                    <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 4}} source={{uri: 'https://images.unsplash.com/photo-1553455860-2fa544e14141?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60'}}/>
+                    <LinearGradient colors={['rgba(255,255,255,.0)', '#393b47']} style={{padding:10, justifyContent: 'flex-end', backgroundColor: 'rgba(255,255,255,.15)',width: '100%', height: '100%', position: 'absolute', borderRadius: 4}}>
+                      <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 14, marginTop: 10}]}>25% OFF <Text style={{fontSize: 10, color: '#fbb43a'}}>/ 3 PEOPLE LEFT</Text></Text>
+                      <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3', marginTop: 5}]}>Chicken and Chorizo..</Text>
+                    </LinearGradient>
+                  </View>
+                </View>
+                <View style={{width: width / 3, height: '100%', marginRight: 15}}>
+                  <View style={{width: '100%', height: 180}}>
+                    <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 4}} source={{uri: 'https://images.unsplash.com/photo-1553660159-d760771cfa47?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60'}}/>
+                    <LinearGradient colors={['rgba(255,255,255,.0)', '#393b47']} style={{padding:10, justifyContent: 'flex-end', backgroundColor: 'rgba(255,255,255,.15)',width: '100%', height: '100%', position: 'absolute', borderRadius: 4}}>
+                      <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 14, marginTop: 10}]}>33% OFF <Text style={{fontSize: 10, color: '#fbb43a'}}>/ BIRTHDAY</Text></Text>
+                      <Text style={[common.fontitle, {fontSize: 12, color: '#f6f5f3', marginTop: 5}]}>Vegetarian Sausage..</Text>
+                    </LinearGradient>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
         </View>
       </View>
     )
   }
 }
 
-export default BuyerDashboard;
+export default compose(
+  graphql(CURRENT_USER, {
+    name: 'current_user',
+    options: (props) => ({
+      fetchPolicy: 'network-only'
+    }),
+    props: ({current_user: {current_user}}) => ({ current_user })
+  })
+)(BuyerDashboard);

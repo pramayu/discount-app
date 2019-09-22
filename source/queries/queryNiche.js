@@ -15,3 +15,16 @@ export var FETCH_NICHE=gql`
     }
   }
 `;
+
+export var GET_NICHES=gql`
+  query {
+    niches {
+      _id
+      child
+      categori {
+        _id
+        child
+      }
+    }
+  }
+`
