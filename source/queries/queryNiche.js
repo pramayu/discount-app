@@ -21,10 +21,6 @@ export var GET_NICHES=gql`
     niches {
       _id
       child
-      categori {
-        _id
-        child
-      }
     }
   }
 `

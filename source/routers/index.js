@@ -15,6 +15,7 @@ import Notif from '../components/dashboard/buyer/notif';
 import BuyerDashboard from '../components/dashboard/buyer/timeline';
 import SettingUser from '../components/shared/setting';
 import ChangePassword from '../components/shared/changepassword';
+import StuffFilter from '../components/shared/filterstuff';
 
 import Scan from '../components/dashboard/merchant/scan';
 import Shop from '../components/dashboard/merchant/shop';
@@ -108,6 +109,14 @@ var shopScreen = createStackNavigator({
   transitionConfig: TransitionConfiguration,
 });
 
+var discoverScreen = createStackNavigator({
+  DiscoverBuyer: { screen: DiscoverBuyer },
+  StuffFilter: { screen: StuffFilter }
+}, {
+  headerMode: 'none',
+  transitionConfig: TransitionConfiguration,
+})
+
 accountBuyer.navigationOptions = ({ navigation }) => {
   var tabBarVisible = true;
   if(navigation.state.index > 0) {
@@ -128,13 +137,23 @@ shopScreen.navigationOptions = ({ navigation }) => {
   }
 }
 
+discoverScreen.navigationOptions = ({ navigation }) => {
+  var tabBarVisible = true;
+  if(navigation.state.index > 0) {
+    tabBarVisible = false
+  }
+  return {
+    tabBarVisible
+  }
+}
+
 
 var buyerDashboard = createBottomTabNavigator({
   BuyerDashboard: {
     screen: BuyerDashboard
   },
   DiscoverBuyer: {
-    screen: DiscoverBuyer
+    screen: discoverScreen
   },
   BasketBuyer: {
     screen: BasketBuyer

@@ -225,7 +225,7 @@ class BuyerDashboard extends Component {
                   <View style={{width: '100%', height: height / 3.8}}>
                     <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 6}} source={{uri: 'https://images.unsplash.com/photo-1543362906-acfc16c67564?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=701&q=80'}}/>
                     <View style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 6, padding: 10, justifyContent: 'flex-end'}}>
-                      <Text style={[common.fontbody, {fontSize: 12, color: '#7f8082',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.8)'}]}>34% OFF</Text>
+                      <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: '#ea4c89'}]}>34% OFF</Text>
                     </View>
                   </View>
                 </View>
@@ -233,7 +233,7 @@ class BuyerDashboard extends Component {
                   <View style={{width: '100%', height: height / 3.8}}>
                     <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 6}} source={{uri: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=662&q=80'}}/>
                       <View style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 6, padding: 10, justifyContent: 'flex-end'}}>
-                        <Text style={[common.fontbody, {fontSize: 12, color: '#7f8082',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.8)'}]}>10% OFF</Text>
+                        <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: '#ea4c89'}]}>10% OFF</Text>
                       </View>
                   </View>
                 </View>
@@ -241,7 +241,7 @@ class BuyerDashboard extends Component {
                   <View style={{width: '100%', height: height / 3.8}}>
                     <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 6}} source={{uri: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80'}}/>
                       <View style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 6, padding: 10, justifyContent: 'flex-end'}}>
-                        <Text style={[common.fontbody, {fontSize: 12, color: '#7f8082',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.8)'}]}>6% OFF</Text>
+                        <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: '#ea4c89'}]}>6% OFF</Text>
                       </View>
                   </View>
                 </View>
