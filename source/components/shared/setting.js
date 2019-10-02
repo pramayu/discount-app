@@ -226,7 +226,7 @@ class SettingUser extends Component {
             <View style={{flex: .6, paddingLeft: 10, paddingTop: 5}}>
               <TextInput onChangeText={(txt) => this.handleonchange('username',txt)} autoCorrect={false} placeholder="Username" value={this.state.username} style={[common.field, common.fontbody, {height: 24, letterSpacing: 0, paddingVertical: 0, marginBottom: 0}]}/>
               <TextInput onChangeText={(txt) => this.handleonchange('fullname',txt)} autoCorrect={false} placeholder="Fullname" value={this.state.fullname} style={[common.field, common.fontbody, {height: 24, letterSpacing: 0, paddingVertical: 0, marginBottom: 0}]}/>
-              <TextInput onChangeText={(txt) => this.handleonchange('email',txt)} autoCorrect={false} placeholder="Email Address" value={this.state.email} style={[common.field, common.fontbody, {height: 24, letterSpacing: 0, paddingVertical: 0, marginBottom: 0}]}/>
+              <TextInput onChangeText={(txt) => this.handleonchange('email',txt)} autoCorrect={false} placeholder="Email Address" value={this.state.email} style={[common.field, common.fontbody, {textAlign: 'left',height: 24, letterSpacing: 0, paddingVertical: 0, marginBottom: 0}]}/>
               <TextInput onChangeText={(txt) => this.handleonchange('phone',txt)} autoCorrect={false} placeholder="Phone" value={this.state.phone} style={[common.field, common.fontbody, {height: 24, letterSpacing: 0, paddingVertical: 0, marginBottom: 0}]}/>
               <TextInput onChangeText={(txt) => this.handleonchange('address',txt)} autoCorrect={false} placeholder="Address" value={this.state.address} style={[common.field, common.fontbody, {height: 24, letterSpacing: 0, paddingVertical: 0, marginBottom: 0}]}/>
             </View>

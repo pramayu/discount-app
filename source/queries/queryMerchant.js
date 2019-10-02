@@ -26,11 +26,6 @@ export var ADDRESS_UPDATE_MERCHANT = gql`
         address
         province
         distric
-        coordinate {
-          _id
-          latitude
-          longitude
-        }
       }
     }
   }

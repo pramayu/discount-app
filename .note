@@ -19,3 +19,31 @@ grey: dbd9d9
 pastel-green: #6c7e70
 #393b47 dark-purple
 pink #ea4c89
+
+
+#error
+- insert coordinate masih kurang trapat
+- pertama buat merchant -> setting; masih error
+- seletah upload bersihkan extra field & image
+- di tambah address (field semua kosongkan)
+
+
+db.merchants.updateOne({'_id': ObjectId("5d935498d6054a10c7bd4892")}, {$unset: {"geometri.coordinates.0": 1}}) ->
+db.merchants.updateOne({'_id': ObjectId("5d935498d6054a10c7bd4892")}, {$pull: {"geometri.coordinates": null}})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{$pull: { 'location': {'_id': args.addressdeleteprop.locationID}}},
+{$unset: {[pathUnset]: 1}},
+{$pull: {"geometri.coordinates": null}

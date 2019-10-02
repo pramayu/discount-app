@@ -118,11 +118,6 @@ export var FETCH_USER = gql`
             address
             distric
             province
-            coordinate {
-              _id
-              latitude
-              longitude
-            }
           }
           photos {
             _id

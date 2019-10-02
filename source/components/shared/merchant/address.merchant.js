@@ -42,6 +42,10 @@ class AddressMerchant extends Component {
     })
   }
 
+  componentWillUnmount = () => {
+    navigator.geolocation.clearWatch(this.watchID);
+  }
+
   closemodal = () => {
     this.props.hidemodalservice();
     this.setState({
@@ -58,7 +62,7 @@ class AddressMerchant extends Component {
 
   getcoordinate = () => {
     this.setState({ fetchstatus: true })
-    navigator.geolocation.getCurrentPosition((position) => {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
       this.setState({
         latitude: position.coords.latitude.toString(),
         longitude: position.coords.longitude.toString(),
@@ -66,11 +70,10 @@ class AddressMerchant extends Component {
         errorcoordinate: ''
       })
     }, error => {
-      console.log(error)
       if(error) {
         this.setState({errorcoordinate: 'Activate your phone GPS'})
       }
-    }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 });
+    });
   }
 
   addressonchange = (name, value) => {
@@ -110,7 +113,14 @@ class AddressMerchant extends Component {
       } else {
         this.state.location.push(location[0]);
       }
-      this.setState({addlocation: false});
+      this.setState({
+        addlocation: false,
+        latitude: '',
+        longitude: '',
+        address: '',
+        distric: '',
+        province: '',
+      });
     }
   }
 
@@ -121,6 +131,7 @@ class AddressMerchant extends Component {
           userID      : this.props.currentuser._id,
           merchantID  : this.props.merchantID,
           locationID  : this.state.locationID ? this.state.locationID : '',
+          indexID     : this.state.indexID
         }
       },
       refetchQueries: [{
@@ -155,8 +166,8 @@ class AddressMerchant extends Component {
         address       : location[0].address,
         distric       : location[0].distric,
         province      : location[0].province,
-        latitude      : location[0].coordinate[0].latitude,
-        longitude     : location[0].coordinate[0].longitude,
+        // latitude      : location[0].coordinate[0].latitude,
+        // longitude     : location[0].coordinate[0].longitude,
         indexID       : indexID.toString(),
         addlocation   : true
       });
@@ -172,24 +183,27 @@ class AddressMerchant extends Component {
         <TextInput value={this.state.distric} onChangeText={(txt) => this.addressonchange('distric',txt)} autoCorrect={false} style={[common.fontbody, {marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
         <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Province</Text>
         <TextInput value={this.state.province} onChangeText={(txt) => this.addressonchange('province',txt)} autoCorrect={false} style={[common.fontbody, {marginBottom: 15, color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
-        <View style={{width: '100%', height: 50}}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={{width: '43%', justifyContent: 'center', paddingRight: 5}}>
-              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Latitude</Text>
-              <TextInput value={this.state.latitude} onChangeText={(txt) => this.addressonchange('latitude',txt)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+        {
+          this.state.locationID.length === 0 ?
+          <View style={{width: '100%', height: 50}}>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <View style={{width: '43%', justifyContent: 'center', paddingRight: 5}}>
+                <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Latitude</Text>
+                <TextInput value={this.state.latitude} onChangeText={(txt) => this.addressonchange('latitude',txt)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+              </View>
+              <View style={{width: '43%', justifyContent: 'center', paddingRight: 5}}>
+                <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Longitude</Text>
+                <TextInput value={this.state.longitude} onChangeText={(txt) => this.addressonchange('longitude',txt)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
+              </View>
+              <View style={{width: '14%', justifyContent: 'center', alignItems: 'flex-end'}}>
+                <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 5}]}></Text>
+                <TouchableOpacity onPress={(e) => this.getcoordinate()} style={{borderRadius: 4,backgroundColor: '#6c7e70',width: 39, height: 37, justifyContent: 'center', alignItems: 'center'}}>
+                  <Ionicons name="ios-pin" size={24} color="#f6f5f3"/>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={{width: '43%', justifyContent: 'center', paddingRight: 5}}>
-              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 7}]}>#Longitude</Text>
-              <TextInput value={this.state.longitude} onChangeText={(txt) => this.addressonchange('longitude',txt)} autoCorrect={false} style={[common.fontbody, {color: '#444',width: '100%', height: 38, borderRadius: 4, backgroundColor: '#f0efed', paddingHorizontal: 10}]}/>
-            </View>
-            <View style={{width: '14%', justifyContent: 'center', alignItems: 'flex-end'}}>
-              <Text style={[common.fontitle, {fontSize: 12,color: '#444', marginBottom: 5}]}></Text>
-              <TouchableOpacity onPress={(e) => this.getcoordinate()} style={{borderRadius: 4,backgroundColor: '#6c7e70',width: 39, height: 37, justifyContent: 'center', alignItems: 'center'}}>
-                <Ionicons name="ios-pin" size={24} color="#f6f5f3"/>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+          </View> : null
+        }
       </View>
     )
   }
@@ -240,7 +254,7 @@ class AddressMerchant extends Component {
             </View>
             <View style={{flex: .1, justifyContent: 'center', alignItems: 'flex-end', paddingTop: 8}}>
               {
-                this.state.address.length > 0 && this.state.latitude.length > 0 && this.state.longitude.length > 0 ?
+                this.state.addlocation === true ?
                 <TouchableOpacity onPress={(e) => this.handleservicemerchant()} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'flex-end'}}>
                   <Ionicons name="ios-checkmark" size={28} color="#6c7e70"/>
                 </TouchableOpacity> : null

@@ -54,7 +54,6 @@ class BuyerDashboard extends Component {
     this._navListener.remove();
   }
 
-
   rotateUsernameXA = () => {
     Animated.parallel([
       Animated.timing(this.state.opaciti, {
