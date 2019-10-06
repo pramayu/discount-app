@@ -17,7 +17,7 @@ import {
 class Loading extends Component {
   render () {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#ECEFF1'}}>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f6f5f3'}}>
         <StatusBar backgroundColor='#ECEFF1' barStyle='dark-content'/>
         <View style={{width: '100%', height: 150, justifyContent: 'center', alignItems: 'center'}}>
           <View style={{width: 100, height: 100, justifyContent: 'center', alignItems: 'center'}}>

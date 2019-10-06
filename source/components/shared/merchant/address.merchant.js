@@ -104,15 +104,7 @@ class AddressMerchant extends Component {
     });
     var { status, error, location } = response.data.addressupdatemerchant;
     if(status === true) {
-      if(this.state.indexID.length > 0) {
-        this.state.location.splice(this.state.indexID, 1);
-        var updated = _.filter(location, (loc) => {
-          return loc._id === this.state.locationID
-        });
-        this.state.location.push(updated[0]);
-      } else {
-        this.state.location.push(location[0]);
-      }
+      this.state.location.push(location);
       this.setState({
         addlocation: false,
         latitude: '',
@@ -166,8 +158,6 @@ class AddressMerchant extends Component {
         address       : location[0].address,
         distric       : location[0].distric,
         province      : location[0].province,
-        // latitude      : location[0].coordinate[0].latitude,
-        // longitude     : location[0].coordinate[0].longitude,
         indexID       : indexID.toString(),
         addlocation   : true
       });

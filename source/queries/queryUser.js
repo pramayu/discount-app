@@ -113,12 +113,6 @@ export var FETCH_USER = gql`
           foodtype
           sosmed
           phone
-          location {
-            _id
-            address
-            distric
-            province
-          }
           photos {
             _id
             publicId
@@ -136,6 +130,12 @@ export var FETCH_USER = gql`
           facilities {
             _id
             child
+          }
+          location {
+            _id
+            address
+            distric
+            province
           }
         }
       }

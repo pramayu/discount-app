@@ -25,12 +25,12 @@ class CheckToken extends Component {
   componentDidMount = () => {
     this.checkconnection();
     this.requestCameraPermission();
-    this.getcurrentPosition();
+    // this.getcurrentPosition();
   }
 
-  componentWillUnmount = () => {
-    navigator.geolocation.clearWatch(this.watchID);
-  }
+  // componentWillUnmount = () => {
+  //   navigator.geolocation.clearWatch(this.watchID);
+  // }
 
   requestCameraPermission = async() => {
     try {
@@ -90,18 +90,10 @@ class CheckToken extends Component {
     }
   }
 
-  getcurrentPosition = () => {
-    // navigator.geolocation.getCurrentPosition((position) => {
-    //   try {
-    //     var currentLocation = JSON.stringify(position);
-    //   } catch (e) {
-    //     console.log(e)
-    //   }
-    // })
-    this.watchID = navigator.geolocation.watchPosition((position) => {
-      alert(JSON.stringify(position))
-    });
-  }
+  // getcurrentPosition = () => {
+  //   this.watchID = navigator.geolocation.watchPosition( async(position) => {
+  //   });
+  // }
 
   render() {
     return <Loading />
