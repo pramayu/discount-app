@@ -13,7 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   common
 } from '../../../assets/stylesheets/common';
-import Loading from '../../shared/loading';
+import TimelineProgress from '../../shared/timelineProgress';
 import { CURRENT_USER } from '../../../queries/queryUser';
 import { GET_TIMELINE } from '../../../queries/queryTimeline';
 
@@ -191,7 +191,7 @@ class BuyerDashboard extends Component {
             }
           }}>
           {({loading, error, data}) => {
-            if(loading) return <Loading caption={"PLEASE WAIT"}/>
+            if(loading) return <TimelineProgress />
             return (
               <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
                 <View style={{width: '100%', height: 50, paddingHorizontal: 20}}>
@@ -351,7 +351,7 @@ class BuyerDashboard extends Component {
         </Query>
       )
     } else {
-      return <Loading />
+      return <TimelineProgress />
     }
   }
 }
