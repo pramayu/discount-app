@@ -67,6 +67,75 @@ class BuyerDashboard extends Component {
     });
   }
 
+  renderRecentStuff = (stuffs) => {
+    var { width, height } = Dimensions.get('window');
+    return _.map(stuffs, (stuff, index) => {
+      var discount = _.filter(stuff.discounts, (discount) => {return discount.status === true})
+      return (
+        <View key={index} style={{width: width / 3, height: '100%', marginRight: 10}}>
+          <View style={{width: '100%', height: height / 3.8}}>
+            <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 6}} source={{uri: stuff.photos[0].secureUrl}}/>
+            <View style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 6, padding: 10, justifyContent: 'flex-end'}}>
+              <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: '#ea4c89'}]}>{discount[0].discount}% OFF</Text>
+            </View>
+          </View>
+        </View>
+      )
+    })
+  }
+
+  renderShopStuffs = (stuffs) => {
+    return (
+      <View style={{flex: 1, flexDirection: 'row'}}>
+        <View style={{flex: .7, paddingRight: 3}}>
+          <Image style={{width: '100%', height: '100%', borderTopLeftRadius: 6, borderBottomLeftRadius: 6, resizeMode: 'cover'}} source={{uri: stuffs[0].photos[0].secureUrl}}/>
+        </View>
+        <View style={{flex: .3}}>
+          <View style={{flex: 1, flexDirection: 'column'}}>
+            <View style={{flex: .5, paddingBottom: 1.5}}>
+              <Image style={{width: '100%', height: '100%', borderTopRightRadius: 6, resizeMode: 'cover'}} source={{uri: stuffs[1].photos[0].secureUrl}}/>
+            </View>
+            <View style={{flex: .5, paddingTop: 1.5}}>
+              <Image style={{width: '100%', height: '100%', borderBottomRightRadius: 6, resizeMode: 'cover'}} source={{uri: stuffs[2].photos[0].secureUrl}}/>
+            </View>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
+  renderNearShop = (merchants) => {
+    var { width, height } = Dimensions.get('window');
+    return _.map(merchants, (merchant, index) => {
+      return (
+        <View key={index} style={{width: width / 1.5, height: '100%', marginRight: 10}}>
+          <View style={{flex: 1, flexDirection: 'column'}}>
+            <View style={{flex: .8}}>
+              {
+                merchant.stuffs.length >= 3 ?
+                this.renderShopStuffs(merchant.stuffs) :
+                <Image source={{uri: merchant.stuffs[0].photos[0].secureUrl}} style={{width: '100%', height: '100%', borderRadius: 6, resizeMode: 'cover'}}/>
+              }
+              <View style={{width: '100%', height: '100%', borderRadius: 6, position: 'absolute', backgroundColor: 'rgba(255,255,255,.15)'}}></View>
+            </View>
+            <View style={{flex: .2}}>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={{width: '14%', height: '100%',justifyContent: 'flex-end'}}>
+                  <View style={{width: 24, height: 24}}>
+                    <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 20}} source={{uri: merchant.photos[0].secureUrl}}/>
+                  </View>
+                </View>
+                <View style={{width: '80%', height: '100%',justifyContent: 'center', paddingTop: 8}}>
+                  <Text style={[common.fontbody, {color: '#444', fontSize: 12}]}>{merchant.name}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+      )
+    })
+  }
+
   rotateUsernameXA = () => {
     Animated.parallel([
       Animated.timing(this.state.opaciti, {
@@ -244,103 +313,13 @@ class BuyerDashboard extends Component {
                     <View style={{width: width, height: height / 2.8, paddingHorizontal: 20}}>
                       <Text style={[common.fontitle, {fontSize: 12, color: '#7f8082', marginBottom: 15}]}>RECENT DISCOUNT</Text>
                       <View style={{flex: 1, flexDirection: 'row'}}>
-                        <View style={{width: width / 3, height: '100%', marginRight: 10}}>
-                          <View style={{width: '100%', height: height / 3.8}}>
-                            <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 6}} source={{uri: 'https://images.unsplash.com/photo-1543362906-acfc16c67564?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=701&q=80'}}/>
-                            <View style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 6, padding: 10, justifyContent: 'flex-end'}}>
-                              <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: '#ea4c89'}]}>34% OFF</Text>
-                            </View>
-                          </View>
-                        </View>
-                        <View style={{width: width / 3, height: '100%', marginRight: 10}}>
-                          <View style={{width: '100%', height: height / 3.8}}>
-                            <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 6}} source={{uri: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=662&q=80'}}/>
-                              <View style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 6, padding: 10, justifyContent: 'flex-end'}}>
-                                <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: '#ea4c89'}]}>10% OFF</Text>
-                              </View>
-                          </View>
-                        </View>
-                        <View style={{width: width / 3, height: '100%', marginRight: 10}}>
-                          <View style={{width: '100%', height: height / 3.8}}>
-                            <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 6}} source={{uri: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80'}}/>
-                              <View style={{position: 'absolute', width: '100%', height: '100%', borderRadius: 6, padding: 10, justifyContent: 'flex-end'}}>
-                                <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: '#ea4c89'}]}>6% OFF</Text>
-                              </View>
-                          </View>
-                        </View>
+                        { this.renderRecentStuff(data.timeline.stuffs) }
                       </View>
                     </View>
                     <View style={{width: width, height: height / 3.7, paddingLeft: 20}}>
                       <Text style={[common.fontitle, {fontSize: 12, color: '#7f8082', marginBottom: 15}]}>NEAR MERCHANT</Text>
                       <View style={{flex: 1, flexDirection: 'row'}}>
-                        <View style={{width: width / 1.5, height: '100%', marginRight: 10}}>
-                          <View style={{flex: 1, flexDirection: 'column'}}>
-                            <View style={{flex: .8}}>
-                              <View style={{flex: 1, flexDirection: 'row'}}>
-                                <View style={{flex: .7, paddingRight: 3}}>
-                                  <Image style={{width: '100%', height: '100%', borderTopLeftRadius: 6, borderBottomLeftRadius: 6, resizeMode: 'cover'}} source={{uri: 'https://cdn.dribbble.com/users/145033/screenshots/3874749/1.png'}}/>
-                                </View>
-                                <View style={{flex: .3}}>
-                                  <View style={{flex: 1, flexDirection: 'column'}}>
-                                    <View style={{flex: .5, paddingBottom: 1.5}}>
-                                      <Image style={{width: '100%', height: '100%', borderTopRightRadius: 6, resizeMode: 'cover'}} source={{uri: 'https://cdn.dribbble.com/users/145033/screenshots/4450155/shimurhuman.png'}}/>
-                                    </View>
-                                    <View style={{flex: .5, paddingTop: 1.5}}>
-                                      <Image style={{width: '100%', height: '100%', borderBottomRightRadius: 6, resizeMode: 'cover'}} source={{uri: 'https://cdn.dribbble.com/users/145033/screenshots/4629791/sh4.png'}}/>
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                              <View style={{width: '100%', height: '100%', borderRadius: 6, position: 'absolute', backgroundColor: 'rgba(255,255,255,.15)'}}></View>
-                            </View>
-                            <View style={{flex: .2}}>
-                              <View style={{flex: 1, flexDirection: 'row'}}>
-                                <View style={{width: '14%', height: '100%',justifyContent: 'flex-end'}}>
-                                  <View style={{width: 24, height: 24}}>
-                                    <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 20}} source={{uri: 'https://cdn.dribbble.com/users/2996009/screenshots/5798857/dribbble_nike_blazer_mid_2x.png'}}/>
-                                  </View>
-                                </View>
-                                <View style={{width: '80%', height: '100%',justifyContent: 'center', paddingTop: 8}}>
-                                  <Text style={[common.fontbody, {color: '#444', fontSize: 12}]}>Nike Official Store</Text>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                        </View>
-                        <View style={{width: width / 1.5, height: '100%', marginRight: 10}}>
-                          <View style={{flex: 1, flexDirection: 'column'}}>
-                            <View style={{flex: .8}}>
-                              <View style={{flex: 1, flexDirection: 'row'}}>
-                                <View style={{flex: .7, paddingRight: 3}}>
-                                  <Image style={{width: '100%', height: '100%', borderTopLeftRadius: 6, borderBottomLeftRadius: 6, resizeMode: 'cover'}} source={{uri: 'https://cdn.dribbble.com/users/408980/screenshots/3171906/food.jpg'}}/>
-                                </View>
-                                <View style={{flex: .3}}>
-                                  <View style={{flex: 1, flexDirection: 'column'}}>
-                                    <View style={{flex: .5, paddingBottom: 1.5}}>
-                                      <Image style={{width: '100%', height: '100%', borderTopRightRadius: 6, resizeMode: 'cover'}} source={{uri: 'https://cdn.dribbble.com/users/145033/screenshots/4450155/shimurhuman.png'}}/>
-                                    </View>
-                                    <View style={{flex: .5, paddingTop: 1.5}}>
-                                      <Image style={{width: '100%', height: '100%', borderBottomRightRadius: 6, resizeMode: 'cover'}} source={{uri: 'https://cdn.dribbble.com/users/145033/screenshots/4629791/sh4.png'}}/>
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                              <View style={{width: '100%', height: '100%', borderRadius: 6, position: 'absolute', backgroundColor: 'rgba(255,255,255,.15)'}}></View>
-                            </View>
-                            <View style={{flex: .2}}>
-                              <View style={{flex: 1, flexDirection: 'row'}}>
-                                <View style={{width: '14%', height: '100%',justifyContent: 'flex-end'}}>
-                                  <View style={{width: 24, height: 24}}>
-                                    <Image style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 20}} source={{uri: 'https://cdn.dribbble.com/users/339280/screenshots/3744467/____---macarrao-santo.png'}}/>
-                                  </View>
-                                </View>
-                                <View style={{width: '80%', height: '100%',justifyContent: 'center', paddingTop: 8}}>
-                                  <Text style={[common.fontbody, {color: '#444', fontSize: 12}]}>一ノ瀬アミン Store</Text>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                        </View>
+                        { this.renderNearShop(data.timeline.merchant) }
                       </View>
                     </View>
                   </View>

@@ -24,6 +24,13 @@ export var GET_TIMELINE = gql`
           _id
           secureUrl
         }
+        stuffs {
+          _id
+          photos {
+            _id
+            secureUrl
+          }
+        }
       }
     }
   }
