@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import {
   View, Text, TouchableOpacity,
   StatusBar, Dimensions, Image,
-  Animated, TextInput, TouchableHighlight
+  Animated, TextInput, TouchableHighlight,
+  ScrollView
 } from 'react-native';
 import { Query, graphql, compose } from 'react-apollo';
 import _ from 'lodash';
+import { BottomTabBar } from 'react-navigation';
 import AsyncStorage from '@react-native-community/async-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -38,6 +40,8 @@ class BuyerDashboard extends Component {
     this.schinputHide    = new Animated.Value(0);
   }
 
+
+
   componentWillReceiveProps = (nextProps) => {
     this.setState({
       current_user        : nextProps.current_user ? nextProps.current_user : '',
@@ -50,7 +54,9 @@ class BuyerDashboard extends Component {
       StatusBar.setBarStyle('dark-content');
       StatusBar.setBackgroundColor('#f6f5f3');
     });
-    this.getcurrentPosition()
+    this.props.navigation.setParams({ isVisible: false });
+    this.getcurrentPosition();
+    this.getpo();
   }
 
   componentWillUnmount = () => {
@@ -59,12 +65,24 @@ class BuyerDashboard extends Component {
   }
 
   getcurrentPosition = () => {
-    this.watchID = navigator.geolocation.watchPosition((res) => {
+    this.watchID = navigator.geolocation.watchPosition(async(res) => {
       this.setState({
         latitude: res.coords.latitude,
         longitude: res.coords.longitude
-      })
+      });
+      var coordinate = {};
+      coordinate.latitude = res.coords.latitude;
+      coordinate.longitude = res.coords.longitude;
+      this.props.navigation.setParams({ isVisible: true });
+      await AsyncStorage.setItem('coordinate', JSON.stringify(coordinate));
     });
+  }
+
+  getpo = async() => {
+    var coordinate = await AsyncStorage.getItem('coordinate');
+    if(coordinate !== null) {
+      var objCoordinate = JSON.parse(coordinate);
+    }
   }
 
   renderRecentStuff = (stuffs) => {
@@ -312,15 +330,15 @@ class BuyerDashboard extends Component {
                   <View style={{flex: 1, flexDirection: 'column'}}>
                     <View style={{width: width, height: height / 2.8, paddingHorizontal: 20}}>
                       <Text style={[common.fontitle, {fontSize: 12, color: '#7f8082', marginBottom: 15}]}>RECENT DISCOUNT</Text>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{flex: 1, flexDirection: 'row'}}>
                         { this.renderRecentStuff(data.timeline.stuffs) }
-                      </View>
+                      </ScrollView>
                     </View>
                     <View style={{width: width, height: height / 3.7, paddingLeft: 20}}>
                       <Text style={[common.fontitle, {fontSize: 12, color: '#7f8082', marginBottom: 15}]}>NEAR MERCHANT</Text>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{flex: 1, flexDirection: 'row'}}>
                         { this.renderNearShop(data.timeline.merchant) }
-                      </View>
+                      </ScrollView>
                     </View>
                   </View>
                 </View>

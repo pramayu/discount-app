@@ -234,7 +234,8 @@ var buyerDashboard = createBottomTabNavigator({
     tabStyle: {
       backgroundColor: '#f6f5f3'
     }
-  }
+  },
+  tabBarComponent: TabBarComponent
 });
 
 var uploadStuff = createStackNavigator({

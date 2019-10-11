@@ -15,6 +15,17 @@ class TabBarComponent extends Component {
     }
   }
 
+  componentWillReceiveProps = (nextProps) => {
+    const newState = nextProps.navigation.state;
+    const newRoute = newState.routes[newState.index];
+    if(newRoute.routeName === 'BuyerDashboard') {
+      const newParams = newRoute.params;
+      this.setState({isVisible: newParams.isVisible})
+    } else {
+      this.setState({isVisible: true})
+    }
+  }
+
   componentWillMount() {
     this.keyboardWillShowSub = Keyboard.addListener('keyboardDidShow', this.keyboardWillShow)
     this.keyboardWillHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardWillHide)
