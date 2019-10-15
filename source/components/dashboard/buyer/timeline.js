@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { Query, graphql, compose } from 'react-apollo';
 import _ from 'lodash';
+import axios from 'axios';
 import { BottomTabBar } from 'react-navigation';
 import AsyncStorage from '@react-native-community/async-storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,7 +18,7 @@ import {
 } from '../../../assets/stylesheets/common';
 import TimelineProgress from '../../shared/timelineProgress';
 import { CURRENT_USER } from '../../../queries/queryUser';
-import { GET_TIMELINE } from '../../../queries/queryTimeline';
+import { GET_TIMELINE, USERTIMELINE } from '../../../queries/queryTimeline';
 
 class BuyerDashboard extends Component {
   constructor(props) {
@@ -26,6 +27,7 @@ class BuyerDashboard extends Component {
       latitude: '',
       longitude: '',
       current_user: '',
+      city: '',
       rotatestatus: false,
       opaciti: new Animated.Value(1),
       opaciti2:  new Animated.Value(0)
@@ -52,9 +54,10 @@ class BuyerDashboard extends Component {
   componentDidMount = () => {
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
-      StatusBar.setBackgroundColor('#f6f5f3');
+      StatusBar.setBackgroundColor('transparent');
+      StatusBar.setTranslucent(true)
     });
-    this.props.navigation.setParams({ isVisible: false });
+    // this.props.navigation.setParams({ isVisible: false });
     this.getcurrentPosition();
     this.getpo();
   }
@@ -70,10 +73,11 @@ class BuyerDashboard extends Component {
         latitude: res.coords.latitude,
         longitude: res.coords.longitude
       });
+      this.getregion(res.coords.latitude, res.coords.longitude);
       var coordinate = {};
       coordinate.latitude = res.coords.latitude;
       coordinate.longitude = res.coords.longitude;
-      this.props.navigation.setParams({ isVisible: true });
+      // this.props.navigation.setParams({ isVisible: true });
       await AsyncStorage.setItem('coordinate', JSON.stringify(coordinate));
     });
   }
@@ -83,6 +87,13 @@ class BuyerDashboard extends Component {
     if(coordinate !== null) {
       var objCoordinate = JSON.parse(coordinate);
     }
+  }
+
+  getregion = async(lat, long) => {
+    var region = await axios.get(`http://open.mapquestapi.com/geocoding/v1/reverse?key=p7kcAQYKiB4wHc2GkYdA0lzy66a4IPG4&location=${parseFloat(lat)},${parseFloat(long)}&includeRoadMetadata=true&includeNearestIntersection=true`);
+    this.setState({
+      city: `${region.data.results[0].locations[0].adminArea5}, ${region.data.results[0].locations[0].adminArea3}`
+    })
   }
 
   renderRecentStuff = (stuffs) => {
@@ -97,6 +108,7 @@ class BuyerDashboard extends Component {
               <Text style={[common.fontbody, {fontSize: 12, color: '#f6f5f3',alignSelf: 'flex-start', paddingVertical: 4, paddingHorizontal: 5, borderRadius: 4, backgroundColor: '#ea4c89'}]}>{discount[0].discount}% OFF</Text>
             </View>
           </View>
+          <TouchableOpacity onPress={(e) => this.props.navigation.navigate('StuffBuyer', {stuff_id: stuff._id})} style={{position: 'absolute', height: '100%', width: '100%'}}><Text></Text></TouchableOpacity>
         </View>
       )
     })
@@ -152,6 +164,88 @@ class BuyerDashboard extends Component {
         </View>
       )
     })
+  }
+
+  renderHeaderTimeline = (userID) => {
+    var rotateUsernameSty = this.rotateUsernameX.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, -50]
+    });
+    var rotateNormalSty = this.rotateUsernameN.interpolate({
+      inputRange: [0, 1],
+      outputRange: [-50, 0]
+    });
+    var searchHideSty = this.searchHide.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 80]
+    });
+    var searchShowSty = this.searchShow.interpolate({
+      inputRange: [0, 1],
+      outputRange: [80, 0]
+    });
+    var closeShowSty = this.closeShow.interpolate({
+      inputRange: [0, 1],
+      outputRange: [80, 0]
+    });
+    var closeHideSty = this.closeHide.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 80]
+    });
+    var inputShowSty = this.schinputShow.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0%', '100%']
+    });
+    var inputHideSty = this.schinputHide.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['100%', '0%']
+    });
+    return (
+      <Query query={USERTIMELINE} variables={{userID: userID}}>
+        {({loading, error, data}) => {
+          return (
+            <View style={{width: '100%', height: 50, paddingHorizontal: 20}}>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={{flex: .14, justifyContent: 'center'}}>
+                  <View style={{width: 30, height: 30, marginTop: 5}}>
+                    <Image source={{uri: data.usertimeline ? data.usertimeline.photos[0].secureUrl : 'https://cdn.dribbble.com/users/5637/screenshots/1565044/missing_file_02_1x.jpg'}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 40}}/>
+                  </View>
+                </View>
+                <View style={{flex: .86, justifyContent: 'center', alignItems: 'flex-end'}}>
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <View style={{flex: .85, justifyContent: 'center', alignItems: 'flex-start'}}>
+                      <View style={{flex: 1, flexDirection: 'column'}}>
+                          <Animated.View style={{backgroundColor: '#f6f5f3',opacity: this.state.opaciti ,zIndex: this.state.rotatestatus === false ? 10 : 9,transform: [{translateY: this.state.rotatestatus === false ? rotateUsernameSty : rotateNormalSty}],position: 'absolute',width: '100%', height: '100%', justifyContent: 'center'}}>
+                            <Text style={[common.fontbody, {color: '#444'}]}>Hi, {data.usertimeline ? data.usertimeline.fullname : 'Welcome back'}</Text>
+                            <Text style={[common.fontbody, {color: '#7f8082', fontSize: 12}]}>{this.state.city ? this.state.city : '[...]'}</Text>
+                          </Animated.View>
+                          <Animated.View style={{opacity: this.state.opaciti2, backgroundColor: '#f6f5f3',zIndex: this.state.rotatestatus === false ? 9 : 10, alignItems: 'flex-end',height: '100%', width: this.state.rotatestatus === false ? inputShowSty : inputHideSty, position: 'absolute', justifyContent: 'center', paddingLeft: 10}}>
+                            <TextInput placeholder="Search" style={[common.fontbody, {marginTop: 5, color: '#444',width: '100%', height: 34, paddingHorizontal: 10, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', paddingVertical: 0}]}/>
+                          </Animated.View>
+                      </View>
+                    </View>
+                    <View style={{flex: .15, justifyContent: 'center', alignItems: 'flex-end'}}>
+                      {
+                        this.state.rotatestatus === false ?
+                        <Animated.View style={{flex: 1, flexDirection: 'column', transform: [{translateX: this.state.rotatestatus === false ? searchHideSty : searchShowSty}]}}>
+                          <TouchableOpacity style={{width: 50, height: 50, justifyContent: 'center', alignItems: 'flex-end'}} onPress={(e) => this.rotateUsernameXA()}>
+                            <Ionicons name="ios-search" size={24} color="#444"/>
+                          </TouchableOpacity>
+                        </Animated.View> :
+                        <Animated.View style={{flex: 1, flexDirection: 'column', transform: [{translateX: this.state.rotatestatus === false ? closeShowSty : closeHideSty}]}}>
+                          <TouchableOpacity style={{width: 50, height: 50, justifyContent: 'center', alignItems: 'flex-end'}} onPress={(e) => this.rotateUsernameNA()}>
+                            <MaterialCommunityIcons name="blur" size={22} color="#444"/>
+                          </TouchableOpacity>
+                        </Animated.View>
+                      }
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )
+        }}
+      </Query>
+    )
   }
 
   rotateUsernameXA = () => {
@@ -236,38 +330,6 @@ class BuyerDashboard extends Component {
 
   render() {
     var { width, height } = Dimensions.get('window');
-    var rotateUsernameSty = this.rotateUsernameX.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, -50]
-    });
-    var rotateNormalSty = this.rotateUsernameN.interpolate({
-      inputRange: [0, 1],
-      outputRange: [-50, 0]
-    });
-    var searchHideSty = this.searchHide.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 80]
-    });
-    var searchShowSty = this.searchShow.interpolate({
-      inputRange: [0, 1],
-      outputRange: [80, 0]
-    });
-    var closeShowSty = this.closeShow.interpolate({
-      inputRange: [0, 1],
-      outputRange: [80, 0]
-    });
-    var closeHideSty = this.closeHide.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 80]
-    });
-    var inputShowSty = this.schinputShow.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0%', '100%']
-    });
-    var inputHideSty = this.schinputHide.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['100%', '0%']
-    });
     if(this.state.current_user._id && this.state.latitude.toString().length > 0 && this.state.longitude.toString().length > 0) {
       return (
         <Query query={GET_TIMELINE} variables={{
@@ -280,46 +342,8 @@ class BuyerDashboard extends Component {
           {({loading, error, data}) => {
             if(loading) return <TimelineProgress />
             return (
-              <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
-                <View style={{width: '100%', height: 50, paddingHorizontal: 20}}>
-                  <View style={{flex: 1, flexDirection: 'row'}}>
-                    <View style={{flex: .14, justifyContent: 'center'}}>
-                      <View style={{width: 30, height: 30, marginTop: 5}}>
-                        <Image source={{uri: 'https://cdn.dribbble.com/users/185856/screenshots/7142963/allelevens4_1x.png'}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 40}}/>
-                      </View>
-                    </View>
-                    <View style={{flex: .86, justifyContent: 'center', alignItems: 'flex-end'}}>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <View style={{flex: .85, justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <View style={{flex: 1, flexDirection: 'column'}}>
-                              <Animated.View style={{backgroundColor: '#f6f5f3',opacity: this.state.opaciti ,zIndex: this.state.rotatestatus === false ? 10 : 9,transform: [{translateY: this.state.rotatestatus === false ? rotateUsernameSty : rotateNormalSty}],position: 'absolute',width: '100%', height: '100%', justifyContent: 'center'}}>
-                                <Text style={[common.fontbody, {color: '#444'}]}>Hi, Bolsterli</Text>
-                                <Text style={[common.fontbody, {color: '#7f8082', fontSize: 12}]}>Singaradja</Text>
-                              </Animated.View>
-                              <Animated.View style={{opacity: this.state.opaciti2, backgroundColor: '#f6f5f3',zIndex: this.state.rotatestatus === false ? 9 : 10, alignItems: 'flex-end',height: '100%', width: this.state.rotatestatus === false ? inputShowSty : inputHideSty, position: 'absolute', justifyContent: 'center', paddingLeft: 10}}>
-                                <TextInput placeholder="Search" style={[common.fontbody, {marginTop: 5, color: '#444',width: '100%', height: 34, paddingHorizontal: 10, borderRadius: 4, backgroundColor: 'rgba(255,255,255,.5)', paddingVertical: 0}]}/>
-                              </Animated.View>
-                          </View>
-                        </View>
-                        <View style={{flex: .15, justifyContent: 'center', alignItems: 'flex-end'}}>
-                          {
-                            this.state.rotatestatus === false ?
-                            <Animated.View style={{flex: 1, flexDirection: 'column', transform: [{translateX: this.state.rotatestatus === false ? searchHideSty : searchShowSty}]}}>
-                              <TouchableOpacity style={{width: 50, height: 50, justifyContent: 'center', alignItems: 'flex-end'}} onPress={(e) => this.rotateUsernameXA()}>
-                                <Ionicons name="ios-search" size={24} color="#444"/>
-                              </TouchableOpacity>
-                            </Animated.View> :
-                            <Animated.View style={{flex: 1, flexDirection: 'column', transform: [{translateX: this.state.rotatestatus === false ? closeShowSty : closeHideSty}]}}>
-                              <TouchableOpacity style={{width: 50, height: 50, justifyContent: 'center', alignItems: 'flex-end'}} onPress={(e) => this.rotateUsernameNA()}>
-                                <MaterialCommunityIcons name="blur" size={22} color="#444"/>
-                              </TouchableOpacity>
-                            </Animated.View>
-                          }
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                </View>
+              <View style={[common.container, { backgroundColor: '#f6f5f3', paddingTop: 30}]}>
+                { this.renderHeaderTimeline(this.state.current_user._id) }
                 <View style={{width: width-20, height: (height / 4) - 50, justifyContent: 'flex-start', paddingHorizontal: 20, paddingRight: '20%', paddingTop: 30}}>
                   <TouchableHighlight>
                     <Text style={[{fontFamily:'Oswald',color: '#444', fontSize: 24, lineHeight: 42}]}>DISCOUNT HUNTERS JOIN HERE & GET YOUR LUCK</Text>

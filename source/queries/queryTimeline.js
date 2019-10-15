@@ -1,5 +1,18 @@
 import gql from 'graphql-tag';
 
+export var USERTIMELINE = gql`
+  query($userID: ID!) {
+    usertimeline(userID: $userID) {
+      _id
+      username
+      fullname
+      photos {
+        _id
+        secureUrl
+      }
+    }
+  }
+`
 
 export var GET_TIMELINE = gql`
   query($timelineProp: timelineProp) {

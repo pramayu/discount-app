@@ -59,7 +59,7 @@ class TimelineProgress extends Component {
   render() {
     var {width, height} = Dimensions.get('window');
     return (
-      <View style={[common.container, { backgroundColor: '#f6f5f3' }]}>
+      <View style={[common.container, { backgroundColor: '#f6f5f3', paddingTop: 30}]}>
         <View style={{width: '100%', height: 50, paddingHorizontal: 20}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex: .14, justifyContent: 'center'}}>

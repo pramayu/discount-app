@@ -151,4 +151,4 @@ export var CURRENT_USER = gql`
       usertype
     }
   }
-`
+`;

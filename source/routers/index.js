@@ -16,6 +16,7 @@ import BuyerDashboard from '../components/dashboard/buyer/timeline';
 import SettingUser from '../components/shared/setting';
 import ChangePassword from '../components/shared/changepassword';
 import StuffFilter from '../components/shared/filterstuff';
+import StuffBuyer from '../components/shared/stuffbuyer';
 
 import Scan from '../components/dashboard/merchant/scan';
 import Shop from '../components/dashboard/merchant/shop';
@@ -115,7 +116,14 @@ var discoverScreen = createStackNavigator({
 }, {
   headerMode: 'none',
   transitionConfig: TransitionConfiguration,
-})
+});
+
+var timelinexScreen = createStackNavigator({
+  BuyerDashboard: { screen: BuyerDashboard },
+  StuffBuyer: { screen: StuffBuyer }
+}, {
+  headerMode: 'none',
+});
 
 accountBuyer.navigationOptions = ({ navigation }) => {
   var tabBarVisible = true;
@@ -147,10 +155,20 @@ discoverScreen.navigationOptions = ({ navigation }) => {
   }
 }
 
+timelinexScreen.navigationOptions = ({ navigation }) => {
+  var tabBarVisible = true;
+  if(navigation.state.index > 0) {
+    tabBarVisible = false
+  }
+  return {
+    tabBarVisible
+  }
+}
+
 
 var buyerDashboard = createBottomTabNavigator({
   BuyerDashboard: {
-    screen: BuyerDashboard
+    screen: timelinexScreen
   },
   DiscoverBuyer: {
     screen: discoverScreen
