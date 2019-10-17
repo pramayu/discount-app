@@ -140,6 +140,17 @@ export var GET_STUFF = gql`
         price
         discountstatus
         stuffstatus
+        discounts {
+          _id
+          discount
+          enddate
+          quantity
+          status
+          discountype {
+            _id
+            child
+          }
+        }
         photos {
           _id
           secureUrl

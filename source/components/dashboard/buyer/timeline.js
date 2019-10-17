@@ -352,7 +352,7 @@ class BuyerDashboard extends Component {
                 </View>
                 <View style={{width: width, height: height / 1.5, justifyContent: 'flex-start', paddingTop: 20}}>
                   <View style={{flex: 1, flexDirection: 'column'}}>
-                    <View style={{width: width, height: height / 2.8, paddingHorizontal: 20}}>
+                    <View style={{width: width, height: height / 2.8, paddingLeft: 20}}>
                       <Text style={[common.fontitle, {fontSize: 12, color: '#7f8082', marginBottom: 15}]}>RECENT DISCOUNT</Text>
                       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{flex: 1, flexDirection: 'row'}}>
                         { this.renderRecentStuff(data.timeline.stuffs) }
