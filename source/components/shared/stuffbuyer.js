@@ -20,8 +20,13 @@ class StuffBuyer extends Component {
     super(props);
     this.state = {
       current_user: '',
-      stuffID: ''
+      stuffID: '',
+      bottomSheetStatus: false
     }
+    this.bottomSheetUp = new Animated.Value(0);
+    this.bottomSheetDw = new Animated.Value(0);
+    this.moveBottomsLf = new Animated.Value(0);
+    this.moveBottomsRg = new Animated.Value(0);
   }
   componentDidMount = () => {
     var {stuff_id} = this.props.navigation.state.params;
@@ -44,6 +49,40 @@ class StuffBuyer extends Component {
   componentWillUnmount = () => {
     this._navListener.remove()
   }
+
+  bottomSheetAnimatedUp = () => {
+    Animated.parallel([
+      Animated.timing(this.moveBottomsLf, {
+        toValue: 1,
+        duration: 400
+      }),
+      Animated.timing(this.bottomSheetUp, {
+        toValue: 1,
+        duration: 500
+      })
+    ]).start((e) => {
+      this.setState({ bottomSheetStatus: true });
+      this.bottomSheetDw.setValue(0);
+      this.moveBottomsRg.setValue(0);
+    })
+  };
+
+  bottomSheetAnimatedDw = () => {
+    Animated.parallel([
+      Animated.timing(this.bottomSheetDw, {
+        toValue: 1,
+        duration: 500
+      }),
+      Animated.timing(this.moveBottomsRg, {
+        toValue: 1,
+        duration: 400
+      })
+    ]).start((e) => {
+      this.setState({ bottomSheetStatus: false });
+      this.bottomSheetUp.setValue(0);
+      this.moveBottomsLf.setValue(0);
+    })
+  };
 
   truncate = (str, limit) => {
     return str.split(" ").splice(0, limit).join(" ");
@@ -80,8 +119,41 @@ class StuffBuyer extends Component {
     </Text>
   }
 
+  renderDiscount = (discounts) => {
+    var trueDiscount = _.filter(discounts, (discount) => discount.status === true);
+    return trueDiscount;
+  }
+
+  renderRules = (rules) => {
+    return _.map(rules, (rule, index) => {
+      return <Text key={index} style={[common.fontbody, {color: '#7f8082', lineHeight: 21}]}># {rule.child}</Text>
+    })
+  }
+
+  renderFacilities = (facilities) => {
+    return _.map(facilities, (faciliti, index) => {
+      return <Text key={index} style={[common.fontbody, {color: '#7f8082', lineHeight: 21}]}># {faciliti.child}</Text>
+    })
+  }
+
   render() {
     var { width, height } = Dimensions.get('window');
+    var bottomSheetUpSty = this.bottomSheetUp.interpolate({
+      inputRange: [0, 1],
+      outputRange: [height + 40, 0]
+    });
+    var moveBottomsLfSty = this.moveBottomsLf.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, -width]
+    });
+    var bottomSheetDwSty = this.bottomSheetDw.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, height + 40]
+    });
+    var moveBottomsRgSty = this.moveBottomsRg.interpolate({
+      inputRange: [0, 1],
+      outputRange: [-width, 0]
+    });
     if(this.state.stuffID.length > 0) {
       return (
         <Query query={GET_STUFF} variables={{stuffID: this.state.stuffID}}>
@@ -92,12 +164,13 @@ class StuffBuyer extends Component {
                 </View>
               )
             }
+            var trueDiscount = this.renderDiscount(data.stuff ? data.stuff.stuff.discounts : [])
             return (
               <View style={[common.container, { backgroundColor: '#f6f5f3'}]}>
                 <View style={{width: '100%', height: 80, backgroundColor: 'rgba(255,255,255,.0)', position: 'absolute', top: 0, zIndex: 15, paddingHorizontal: 20}}>
                   <View style={{flex: 1, flexDirection: 'row'}}>
                     <View style={{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
-                      <TouchableOpacity style={{height: '100%', justifyContent: 'center'}}>
+                      <TouchableOpacity onPress={(e) => this.props.navigation.goBack()} style={{height: '100%', justifyContent: 'center'}}>
                         <Ionicons name="ios-arrow-round-back" size={28} color="#f6f5f3"/>
                       </TouchableOpacity>
                     </View>
@@ -113,18 +186,18 @@ class StuffBuyer extends Component {
                   <View style={{flex: 1, flexDirection: 'row'}}>
                     {this.renderPicture(data.stuff.stuff.photos)}
                   </View>
-                  <View style={{width: 40, height: 40, borderRadius: 50, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center', position: 'absolute', bottom: 50, elevation: 10, marginLeft: 30, zIndex: 16}}>
+                  <Animated.View style={{transform: [{translateX: this.state.bottomSheetStatus === false ? moveBottomsLfSty : moveBottomsRgSty}], position: 'absolute', width: 40, height: 40, borderRadius: 50, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center', bottom: 50, elevation: 10, marginLeft: 30, zIndex: 16}}>
                     <TouchableOpacity style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', borderRadius: 50, backgroundColor: '#ea4c89'}}>
                       <Ionicons name="ios-heart" size={24} color="#f6f5f3"/>
                     </TouchableOpacity>
-                  </View>
-                  <View style={{width: '100%', height: 70, paddingHorizontal: 20, position: 'absolute', bottom: 0, borderTopLeftRadius: 20, backgroundColor: '#f6f5f3', zIndex: 14}}>
+                  </Animated.View>
+                  <View style={{width: '100%', height: 70, paddingHorizontal: 20, position: 'absolute', bottom: 0, borderTopRightRadius: 20, borderTopLeftRadius: 20, backgroundColor: '#f6f5f3', zIndex: 14}}>
                     <View style={{flex: 1, flexDirection: 'row'}}>
                       <View style={{flex: .75, paddingTop: 25}}>
                         <Text style={[common.fontitle, {fontSize: 18, color: '#444',lineHeight: 26}]}>{data.stuff.stuff.title}</Text>
                       </View>
                       <View style={{flex: .25, paddingTop: 20, alignItems: 'flex-end'}}>
-                        <Text style={[common.fontitle, {fontSize: 24, color: '#444'}]}>50%</Text>
+                        <Text style={[common.fontitle, {fontSize: 24, color: '#444'}]}>{trueDiscount[0].discount}%</Text>
                         <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>DISCOUNT</Text>
                       </View>
                     </View>
@@ -141,7 +214,7 @@ class StuffBuyer extends Component {
                       { this.setTrueDiscount(data.stuff.stuff.discounts) }
                     </View>
                   </View>
-                  <Text style={[common.fontitle, {fontSize: 16, color: '#444'}]}>IDR 35000 / <Text style={{fontSize: 12, color: '#7f8082'}}>IDR {data.stuff.stuff.price}</Text></Text>
+                  <Text style={[common.fontitle, {fontSize: 16, color: '#444'}]}>IDR {Math.round(parseInt(data.stuff.stuff.price) - (parseInt(data.stuff.stuff.price) * parseInt(trueDiscount[0].discount) / 100))} / <Text style={{fontSize: 12, color: '#7f8082'}}>IDR {data.stuff.stuff.price}</Text></Text>
                   <View style={{width: '100%', paddingRight: '15%', paddingTop: 10}}>
                     <Text style={[common.fontbody, {color: '#444', lineHeight: 20}]}>{this.truncate(data.stuff.stuff.description, 18)} <Text style={{fontSize: 12}}>{data.stuff.stuff.description.split(" ").length > 18 ? ' [...]' : null}</Text></Text>
                   </View>
@@ -166,10 +239,67 @@ class StuffBuyer extends Component {
                         <Ionicons size={24} color="#dbd9d9" name="ios-paper-plane"/>
                         <Text style={[common.fontitle, {fontSize: 10, color: '#444'}]}>MORE</Text>
                         <Text style={[common.fontitle, {fontSize: 10, color: '#444'}]}>INFO</Text>
+                        <TouchableOpacity onPress={(e) => this.bottomSheetAnimatedUp()} style={{width: '100%', height: '100%', position: 'absolute'}}></TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={{width: '100%', height: height / 10, marginTop: 30}}>
+                    <View style={{flex: 1, flexDirection: 'row'}}>
+                      <View style={{flex: .75}}>
+                        <View style={{flex: 1, flexDirection: 'row', alignItems: 'flex-end'}}>
+                          <View style={{borderTopLeftRadius: 20, borderBottomLeftRadius: 20,flex: .6, justifyContent: 'center', alignItems: 'flex-end',paddingRight: 10, height: 55, backgroundColor: '#444'}}>
+                            <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 16}]}>ADD TO CART</Text>
+                          </View>
+                          <View style={{borderTopRightRadius: 20, borderBottomRightRadius: 20, flex: .4, justifyContent: 'center', alignItems: 'flex-start', height: 55, backgroundColor: '#444'}}>
+                            <Ionicons name="ios-arrow-round-forward" size={28} color="#f6f5f3"/>
+                          </View>
+                          <TouchableOpacity style={{width: '100%', height: 55, position: 'absolute', borderRadius: 20}}>
+                            <Text></Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                      <View style={{flex: .25, justifyContent: 'flex-end', alignItems: 'flex-end'}}>
+                        <TouchableOpacity style={{width: '80%', height: 55, backgroundColor: '#e2cb93', borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+                          <Ionicons name="ios-chatbubbles" size={28} color="#aa9460"/>
+                        </TouchableOpacity>
                       </View>
                     </View>
                   </View>
                 </View>
+                <Animated.View style={{position: 'absolute', width: width, height: height + 30, justifyContent: 'flex-end', zIndex: 17, transform: [{translateY: this.state.bottomSheetStatus === false ? bottomSheetUpSty : bottomSheetDwSty}]}}>
+                  <View style={{width: '100%', height: 20, justifyContent: 'center', alignItems: 'center'}}>
+                    <TouchableOpacity onPress={(e) => this.bottomSheetAnimatedDw()} style={{width: 40, height: 20, justifyContent: 'center'}}>
+                      <View style={{width: 40, height: 4, backgroundColor: '#f6f5f3', borderRadius: 20}}></View>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{width: '100%', height: height / 1.5, backgroundColor: '#f6f5f3', borderTopLeftRadius: 30, borderTopRightRadius: 30, paddingHorizontal: 20}}>
+                    <View style={{width: '100%', height: 70, marginTop: 30}}>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <View style={{width: '22%', height: '100%'}}>
+                          <View style={{width: 60, height: 60}}>
+                            <Image source={{uri: data.stuff.stuff.merchant.photos[0].secureUrl}} style={{width: '100%', height: '100%', borderRadius: 50, resizeMode: 'cover'}}/>
+                          </View>
+                        </View>
+                        <View style={{width: '78%', height: '100%'}}>
+                          <Text style={[common.fontitle, {color: '#444'}]}>{data.stuff.stuff.merchant.name}</Text>
+                          <Text style={[common.fontbody, {color: '#7f8082', marginTop: 5}]}>{data.stuff.stuff.merchant.sosmed}</Text>
+                          <View style={{width: '100%', height: 34}}>
+                            <View style={{flex: 1, flexDirection: 'row', paddingTop:5}}>
+                              <Ionicons name="ios-ribbon" size={18} color="#7f8082" style={{alignSelf: 'flex-start', marginRight: 5}}/>
+                              <Text style={[common.fontbody, {color: '#7f8082', marginRight: 10, paddingTop: 2}]}>4.6</Text>
+                              <Ionicons name="ios-person" size={18} color="#7f8082" style={{alignSelf: 'flex-start', marginRight: 5}}/>
+                              <Text style={[common.fontbody, {color: '#7f8082', marginRight: 10, paddingTop: 2}]}>500 follower</Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                    <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20, marginBottom: 5}]}>RULES EXCHANGE</Text>
+                    {this.renderRules(data.stuff.stuff.merchant.rules)}
+                    <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20, marginBottom: 5}]}>FACILITIES</Text>
+                    {this.renderFacilities(data.stuff.stuff.merchant.facilities)}
+                  </View>
+                </Animated.View>
               </View>
             )
           }}

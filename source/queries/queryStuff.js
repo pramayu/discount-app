@@ -166,6 +166,26 @@ export var GET_STUFF = gql`
         }
         merchant {
           _id
+          name
+          sosmed
+          photos {
+            _id
+            secureUrl
+          }
+          rules {
+            _id
+            child
+          }
+          facilities {
+            _id
+            child
+          }
+          location {
+            _id
+            address
+            distric
+            province
+          }
           niche {
             _id
             categori {
