@@ -13,6 +13,7 @@ import { common } from '../../assets/stylesheets/common';
 import { titleCase, countDiscount } from './sharedaction';
 import { GET_STUFF } from '../../queries/queryStuff';
 import { CURRENT_USER } from '../../queries/queryUser';
+import { ADD_TO_CART, GET_USER_CART } from '../../queries/queryCart';
 
 
 class StuffBuyer extends Component {
@@ -119,6 +120,25 @@ class StuffBuyer extends Component {
     </Text>
   }
 
+  addToCart = async(stuffID) => {
+    var res = await this.props.add_to_cart({
+      variables: {
+        stuffID: stuffID,
+        userID: this.state.current_user._id
+      },
+      refetchQueries: [{
+        query: GET_USER_CART,
+        variables: {
+          usercartprop: {
+            userID: this.state.current_user._id,
+            stuffID: stuffID
+          }
+        }
+      }]
+    });
+    var { status, error, cart } = res.data.add_to_cart;
+  }
+
   renderDiscount = (discounts) => {
     var trueDiscount = _.filter(discounts, (discount) => discount.status === true);
     return trueDiscount;
@@ -134,6 +154,57 @@ class StuffBuyer extends Component {
     return _.map(facilities, (faciliti, index) => {
       return <Text key={index} style={[common.fontbody, {color: '#7f8082', lineHeight: 21}]}># {faciliti.child}</Text>
     })
+  }
+
+  renderStoreLocation = (locations) => {
+    return _.map(locations, (location, index) => {
+      return <Text key={index} style={[common.fontbody, {color: '#7f8082', lineHeight: 21}]}># {location.address}</Text>
+    })
+  }
+
+  renderGetUserCart = (stuffID, userID) => {
+    return (
+      <Query query={GET_USER_CART} variables={{
+          usercartprop: {
+            userID: userID,
+            stuffID: stuffID
+          }
+        }}>
+        {({loading, error, data}) => {
+          if(loading) {
+            return (
+              <View style={{flex: 1, flexDirection: 'row', alignItems: 'flex-end'}}>
+                <View style={{borderTopLeftRadius: 20, borderBottomLeftRadius: 20,flex: .6, justifyContent: 'center', alignItems: 'flex-end',paddingRight: 10, height: 55, backgroundColor: '#444'}}>
+                  <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 16}]}>ADD TO CART</Text>
+                </View>
+                <View style={{borderTopRightRadius: 20, borderBottomRightRadius: 20, flex: .4, justifyContent: 'center', alignItems: 'flex-start', height: 55, backgroundColor: '#444'}}>
+                  <Ionicons name="ios-arrow-round-forward" size={28} color="#f6f5f3"/>
+                </View>
+              </View>
+            )
+          }
+          return (
+            <View style={{flex: 1, flexDirection: 'row', alignItems: 'flex-end'}}>
+              <View style={{borderTopLeftRadius: 20, borderBottomLeftRadius: 20,flex: .6, justifyContent: 'center', alignItems: 'flex-end',paddingRight: 10, height: 55, backgroundColor: '#393b47'}}>
+                {
+                  data.get_user_cart.status === false ?
+                  <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 16}]}>ADD TO CART</Text> : <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 16}]}>ALREADY IN CART</Text>
+                }
+              </View>
+              <View style={{borderTopRightRadius: 20, borderBottomRightRadius: 20, flex: .4, justifyContent: 'center', alignItems: 'flex-start', height: 55, backgroundColor: '#393b47'}}>
+                <Ionicons name="ios-arrow-round-forward" size={28} color="#f6f5f3"/>
+              </View>
+              {
+                data.get_user_cart.status === false ?
+                <TouchableOpacity onPress={(e) => this.addToCart(stuffID)} style={{width: '100%', height: 55, position: 'absolute', borderRadius: 20}}>
+                  <Text></Text>
+                </TouchableOpacity> : null
+              }
+            </View>
+          )
+        }}
+      </Query>
+    )
   }
 
   render() {
@@ -177,7 +248,7 @@ class StuffBuyer extends Component {
                     <View style={{width: '60%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}></View>
                     <View style={{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'flex-end'}}>
                       <TouchableOpacity style={{height: '100%', justifyContent: 'center'}}>
-                        <Ionicons name="ios-archive" size={18} color="#f6f5f3"/>
+                        {/*<Ionicons name="ios-archive" size={18} color="#f6f5f3"/> */}
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -246,17 +317,7 @@ class StuffBuyer extends Component {
                   <View style={{width: '100%', height: height / 10, marginTop: 30}}>
                     <View style={{flex: 1, flexDirection: 'row'}}>
                       <View style={{flex: .75}}>
-                        <View style={{flex: 1, flexDirection: 'row', alignItems: 'flex-end'}}>
-                          <View style={{borderTopLeftRadius: 20, borderBottomLeftRadius: 20,flex: .6, justifyContent: 'center', alignItems: 'flex-end',paddingRight: 10, height: 55, backgroundColor: '#444'}}>
-                            <Text style={[common.fontitle, {color: '#f6f5f3', fontSize: 16}]}>ADD TO CART</Text>
-                          </View>
-                          <View style={{borderTopRightRadius: 20, borderBottomRightRadius: 20, flex: .4, justifyContent: 'center', alignItems: 'flex-start', height: 55, backgroundColor: '#444'}}>
-                            <Ionicons name="ios-arrow-round-forward" size={28} color="#f6f5f3"/>
-                          </View>
-                          <TouchableOpacity style={{width: '100%', height: 55, position: 'absolute', borderRadius: 20}}>
-                            <Text></Text>
-                          </TouchableOpacity>
-                        </View>
+                        {this.renderGetUserCart(this.state.stuffID, this.state.current_user._id)}
                       </View>
                       <View style={{flex: .25, justifyContent: 'flex-end', alignItems: 'flex-end'}}>
                         <TouchableOpacity style={{width: '80%', height: 55, backgroundColor: '#e2cb93', borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
@@ -294,9 +355,11 @@ class StuffBuyer extends Component {
                         </View>
                       </View>
                     </View>
-                    <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20, marginBottom: 5}]}>RULES EXCHANGE</Text>
+                    <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20, marginBottom: 5}]}><Ionicons name="ios-pin" size={18} color="#444"/>  STORE LOCATION</Text>
+                    {this.renderStoreLocation(data.stuff.stuff.merchant.location)}
+                    <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20, marginBottom: 5}]}><Ionicons name="ios-repeat" size={18} color="#444"/>  RULES EXCHANGE</Text>
                     {this.renderRules(data.stuff.stuff.merchant.rules)}
-                    <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20, marginBottom: 5}]}>FACILITIES</Text>
+                    <Text style={[common.fontitle, {fontSize: 12, color: '#444', marginTop: 20, marginBottom: 5}]}><Ionicons name="ios-play-circle" size={18} color="#444"/>  FACILITIES</Text>
                     {this.renderFacilities(data.stuff.stuff.merchant.facilities)}
                   </View>
                 </Animated.View>
@@ -322,5 +385,8 @@ export default compose(
       fetchPolicy: 'network-only'
     }),
     props: ({current_user: {current_user}}) => ({current_user})
+  }),
+  graphql(ADD_TO_CART, {
+    name: 'add_to_cart'
   })
 )(StuffBuyer);
