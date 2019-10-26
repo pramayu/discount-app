@@ -17,6 +17,7 @@ import SettingUser from '../components/shared/setting';
 import ChangePassword from '../components/shared/changepassword';
 import StuffFilter from '../components/shared/filterstuff';
 import StuffBuyer from '../components/shared/stuffbuyer';
+import ReviewStuff from '../components/shared/reviews';
 
 import Scan from '../components/dashboard/merchant/scan';
 import Shop from '../components/dashboard/merchant/shop';
@@ -120,7 +121,8 @@ var discoverScreen = createStackNavigator({
 
 var timelinexScreen = createStackNavigator({
   BuyerDashboard: { screen: BuyerDashboard },
-  StuffBuyer: { screen: StuffBuyer }
+  StuffBuyer: { screen: StuffBuyer },
+  ReviewStuff: { screen: ReviewStuff }
 }, {
   headerMode: 'none',
 });
