@@ -10,7 +10,8 @@ import {compose, graphql, Query} from 'react-apollo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { common } from '../../assets/stylesheets/common';
-import {COMMENT_TO_STUFF, COMMENT_STUFF} from '../../queries/queryComment';
+import images from '../../assets/images/images';
+import {COMMENT_TO_STUFF, COMMENT_STUFF, EDIT_COMMENT_STUFF, DELETE_COMMENT_STUFF} from '../../queries/queryComment';
 import {CURRENT_USER} from '../../queries/queryUser';
 
 
@@ -21,8 +22,13 @@ class ReviewStuff extends Component {
       keyAnimatedStatus: false,
       keyHeight: 0,
       stuffID: '',
+      merchantID: '',
       child: '',
-      current_user: ''
+      current_user: '',
+      commentID: '',
+      editstatus: false,
+      rate: '0',
+      typingstatus: false
     }
     this.animatedTextInputUp = new Animated.Value(0);
     this.animatedTextInputDw = new Animated.Value(0);
@@ -31,7 +37,7 @@ class ReviewStuff extends Component {
   }
 
   componentDidMount = () => {
-    var {stuffID} = this.props.navigation.state.params;
+    var {stuffID, merchantID} = this.props.navigation.state.params;
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       StatusBar.setBarStyle('dark-content');
       StatusBar.setBackgroundColor('transparent');
@@ -45,7 +51,7 @@ class ReviewStuff extends Component {
       'keyboardDidHide',
       this._keyboardDidHide.bind(this),
     );
-    this.setState({ stuffID: stuffID })
+    this.setState({ stuffID: stuffID, merchantID: merchantID })
   }
 
   componentWillReceiveProps = (nextProps) => {
@@ -61,11 +67,12 @@ class ReviewStuff extends Component {
   }
 
   _keyboardDidShow(e) {
-    this.setState({keyHeight: e.endCoordinates.height});
+    this.setState({keyHeight: e.endCoordinates.height, typingstatus: true});
     this.animatedTextInputUpServ()
   }
 
   _keyboardDidHide() {
+    this.setState({typingstatus: false, rate: '0', child: ''});
     this.animatedTextInputDwServ()
   }
 
@@ -75,7 +82,9 @@ class ReviewStuff extends Component {
         commentprop: {
           child       : this.state.child,
           stuffID     : this.state.stuffID,
-          userID      : this.state.current_user._id
+          userID      : this.state.current_user._id,
+          rate        : this.state.rate,
+          merchantID  : this.state.merchantID
         }
       },
       refetchQueries: [{
@@ -93,6 +102,65 @@ class ReviewStuff extends Component {
       this.setState({child: ''});
       Keyboard.dismiss();
     }
+  }
+
+  setCommentEdit = (comment) => {
+    this.setState({
+      child         : comment.child,
+      commentID     : comment._id,
+      editstatus    : true
+    });
+  };
+
+  handleStoreComment = async() => {
+    var res = await this.props.edit_comment_stuff({
+      variables: {
+        commentprop: {
+          userID      : this.state.current_user._id,
+          stuffID     : this.state.stuffID,
+          commentID   : this.state.commentID,
+          child       : this.state.child
+        }
+      },
+      refetchQueries: [{
+        query: COMMENT_STUFF,
+        variables: {
+          commentprop: {
+            stuffID     : this.state.stuffID,
+            userID      : this.state.current_user._id
+          }
+        }
+      }]
+    });
+    var {status, error} = res.data.edit_comment_stuff;
+    if(status === true) {
+      this.setState({
+        child: '',
+        editstatus: false
+      });
+      Keyboard.dismiss();
+    }
+  };
+
+  deleteCommentStuff = async(commentID) => {
+    var res = await this.props.delete_comment_stuff({
+      variables: {
+        commentprop: {
+          userID    : this.state.current_user._id,
+          stuffID   : this.state.stuffID,
+          commentID : commentID
+        }
+      },
+      refetchQueries: [{
+        query: COMMENT_STUFF,
+        variables: {
+          commentprop: {
+            stuffID     : this.state.stuffID,
+            userID      : this.state.current_user._id
+          }
+        }
+      }]
+    })
   }
 
   animatedTextInputUpServ = () => {
@@ -146,7 +214,28 @@ class ReviewStuff extends Component {
                     <Text style={[{fontFamily: 'Oswald', fontSize: 14, color: '#444'}]}>{comment.user.fullname.length > 0 ? comment.user.fullname : comment.user.username} <Text style={[{fontFamily: 'Oswald', color: '#7f8082', fontSize: 12, marginLeft: 15}]}>5d ago.</Text></Text>
                   </View>
                   <View style={{flex: .3, alignItems: 'flex-end'}}>
-                    <MaterialCommunityIcons size={20} color="#444" name="emoticon-kiss-outline"/>
+                    {
+                      comment.rate.scale === '1' ?
+                        <View style={{width: 24, height: 24}}>
+                          <Image source={images.icon_1} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                        </View>:
+                      comment.rate.scale === '2' ?
+                        <View style={{width: 24, height: 24}}>
+                          <Image source={images.icon_2} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                        </View>:
+                      comment.rate.scale === '3' ?
+                        <View style={{width: 24, height: 24}}>
+                          <Image source={images.icon_3} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                        </View>:
+                      comment.rate.scale === '4' ?
+                        <View style={{width: 24, height: 24}}>
+                          <Image source={images.icon_4} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                        </View>:
+                      comment.rate.scale === '5' ?
+                        <View style={{width: 24, height: 24}}>
+                          <Image source={images.icon_5} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                        </View>: null
+                    }
                   </View>
                 </View>
               </View>
@@ -156,17 +245,22 @@ class ReviewStuff extends Component {
                 <View style={{width: '100%', height: 20}}>
                   <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
                     <View style={{width: '12%', height: '100%'}}>
-                      <TouchableOpacity style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                      <TouchableOpacity onPress={(e) => this.setCommentEdit(comment)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
                         <Ionicons name="ios-swap" size={18} color="#dbd9d9"/>
                       </TouchableOpacity>
                     </View>
                     <View style={{width: '12%', height: '100%'}}>
-                      <TouchableOpacity style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                      <TouchableOpacity onPress={(e) => this.deleteCommentStuff(comment._id)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
                         <Ionicons name="ios-flame" size={18} color="#dbd9d9"/>
                       </TouchableOpacity>
                     </View>
                   </View>
-                </View> : null
+                </View> :
+                <View style={{width: '100%', height: 16, alignItems: 'flex-end'}}>
+                  <TouchableOpacity style={{width: '20%', height: '100%'}}>
+                    <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>REPLY</Text>
+                  </TouchableOpacity>
+                </View>
               }
               {/*
                 <View style={{width: '100%', height: 'auto'}}>
@@ -242,28 +336,48 @@ class ReviewStuff extends Component {
                     <View style={{width: '50%', height: '100%', paddingLeft: 20, paddingTop: 20}}>
                       <View style={{flex: 1, flexDirection: 'row'}}>
                         <View style={{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
-                            <MaterialCommunityIcons size={24} color="#7f8082" name="emoticon-angry-outline"/>
+                          <TouchableOpacity onPress={(e) => this.setState({rate: '1'})} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
+                            {
+                              this.state.rate === '1' ?
+                              <Image source={images.icon_1} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>:
+                              <Image source={images.icon_1_greyscale} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                            }
                           </TouchableOpacity>
                         </View>
                         <View style={{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
-                            <MaterialCommunityIcons size={24} color="#7f8082" name="emoticon-neutral-outline"/>
+                          <TouchableOpacity onPress={(e) => this.setState({rate: '2'})} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
+                            {
+                              this.state.rate === '2' ?
+                              <Image source={images.icon_2} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>:
+                              <Image source={images.icon_2_greyscale} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                            }
                           </TouchableOpacity>
                         </View>
                         <View style={{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
-                            <MaterialCommunityIcons size={24} color="#7f8082" name="emoticon-happy-outline"/>
+                          <TouchableOpacity onPress={(e) => this.setState({rate: '3'})} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
+                            {
+                              this.state.rate === '3' ?
+                              <Image source={images.icon_3} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>:
+                              <Image source={images.icon_3_greyscale} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                            }
                           </TouchableOpacity>
                         </View>
                         <View style={{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
-                            <MaterialCommunityIcons size={24} color="#7f8082" name="emoticon-excited-outline"/>
+                          <TouchableOpacity onPress={(e) => this.setState({rate: '4'})} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
+                            {
+                              this.state.rate === '4' ?
+                              <Image source={images.icon_4} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>:
+                              <Image source={images.icon_4_greyscale} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                            }
                           </TouchableOpacity>
                         </View>
                         <View style={{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <TouchableOpacity style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
-                            <MaterialCommunityIcons size={24} color="#7f8082" name="emoticon-kiss-outline"/>
+                          <TouchableOpacity onPress={(e) => this.setState({rate: '5'})} style={{width: 32, height: 32, justifyContent: 'center', alignItems: 'center'}}>
+                            {
+                              this.state.rate === '5' ?
+                              <Image source={images.icon_5} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>:
+                              <Image source={images.icon_5_greyscale} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                            }
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -272,9 +386,9 @@ class ReviewStuff extends Component {
                 </Animated.View>
                 <View style={{width: width, height: height}}>
                   <View style={{flex: 1, flexDirection: 'column'}}>
-                    <View style={{width: '100%', height: height - 80, marginTop: 30, paddingHorizontal: 20, paddingTop: 50}}>
+                    <View style={{width: '100%', height: height - 80, marginTop: 20, paddingHorizontal: 20, paddingTop: 50}}>
                       <View style={{flex: 1, flexDirection: 'column'}}>
-                        { this._renderComment(data.comment_stuff ? data.comment_stuff : []) }
+                        { this.state.typingstatus === false? this._renderComment(data.comment_stuff ? data.comment_stuff : []) : null}
                       </View>
                     </View>
                     {/*form*/}
@@ -288,9 +402,15 @@ class ReviewStuff extends Component {
                         <View style={{width: '85%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
                           <TextInput value={this.state.child} onChangeText = {(txt) => this.setState({child: txt})} placeholder="Give us review" style={[common.fontbody, {paddingRight: 40, fontSize: 14, color: '#444',width: '100%', height: 42, borderRadius: 20, paddingHorizontal: 15, backgroundColor: '#fff'}]}/>
                           <View style={{position: 'absolute', height: 32, width: 32, right: 10}}>
-                            <TouchableOpacity onPress={(e) => this.commentToStuff()} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                              <Ionicons name="ios-color-wand" size={22} color="#444"/>
-                            </TouchableOpacity>
+                            {
+                              this.state.editstatus === false ?
+                              <TouchableOpacity onPress={(e) => this.commentToStuff()} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                                <Ionicons name="ios-color-wand" size={22} color="#444"/>
+                              </TouchableOpacity> :
+                              <TouchableOpacity onPress={(e) => this.handleStoreComment()} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                                <Ionicons name="ios-color-wand" size={22} color="#444"/>
+                              </TouchableOpacity>
+                            }
                           </View>
                         </View>
                       </View>
@@ -311,6 +431,12 @@ class ReviewStuff extends Component {
 export default compose(
   graphql(COMMENT_TO_STUFF, {
     name: 'comment_to_stuff'
+  }),
+  graphql(EDIT_COMMENT_STUFF, {
+    name: 'edit_comment_stuff'
+  }),
+  graphql(DELETE_COMMENT_STUFF, {
+    name: 'delete_comment_stuff'
   }),
   graphql(CURRENT_USER, {
     name: 'current_user',

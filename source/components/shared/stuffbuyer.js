@@ -320,7 +320,7 @@ class StuffBuyer extends Component {
                         {this.renderGetUserCart(this.state.stuffID, this.state.current_user._id)}
                       </View>
                       <View style={{flex: .25, justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-                        <TouchableOpacity onPress={(e) => this.props.navigation.navigate('ReviewStuff', {stuffID: data.stuff.stuff._id})} style={{width: '80%', height: 55, backgroundColor: '#e2cb93', borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
+                        <TouchableOpacity onPress={(e) => this.props.navigation.navigate('ReviewStuff', {stuffID: data.stuff.stuff._id, merchantID: data.stuff.stuff.merchant._id})} style={{width: '80%', height: 55, backgroundColor: '#e2cb93', borderRadius: 20, justifyContent: 'center', alignItems: 'center'}}>
                           <Ionicons name="ios-chatbubbles" size={28} color="#aa9460"/>
                         </TouchableOpacity>
                       </View>

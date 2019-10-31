@@ -29,6 +29,30 @@ export var COMMENT_TO_STUFF = gql`
   }
 `;
 
+export var EDIT_COMMENT_STUFF = gql`
+  mutation($commentprop: commentprop) {
+    edit_comment_stuff(commentprop: $commentprop) {
+      status,
+      error {
+        path
+        message
+      }
+    }
+  }
+`;
+
+export var DELETE_COMMENT_STUFF = gql`
+  mutation($commentprop: commentprop) {
+    delete_comment_stuff(commentprop: $commentprop) {
+      status,
+      error {
+        path
+        message
+      }
+    }
+  }
+`
+
 export var COMMENT_STUFF = gql`
   query($commentprop: commentprop) {
     comment_stuff(commentprop: $commentprop) {
@@ -47,6 +71,10 @@ export var COMMENT_STUFF = gql`
       stuff {
         _id
       }
+      rate {
+        _id
+        scale
+      }
     }
   }
-`
+`;

@@ -29,39 +29,11 @@ pink #ea4c89
 - di tambah address (field semua kosongkan)
 
 
-db.merchants.updateOne({'_id': ObjectId("5d935498d6054a10c7bd4892")}, {$unset: {"geometri": 1}}) ->
-db.merchants.updateOne({'_id': ObjectId("5d935498d6054a10c7bd4892")}, {$pull: {"geometri.coordinates": null}})
+5 star - 252
+4 star - 124
+3 star - 40
+2 star - 29
+1 star - 33
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-{$pull: { 'location': {'_id': args.addressdeleteprop.locationID}}},
-{$unset: {[pathUnset]: 1}},
-{$pull: {"geometri.coordinates": null}
-
-
-
-TF701FNKR3V0 dummy
-172424205654
-TF70MSW7VDQ9
-
-ganti
-172424803802
-TF70YGGJSR26
-
-
-ODP-SGR-FC/17 FC/D01/17.01-PANEL01-8
-
-location: [{
-
-}],
+(5*252 + 4*124 + 3*40 + 2*29 + 1*33) / (252+124+40+29+33) = 4.11 and change

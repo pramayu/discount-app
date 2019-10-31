@@ -46,7 +46,8 @@
   },
   "rnpm": {
     "assets": [
-      "./source/assets/fonts"
+      "./source/assets/fonts",
+      "./source/assets/images"
     ]
   }
 }
