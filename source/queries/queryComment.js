@@ -12,6 +12,10 @@ export var COMMENT_TO_STUFF = gql`
         _id
         child
         createAt
+        subcomment {
+          _id
+          child
+        }
         user {
           _id
           username
@@ -59,6 +63,27 @@ export var COMMENT_STUFF = gql`
       _id
       child
       createAt
+      subcomment {
+        _id
+        child
+        user {
+          _id
+          username
+          fullname
+          photos {
+            _id
+            secureUrl
+          }
+        }
+        merchant {
+          _id
+          name
+          photos {
+            _id
+            secureUrl
+          }
+        }
+      }
       user {
         _id
         username

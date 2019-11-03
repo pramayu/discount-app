@@ -27,6 +27,7 @@ pink #ea4c89
 - pertama buat merchant -> setting; masih error
 - seletah upload bersihkan extra field & image
 - di tambah address (field semua kosongkan)
+- dari merchant dashboard ke setting masih error
 
 
 5 star - 252
@@ -37,3 +38,97 @@ pink #ea4c89
 
 
 (5*252 + 4*124 + 3*40 + 2*29 + 1*33) / (252+124+40+29+33) = 4.11 and change
+
+
+
+return (
+  <View key={index} style={{width: '100%'}}>
+    <View style={{flex: 1, flexDirection: 'row'}}>
+      <View style={{width: '17%', height: 'auto'}}>
+        <View style={{width: 35, height: 35, borderRadius: 60}}>
+          <Image source={{uri: comment.user.photos[0].secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 60}}/>
+        </View>
+      </View>
+      <View style={{width: '83%', height: 'auto', paddingTop: 3}}>
+        <View style={{width: '100%', height: 24}}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{flex: .7}}>
+              <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>{comment.user.fullname.length > 0 ? comment.user.fullname : comment.user.username} <Text style={[{fontFamily: 'Oswald', color: '#7f8082', fontSize: 12, marginLeft: 15}]}>5d ago.</Text></Text>
+            </View>
+            <View style={{flex: .3, alignItems: 'flex-end'}}>
+              {
+                comment.rate.scale === '1' ?
+                  <View style={{width: 24, height: 24}}>
+                    <Image source={images.icon_1} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                  </View>:
+                comment.rate.scale === '2' ?
+                  <View style={{width: 24, height: 24}}>
+                    <Image source={images.icon_2} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                  </View>:
+                comment.rate.scale === '3' ?
+                  <View style={{width: 24, height: 24}}>
+                    <Image source={images.icon_3} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                  </View>:
+                comment.rate.scale === '4' ?
+                  <View style={{width: 24, height: 24}}>
+                    <Image source={images.icon_4} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                  </View>:
+                comment.rate.scale === '5' ?
+                  <View style={{width: 24, height: 24}}>
+                    <Image source={images.icon_5} style={{width: '100%', height: '100%', resizeMode: 'cover'}}/>
+                  </View>: null
+              }
+            </View>
+          </View>
+        </View>
+        <Text style={[common.fontbody, {color: '#7f8082', marginTop: 5, lineHeight: 20, paddingTop: 7, paddingBottom: 9, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#f0f0f0', marginBottom: 5}]}>{comment.child}</Text>
+        {
+          this.state.current_user._id === comment.user._id ?
+          <View style={{width: '100%', height: 20}}>
+            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+              <View style={{width: '12%', height: '100%'}}>
+                <TouchableOpacity onPress={(e) => this.setCommentEdit(comment)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                  <Ionicons name="ios-swap" size={18} color="#dbd9d9"/>
+                </TouchableOpacity>
+              </View>
+              <View style={{width: '12%', height: '100%'}}>
+                <TouchableOpacity onPress={(e) => this.deleteCommentStuff(comment._id)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                  <Ionicons name="ios-flame" size={18} color="#dbd9d9"/>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View> :
+          <View style={{width: '100%', height: 16, alignItems: 'flex-end'}}>
+            {
+              this.state.reply === true ?
+              <TouchableOpacity onPress={(e) => this.setState({reply: false, child: '', placeholder: 'Give us review', commentID: ''})} style={{width: '20%', height: '100%', alignItems: 'flex-end'}}>
+                <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>TERMINATE</Text>
+              </TouchableOpacity> :
+              <TouchableOpacity onPress={(e) => this.setState({reply: true, placeholder: 'Give reply', commentID: comment._id})} style={{width: '20%', height: '100%', alignItems: 'flex-end'}}>
+                <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>REPLY</Text>
+              </TouchableOpacity>
+            }
+          </View>
+        }
+        <View style={{width: '100%', height: 'auto'}}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{width: '20%'}}>
+              <View style={{width: 35, height: 35}}>
+                <Image source={{uri: 'https://cdn.dribbble.com/users/5031/screenshots/7008431/dribbble.png'}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 60, borderWidth: 1, borderColor: '#ea4c89'}}/>
+              </View>
+            </View>
+            <View style={{width: '80%'}}>
+              <Text style={[{fontFamily: 'Oswald', fontSize: 14, color: '#444'}]}>Momo Chan <Text style={[{fontFamily: 'Oswald', color: '#7f8082', fontSize: 12, marginLeft: 15}]}>2h ago.</Text></Text>
+              <Text style={[common.fontbody, {color: '#7f8082', marginTop: 5, lineHeight: 20, paddingTop: 5, paddingBottom: 7, paddingHorizontal: 10, borderRadius: 6, backgroundColor: '#f0f0f0', marginBottom: 5}]}>かわいい〜浴衣似合う🥺家族でゆっくりできてよかったね！</Text>
+              <View style={{width: '100%', height: 16, alignItems: 'flex-end'}}>
+                <TouchableOpacity style={{width: '20%', height: '100%'}}>
+                  <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>REPLY</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  </View>
+)

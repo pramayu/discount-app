@@ -12,6 +12,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { common } from '../../assets/stylesheets/common';
 import images from '../../assets/images/images';
 import {COMMENT_TO_STUFF, COMMENT_STUFF, EDIT_COMMENT_STUFF, DELETE_COMMENT_STUFF} from '../../queries/queryComment';
+import {REPLY_TO_COMMENT_STUFF, DELETE_REPLY_COMMENT} from '../../queries/querySubcomment';
 import {CURRENT_USER} from '../../queries/queryUser';
 
 
@@ -26,9 +27,12 @@ class ReviewStuff extends Component {
       child: '',
       current_user: '',
       commentID: '',
+      merchantID: '',
       editstatus: false,
       rate: '0',
-      typingstatus: false
+      typingstatus: false,
+      reply: false,
+      placeholder: 'Give us review'
     }
     this.animatedTextInputUp = new Animated.Value(0);
     this.animatedTextInputDw = new Animated.Value(0);
@@ -72,7 +76,7 @@ class ReviewStuff extends Component {
   }
 
   _keyboardDidHide() {
-    this.setState({typingstatus: false, rate: '0', child: ''});
+    this.setState({typingstatus: false, rate: '0', child: '', editstatus: false, reply: false});
     this.animatedTextInputDwServ()
   }
 
@@ -102,6 +106,12 @@ class ReviewStuff extends Component {
       this.setState({child: ''});
       Keyboard.dismiss();
     }
+  }
+
+  setCommentPost = (name, value) => {
+    this.setState({
+      [name]: value
+    })
   }
 
   setCommentEdit = (comment) => {
@@ -163,6 +173,58 @@ class ReviewStuff extends Component {
     })
   }
 
+  replyToCommentStuff = async() => {
+    if(this.state.child.length > 0) {
+      var res = await this.props.reply_to_comment_stuff({
+        variables: {
+          subcommentprop: {
+            userID: this.state.current_user._id,
+            merchantID: this.state.merchantID,
+            commentID: this.state.commentID,
+            child: this.state.child
+          }
+        },
+        refetchQueries: [{
+          query: COMMENT_STUFF,
+          variables: {
+            commentprop: {
+              stuffID     : this.state.stuffID,
+              userID      : this.state.current_user._id
+            }
+          }
+        }]
+      });
+      var {status, error} = res.data.reply_to_comment_stuff;
+      if(status === true) {
+        this.setState({
+          child: '',
+          reply: false
+        });
+        Keyboard.dismiss();
+      }
+    }
+  }
+
+  deleteReplyComment = async(subcommentID) => {
+    var res = await this.props.delete_reply_comment({
+      variables: {
+        subcommentprop: {
+          userID: this.state.current_user._id,
+          subcommentID: subcommentID
+        }
+      },
+      refetchQueries: [{
+        query: COMMENT_STUFF,
+        variables: {
+          commentprop: {
+            stuffID     : this.state.stuffID,
+            userID      : this.state.current_user._id
+          }
+        }
+      }]
+    })
+  }
+
   animatedTextInputUpServ = () => {
     Animated.parallel([
       Animated.timing(this.animatedTextInputUp, {
@@ -197,21 +259,61 @@ class ReviewStuff extends Component {
     });
   }
 
+  _renderSubComment = (replies) => {
+    return _.map(replies, (reply, index) => {
+      return (
+        <View key={index} style={{width: '100%'}}>
+          <View style={{flexDirection: 'row'}}>
+            <View style={{width: '20%'}}>
+              <View style={{width: 35, height: 35}}>
+                <Image source={{uri: reply.merchant ? reply.merchant.photos[0].secureUrl : reply.user.photos[0].secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 60}}/>
+              </View>
+            </View>
+            <View style={{width: '80%'}}>
+              <Text style={[{fontFamily: 'Oswald', fontSize: 14, color: '#444'}]}>{reply.merchant ? reply.merchant.name : reply.user.fullname ? reply.user.fullname : reply.user.username} <Text style={[{fontFamily: 'Oswald', color: '#7f8082', fontSize: 12, marginLeft: 15}]}>2h ago.</Text></Text>
+              <Text style={[common.fontbody, {color: '#7f8082', marginTop: 5, lineHeight: 20, paddingTop: 5, paddingBottom: 7, paddingHorizontal: 10, borderRadius: 6, backgroundColor: '#f0f0f0', marginBottom: 5}]}>{reply.child}</Text>
+              <View style={{width: '100%', height: 16, alignItems: 'flex-end'}}>
+                {
+                  this.state.current_user._id === reply.user._id ?
+                  <View style={{width: '100%', height: 20}}>
+                    <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                      <View style={{width: '12%', height: '100%'}}>
+                      </View>
+                      <View style={{width: '12%', height: '100%'}}>
+                        <TouchableOpacity onPress={(e) => this.deleteReplyComment(reply._id)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                          <Ionicons name="ios-flame" size={18} color="#dbd9d9"/>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View> :
+                  <TouchableOpacity style={{width: '20%', height: '100%', alignItems: 'flex-end'}}>
+                    <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>REPLY</Text>
+                  </TouchableOpacity>
+                }
+              </View>
+            </View>
+          </View>
+        </View>
+      )
+    })
+  }
+
   _renderComment = (comments) => {
+    var {width, height} = Dimensions.get('window');
     return _.map(comments, (comment, index) => {
       return (
-        <View key={index} style={{width: '100%', height: 'auto'}}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={{width: '17%', height: 'auto'}}>
+        <View key={index} style={{width: '100%'}}>
+          <View style={{flexDirection: 'row'}}>
+            <View style={{width: '17%'}}>
               <View style={{width: 35, height: 35, borderRadius: 60}}>
                 <Image source={{uri: comment.user.photos[0].secureUrl}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 60}}/>
               </View>
             </View>
-            <View style={{width: '83%', height: 'auto', paddingTop: 3}}>
+            <View style={{width: '83%', paddingTop: 3}}>
               <View style={{width: '100%', height: 24}}>
                 <View style={{flex: 1, flexDirection: 'row'}}>
                   <View style={{flex: .7}}>
-                    <Text style={[{fontFamily: 'Oswald', fontSize: 14, color: '#444'}]}>{comment.user.fullname.length > 0 ? comment.user.fullname : comment.user.username} <Text style={[{fontFamily: 'Oswald', color: '#7f8082', fontSize: 12, marginLeft: 15}]}>5d ago.</Text></Text>
+                    <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>{comment.user.fullname.length > 0 ? comment.user.fullname : comment.user.username} <Text style={[{fontFamily: 'Oswald', color: '#7f8082', fontSize: 12, marginLeft: 15}]}>5d ago.</Text></Text>
                   </View>
                   <View style={{flex: .3, alignItems: 'flex-end'}}>
                     {
@@ -239,49 +341,36 @@ class ReviewStuff extends Component {
                   </View>
                 </View>
               </View>
-              <Text style={[common.fontbody, {color: '#7f8082', marginTop: 5, lineHeight: 20, paddingTop: 5, paddingBottom: 7, paddingHorizontal: 10, borderRadius: 6, backgroundColor: '#f0f0f0', marginBottom: 5}]}>{comment.child}</Text>
-              {
-                this.state.current_user._id === comment.user._id ?
-                <View style={{width: '100%', height: 20}}>
-                  <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-                    <View style={{width: '12%', height: '100%'}}>
-                      <TouchableOpacity onPress={(e) => this.setCommentEdit(comment)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                        <Ionicons name="ios-swap" size={18} color="#dbd9d9"/>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={{width: '12%', height: '100%'}}>
-                      <TouchableOpacity onPress={(e) => this.deleteCommentStuff(comment._id)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                        <Ionicons name="ios-flame" size={18} color="#dbd9d9"/>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View> :
-                <View style={{width: '100%', height: 16, alignItems: 'flex-end'}}>
-                  <TouchableOpacity style={{width: '20%', height: '100%'}}>
-                    <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>REPLY</Text>
-                  </TouchableOpacity>
-                </View>
-              }
-              {/*
-                <View style={{width: '100%', height: 'auto'}}>
-                  <View style={{flex: 1, flexDirection: 'row'}}>
-                    <View style={{width: '20%'}}>
-                      <View style={{width: 35, height: 35}}>
-                        <Image source={{uri: 'https://cdn.dribbble.com/users/5031/screenshots/7008431/dribbble.png'}} style={{width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 60, borderWidth: 1, borderColor: '#ea4c89'}}/>
+              <Text style={[common.fontbody, {color: '#7f8082', marginTop: 5, lineHeight: 20, paddingTop: 7, paddingBottom: 9, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#f0f0f0', marginBottom: 5}]}>{comment.child}</Text>
+                {
+                  this.state.current_user._id === comment.user._id ?
+                  <View style={{width: '100%', height: 20}}>
+                    <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                      <View style={{width: '12%', height: '100%'}}>
+                        <TouchableOpacity onPress={(e) => this.setCommentEdit(comment)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                          <Ionicons name="ios-swap" size={18} color="#dbd9d9"/>
+                        </TouchableOpacity>
                       </View>
-                    </View>
-                    <View style={{width: '80%'}}>
-                      <Text style={[{fontFamily: 'Oswald', fontSize: 14, color: '#444'}]}>Momo Chan <Text style={[{fontFamily: 'Oswald', color: '#7f8082', fontSize: 12, marginLeft: 15}]}>2h ago.</Text></Text>
-                      <Text style={[common.fontbody, {color: '#7f8082', marginTop: 5, lineHeight: 20, paddingTop: 5, paddingBottom: 7, paddingHorizontal: 10, borderRadius: 6, backgroundColor: '#f0f0f0', marginBottom: 5}]}>かわいい〜浴衣似合う🥺家族でゆっくりできてよかったね！</Text>
-                      <View style={{width: '100%', height: 16, alignItems: 'flex-end'}}>
-                        <TouchableOpacity style={{width: '20%', height: '100%'}}>
-                          <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>REPLY</Text>
+                      <View style={{width: '12%', height: '100%'}}>
+                        <TouchableOpacity onPress={(e) => this.deleteCommentStuff(comment._id)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                          <Ionicons name="ios-flame" size={18} color="#dbd9d9"/>
                         </TouchableOpacity>
                       </View>
                     </View>
+                  </View> :
+                  <View style={{width: '100%', height: 16, alignItems: 'flex-end'}}>
+                    {
+                      this.state.reply === true ?
+                      <TouchableOpacity onPress={(e) => this.setState({reply: false, child: '', placeholder: 'Give us review', commentID: ''})} style={{width: '20%', height: '100%', alignItems: 'flex-end'}}>
+                        <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>TERMINATE</Text>
+                      </TouchableOpacity> :
+                      <TouchableOpacity onPress={(e) => this.setState({reply: true, placeholder: 'Give reply', commentID: comment._id})} style={{width: '20%', height: '100%', alignItems: 'flex-end'}}>
+                        <Text style={[common.fontbody, {color: '#dbd9d9', fontSize: 12}]}>REPLY</Text>
+                      </TouchableOpacity>
+                    }
                   </View>
-                </View>
-                */}
+                }
+              {this._renderSubComment(comment.subcomment)}
             </View>
           </View>
         </View>
@@ -387,7 +476,7 @@ class ReviewStuff extends Component {
                 <View style={{width: width, height: height}}>
                   <View style={{flex: 1, flexDirection: 'column'}}>
                     <View style={{width: '100%', height: height - 80, marginTop: 20, paddingHorizontal: 20, paddingTop: 50}}>
-                      <View style={{flex: 1, flexDirection: 'column'}}>
+                      <View style={{flex: 1, flexDirection: 'column', flexWrap: 'wrap', justifyContent: 'flex-start'}}>
                         { this.state.typingstatus === false? this._renderComment(data.comment_stuff ? data.comment_stuff : []) : null}
                       </View>
                     </View>
@@ -400,14 +489,18 @@ class ReviewStuff extends Component {
                           </View>
                         </View>
                         <View style={{width: '85%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <TextInput value={this.state.child} onChangeText = {(txt) => this.setState({child: txt})} placeholder="Give us review" style={[common.fontbody, {paddingRight: 40, fontSize: 14, color: '#444',width: '100%', height: 42, borderRadius: 20, paddingHorizontal: 15, backgroundColor: '#fff'}]}/>
+                          <TextInput returnKeyType="done" value={this.state.child} onChangeText = {(txt) => this.setCommentPost('child', txt)} placeholder={this.state.placeholder} style={[common.fontbody, {paddingRight: 40, fontSize: 14, color: '#444',width: '100%', height: 42, borderRadius: 20, paddingHorizontal: 15, backgroundColor: '#fff'}]}/>
                           <View style={{position: 'absolute', height: 32, width: 32, right: 10}}>
                             {
-                              this.state.editstatus === false ?
-                              <TouchableOpacity onPress={(e) => this.commentToStuff()} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                              this.state.editstatus === true ?
+                              <TouchableOpacity onPress={(e) => this.handleStoreComment()} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
                                 <Ionicons name="ios-color-wand" size={22} color="#444"/>
                               </TouchableOpacity> :
-                              <TouchableOpacity onPress={(e) => this.handleStoreComment()} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                              this.state.reply === true ?
+                              <TouchableOpacity onPress={(e) => this.replyToCommentStuff()} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                                <Ionicons name="ios-color-wand" size={22} color="#444"/>
+                              </TouchableOpacity> :
+                              <TouchableOpacity onPress={(e) => this.commentToStuff()} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
                                 <Ionicons name="ios-color-wand" size={22} color="#444"/>
                               </TouchableOpacity>
                             }
@@ -437,6 +530,12 @@ export default compose(
   }),
   graphql(DELETE_COMMENT_STUFF, {
     name: 'delete_comment_stuff'
+  }),
+  graphql(REPLY_TO_COMMENT_STUFF, {
+    name: 'reply_to_comment_stuff'
+  }),
+  graphql(DELETE_REPLY_COMMENT, {
+    name: 'delete_reply_comment'
   }),
   graphql(CURRENT_USER, {
     name: 'current_user',
