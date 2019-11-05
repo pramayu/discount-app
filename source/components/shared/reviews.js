@@ -81,30 +81,32 @@ class ReviewStuff extends Component {
   }
 
   commentToStuff = async() => {
-    var res = await this.props.comment_to_stuff({
-      variables: {
-        commentprop: {
-          child       : this.state.child,
-          stuffID     : this.state.stuffID,
-          userID      : this.state.current_user._id,
-          rate        : this.state.rate,
-          merchantID  : this.state.merchantID
-        }
-      },
-      refetchQueries: [{
-        query: COMMENT_STUFF,
+    if(this.state.child.length > 0 && this.state.rate.length > 0) {
+      var res = await this.props.comment_to_stuff({
         variables: {
           commentprop: {
+            child       : this.state.child,
             stuffID     : this.state.stuffID,
-            userID      : this.state.current_user._id
+            userID      : this.state.current_user._id,
+            rate        : this.state.rate,
+            merchantID  : this.state.merchantID
           }
-        }
-      }]
-    });
-    var {status, error, comment} = res.data.comment_to_stuff;
-    if(status === true) {
-      this.setState({child: ''});
-      Keyboard.dismiss();
+        },
+        refetchQueries: [{
+          query: COMMENT_STUFF,
+          variables: {
+            commentprop: {
+              stuffID     : this.state.stuffID,
+              userID      : this.state.current_user._id
+            }
+          }
+        }]
+      });
+      var {status, error, comment} = res.data.comment_to_stuff;
+      if(status === true) {
+        this.setState({child: ''});
+        Keyboard.dismiss();
+      }
     }
   }
 
@@ -313,7 +315,7 @@ class ReviewStuff extends Component {
               <View style={{width: '100%', height: 24}}>
                 <View style={{flex: 1, flexDirection: 'row'}}>
                   <View style={{flex: .7}}>
-                    <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>{comment.user.fullname.length > 0 ? comment.user.fullname : comment.user.username} <Text style={[{fontFamily: 'Oswald', color: '#7f8082', fontSize: 12, marginLeft: 15}]}>5d ago.</Text></Text>
+                    <Text style={[common.fontbody, {fontSize: 14, color: '#444'}]}>{comment.user.fullname.length > 0 ? comment.user.fullname : comment.user.username} <Text style={[common.fontbody, {color: '#7f8082', fontSize: 12, marginLeft: 15}]}>5d ago.</Text></Text>
                   </View>
                   <View style={{flex: .3, alignItems: 'flex-end'}}>
                     {
@@ -483,12 +485,7 @@ class ReviewStuff extends Component {
                     {/*form*/}
                     <Animated.View style={{backgroundColor: '#f6f5f3',width: '100%', height: 80, transform: [{translateY: this.state.keyAnimatedStatus === false ? animatedTextInputUpSty : animatedTextInputDwSty}]}}>
                       <View style={{flex: 1, flexDirection: 'row', paddingHorizontal: 20}}>
-                        <View style={{width: '15%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
-                          <View style={{width: 40, height: 40}}>
-                            <Image source={{uri: 'https://cdn.dribbble.com/users/1355613/screenshots/6317190/smoking_hot_2x.jpg'}} style={{width:'100%', height: '100%', borderRadius: 100, resizeMode: 'cover'}}/>
-                          </View>
-                        </View>
-                        <View style={{width: '85%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
+                        <View style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}>
                           <TextInput returnKeyType="done" value={this.state.child} onChangeText = {(txt) => this.setCommentPost('child', txt)} placeholder={this.state.placeholder} style={[common.fontbody, {paddingRight: 40, fontSize: 14, color: '#444',width: '100%', height: 42, borderRadius: 20, paddingHorizontal: 15, backgroundColor: '#fff'}]}/>
                           <View style={{position: 'absolute', height: 32, width: 32, right: 10}}>
                             {

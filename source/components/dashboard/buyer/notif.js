@@ -69,7 +69,7 @@ class Notif extends Component {
         <View style={{flex: .08, justifyContent: 'center', paddingHorizontal: 20}}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex: .7, justifyContent: 'center', alignItems: 'flex-start'}}>
-              <Text style={[common.fontbody, {color: '#444', fontSize: 14}]}>NOTIFICATIONS</Text>
+              <Text style={[common.fontbody, {color: '#444', fontSize: 12}]}>NOTIFICATIONS</Text>
             </View>
             <View style={{flex: .3, justifyContent: 'center', alignItems: 'flex-end'}}>
               <TouchableOpacity>

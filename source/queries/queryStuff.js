@@ -140,6 +140,13 @@ export var GET_STUFF = gql`
         price
         discountstatus
         stuffstatus
+        vote {
+          _id
+          voter {
+            _id
+            username
+          }
+        }
         discounts {
           _id
           discount

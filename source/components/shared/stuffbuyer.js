@@ -14,6 +14,7 @@ import { titleCase, countDiscount } from './sharedaction';
 import { GET_STUFF } from '../../queries/queryStuff';
 import { CURRENT_USER } from '../../queries/queryUser';
 import { ADD_TO_CART, GET_USER_CART } from '../../queries/queryCart';
+import { ADD_VOTE_STUFF, UNVOTE_STUFF } from '../../queries/queryVote';
 
 
 class StuffBuyer extends Component {
@@ -28,6 +29,7 @@ class StuffBuyer extends Component {
     this.bottomSheetDw = new Animated.Value(0);
     this.moveBottomsLf = new Animated.Value(0);
     this.moveBottomsRg = new Animated.Value(0);
+    this.pushVote      = new Animated.Value(0);
   }
   componentDidMount = () => {
     var {stuff_id} = this.props.navigation.state.params;
@@ -139,6 +141,51 @@ class StuffBuyer extends Component {
     var { status, error, cart } = res.data.add_to_cart;
   }
 
+  addVoteToStuff = async(stuffID) => {
+    var res = await this.props.add_vote_stuff({
+      variables: {
+        voteprop: {
+          userID: this.state.current_user._id,
+          stuffID: stuffID
+        }
+      },
+      refetchQueries: [{
+        query: GET_STUFF,
+        variables: {stuffID: stuffID}
+      }]
+    });
+    var {status, error} = res.data.add_vote_stuff;
+    if(status === true) {
+      Animated.timing(this.pushVote, {
+        toValue: 2,
+        duration: 200
+      }).start((e) => this.pushVote.setValue(0))
+    }
+  }
+
+  unvoteToStuff = async (stuffID, voteID) => {
+    var res = await this.props.unvote_stuff({
+      variables: {
+        voteprop: {
+          userID: this.state.current_user._id,
+          stuffID: stuffID,
+          voteID: voteID
+        }
+      },
+      refetchQueries: [{
+        query: GET_STUFF,
+        variables: {stuffID: stuffID}
+      }]
+    });
+    var {status, error} = res.data.unvote_stuff;
+    if(status === true) {
+      Animated.timing(this.pushVote, {
+        toValue: 2,
+        duration: 200
+      }).start((e) => this.pushVote.setValue(0))
+    }
+  }
+
   renderDiscount = (discounts) => {
     var trueDiscount = _.filter(discounts, (discount) => discount.status === true);
     return trueDiscount;
@@ -207,6 +254,23 @@ class StuffBuyer extends Component {
     )
   }
 
+  renderVoteStatus = (votes, stuffID) => {
+    var voter = _.filter(votes, (vote) => {return vote.voter._id === this.state.current_user._id});
+    if(voter.length > 0) {
+      return (
+        <TouchableOpacity onPress={(e) => this.unvoteToStuff(stuffID, voter[0]._id)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', borderRadius: 50, backgroundColor: '#ea4c89'}}>
+          <Ionicons name="ios-heart" size={24} color="#f6f5f3"/>
+        </TouchableOpacity>
+      )
+    } else {
+      return (
+        <TouchableOpacity onPress={(e) => this.addVoteToStuff(stuffID)} style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', borderRadius: 50, backgroundColor: '#f6f5f3'}}>
+          <Ionicons name="ios-heart" size={24} color="#ea4c89"/>
+        </TouchableOpacity>
+      )
+    }
+  }
+
   render() {
     var { width, height } = Dimensions.get('window');
     var bottomSheetUpSty = this.bottomSheetUp.interpolate({
@@ -224,6 +288,10 @@ class StuffBuyer extends Component {
     var moveBottomsRgSty = this.moveBottomsRg.interpolate({
       inputRange: [0, 1],
       outputRange: [-width, 0]
+    });
+    var pushVoteSty = this.pushVote.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [0, -50, 0]
     });
     if(this.state.stuffID.length > 0) {
       return (
@@ -257,10 +325,8 @@ class StuffBuyer extends Component {
                   <View style={{flex: 1, flexDirection: 'row'}}>
                     {this.renderPicture(data.stuff.stuff.photos)}
                   </View>
-                  <Animated.View style={{transform: [{translateX: this.state.bottomSheetStatus === false ? moveBottomsLfSty : moveBottomsRgSty}], position: 'absolute', width: 40, height: 40, borderRadius: 50, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center', bottom: 50, elevation: 10, marginLeft: 30, zIndex: 16}}>
-                    <TouchableOpacity style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', borderRadius: 50, backgroundColor: '#ea4c89'}}>
-                      <Ionicons name="ios-heart" size={24} color="#f6f5f3"/>
-                    </TouchableOpacity>
+                  <Animated.View style={{transform: [{translateX: this.state.bottomSheetStatus === false ? moveBottomsLfSty : moveBottomsRgSty}, {translateY: pushVoteSty}], position: 'absolute', width: 40, height: 40, borderRadius: 50, backgroundColor: '#f6f5f3', justifyContent: 'center', alignItems: 'center', bottom: 50, elevation: 10, marginLeft: 30, zIndex: 16}}>
+                    {this.renderVoteStatus(data.stuff.stuff.vote, data.stuff.stuff._id)}
                   </Animated.View>
                   <View style={{width: '100%', height: 70, paddingHorizontal: 20, position: 'absolute', bottom: 0, borderTopRightRadius: 20, borderTopLeftRadius: 20, backgroundColor: '#f6f5f3', zIndex: 14}}>
                     <View style={{flex: 1, flexDirection: 'row'}}>
@@ -303,7 +369,7 @@ class StuffBuyer extends Component {
                       </View>
                       <View style={{width: 70, height: 70, backgroundColor: '#ececec', borderRadius: 30, justifyContent: 'center', alignItems: 'center'}}>
                         <Ionicons size={24} color="#dbd9d9" name="ios-heart"/>
-                        <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>145+</Text>
+                        <Text style={[common.fontitle, {fontSize: 12, color: '#444'}]}>{data.stuff.stuff.vote.length}+</Text>
                         <Text style={[common.fontitle, {fontSize: 10, color: '#444'}]}>VOTES</Text>
                       </View>
                       <View style={{width: 70, height: 70, backgroundColor: '#ececec', borderRadius: 30, justifyContent: 'center', alignItems: 'center'}}>
@@ -388,5 +454,11 @@ export default compose(
   }),
   graphql(ADD_TO_CART, {
     name: 'add_to_cart'
+  }),
+  graphql(ADD_VOTE_STUFF, {
+    name: 'add_vote_stuff'
+  }),
+  graphql(UNVOTE_STUFF, {
+    name: 'unvote_stuff'
   })
 )(StuffBuyer);
